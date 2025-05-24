@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>プロコム - プロフィールページ</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>P r o c o m</h1>
+    <p class="tagline">あなたのすべてを、ここに集約。</p>
+    <p class="description">Procomは、あなたのSNS・プロフィール・活動情報を一つにまとめる自己発信プラットフォームです。</p>
+  
+    <!-- フォームを右上に配置する枠 -->
+    <div class="auth-forms">
+      <form id="login-form">
+        <input type="text" id="login-username" placeholder="ユーザー名" required />
+        <input type="password" id="login-password" placeholder="パスワード" required />
+        <button type="submit">ログイン</button>
+      </form>
+      <form id="register-form">
+        <input type="text" id="register-username" placeholder="新規ユーザー名" required />
+        <input type="password" id="register-password" placeholder="パスワード" required />
+        <button type="submit">登録</button>
+      </form>
+    </div>
+  </header>
+
+  <!-- 写真登録フォーム -->
+
+  <div class="carousel-wrapper" style="position: relative;">
+    <div class="carousel">
+    <div class="slide" style="--i: 0;"><img src="photo1.jpg" /></div>
+    <div class="slide" style="--i: 1;"><img src="photo2.jpg" /></div>
+    <div class="slide" style="--i: 2;"><img src="photo3.jpg" /></div>
+    <div class="slide" style="--i: 3;"><img src="photo4.jpg" /></div>
+    <div class="slide" style="--i: 4;"><img src="photo5.jpg" /></div>  
+    </div>
+    <button class="prev" onclick="prevSlide()">‹</button>
+    <button class="next" onclick="nextSlide()">›</button>
+  </div>
+
+  <div class="photo-upload">
+    <h3>写真を登録(最大5枚)</h3>
+    <input type="file" id="photoInput" accept="image/*" multiple>
+    <button onclick="savePhotos()">写真を保存</button>
+  </div>
+
+  <!-- プロフィール -->
+  <section class="profile">
+    <div class="profile-wrapper">
+      <div class="profile-info">
+        <h2 id="nameTitle">
+          <span id="name"></span><span id="title"></span>
+        </h2>
+        <p id="bio"></p>
+        <div id="edit-section" style="display: none;"></div>
+        <button id="editBtn">プロフィールを編集</button>
+      </div>
+  
+      <div id="calendar-container">
+        <div id="calendar"></div>
+        <!-- 予定入力フォーム -->
+<div id="event-form">
+  <h3>予定を追加</h3>
+  <label>日付: <input type="date" id="event-date" /></label><br>
+  <label>内容: <input type="text" id="event-text" placeholder="イベント内容" /></label><br>
+  <button id="add-event-btn">追加</button>
+</div>
+      </div>
+    </div>
+  </section>
+  
+  <form id="editForm" class="hidden">
+    <div class="form-row">
+      <label for="nameInput">名前：</label>
+      <input type="text" id="nameInput">
+    </div>
+    <div class="form-row">
+      <label for="titleInput">肩書：</label>
+      <input type="text" id="titleInput">
+    </div>
+    <div class="form-row">
+      <label for="bioInput">プロフィール：</label>
+      <textarea id="bioInput" rows="5"></textarea>
+    </div>
+    <button type="button" id="saveBtn">保存</button>
+    <button type="button" id="cancelBtn">キャンセル</button>
+  </form>
+  <div class="profile-calendar-wrapper">
+  
+  
+
+  <!-- SNS表示エリア -->
+  <div class="sns-links">
+    <h3>SNSリンク</h3>
+
+    <!-- 横並び用フレックスコンテナ -->
+    <div class="sns-embeds-wrapper">
+        <!-- YouTube動画：上段 -->
+        <div class="sns-youtube-wrapper">
+          <div class="sns-item" id="youtube-section">
+            <div class="wrapper">
+            <h2>最新のYouTube動画</h2>
+            <div class="sns-section">
+                <input type="text" id="channelIdInput" placeholder="チャンネルID (UC〜で始まるID)">
+                <small>※@から始まるユーザー名ではなく、UCから始まるチャンネルIDを入力してください</small>
+                <button onclick="saveYouTubeChannelId()">保存</button>
+              </div>
+            <div id="youtubeCard" class="sns-card"></div>
+            <div id="videoContainer" class="video-container">
+              <div class="youtube-card">
+                <iframe src="https://www.youtube.com/embed/XXXX" allowfullscreen></iframe>
+                <p>タイトルや説明</p>
+              </div>
+              <div class="youtube-card">
+                <iframe src="https://www.youtube.com/embed/YYYY" allowfullscreen></iframe>
+                <p>別の動画の説明</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- XとInstagram：下段横並び -->
+        <div class="sns-bottom-links">
+            <div class="sns-item">
+                <h2>X</h2>
+                <label>アカウント名（@なし）: 
+                  <input type="text" id="xUsernameInput" placeholder="ユーザー名を入力">
+                </label>
+                <button onclick="showXTimeline()">タイムラインを表示</button>
+                <div id="xTimelineContainer">ここにXタイムラインが表示されます</div>
+              </div>
+      
+            <div class="sns-item">
+              <h2>Instagram</h2>
+              <small class="note">
+                プロフィールページまたはお気に入りのインスタ画像URLを入力ください
+              </small>
+              <label for="instagramPostLink" class="sr-only">Instagram投稿リンク</label>
+              <input type="text" id="instagramPostLink" placeholder="https://www.instagram.com/xxxxx/" />
+              <button onclick="saveInstagramPostLink()">Instagram投稿を表示</button>
+              <div id="instagramPostContainer">Instagram投稿が表示されます</div>
+            </div>
+         </div>
+
+<!-- TikTok URL入力フォーム -->
+<div id="tiktok-section">
+  <h2>TikTok動画を登録（最大3つ）</h2>
+  <input type="text" class="tiktok-input" placeholder="動画URL 1" /><br />
+  <input type="text" class="tiktok-input" placeholder="動画URL 2" /><br />
+  <input type="text" class="tiktok-input" placeholder="動画URL 3" /><br />
+  <button onclick="saveTikTokVideos()">保存</button>
+
+  <div id="tiktok-container" class="tiktok-grid"></div>
+</div>
+
+  <script src="script.js"></script>
+  <script src="youtube.js"></script>
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  <script async src="https://www.tiktok.com/embed.js"></script>
+</body>
+</html>
