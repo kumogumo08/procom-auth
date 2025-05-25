@@ -535,6 +535,28 @@ body {
     margin-top: 4px;
   }
   
+.x-profile-link {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  color: #1da1f2;
+  font-weight: bold;
+  transition: opacity 0.3s;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.x-profile-link:hover {
+  opacity: 0.85;
+}
+
+.x-profile-image {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
     /* TikTok動画の横並び */
   .tiktok-grid {
     display: flex;

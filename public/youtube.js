@@ -1,45 +1,29 @@
-function showXTimeline() {
+function showXProfile() {
   const username = document.getElementById('xUsernameInput').value.trim();
-  const container = document.getElementById('xTimelineContainer');
-  container.innerHTML = ''; // 再描画のためクリア
+  const container = document.getElementById('xProfileDisplay');
 
   if (!username) {
-    container.textContent = 'ユーザー名を入力してください';
+    container.innerHTML = 'ユーザー名を入力してください。';
     return;
   }
 
-  // X埋め込み用aタグ生成
-  const anchor = document.createElement('a');
-  anchor.setAttribute('class', 'twitter-timeline');
-  anchor.setAttribute('data-height', '400'); // オプション：高さ指定
-  anchor.setAttribute('href', `https://twitter.com/${username}?ref_src=twsrc%5Etfw`);
-  anchor.textContent = `Tweets by ${username}`;
-  container.appendChild(anchor);
+  container.innerHTML = `
+    <a href="https://twitter.com/${username}" target="_blank" class="x-profile-link">
+      <img src="x-profile-black.png" alt="X プロフィール画像" class="x-profile-image" />
+      <p>@${username} さんのXプロフィールを見る</p>
+    </a>
+  `;
 
-  // スクリプトがすでに読み込まれているか確認し再描画
-  if (window.twttr && window.twttr.widgets) {
-    window.twttr.widgets.load(container);
-  } else {
-    const script = document.createElement('script');
-    script.src = 'https://platform.twitter.com/widgets.js';
-    script.async = true;
-    document.body.appendChild(script);
-  }
-
-  // 保存
   localStorage.setItem('xUsername', username);
 }
-  
-  // ページ読み込み時に自動復元（任意）
-  window.addEventListener('DOMContentLoaded', () => {
-    const savedUsername = localStorage.getItem('xUsername');
-const xInput = document.getElementById('xUsernameInput'); // ←ここも要修正
 
-if (savedUsername && xInput) {
-  xInput.value = savedUsername;
-  showXTimeline(); // ←関数名を修正
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('xUsername');
+  if (saved) {
+    document.getElementById('xUsernameInput').value = saved;
+    showXProfile();
   }
-  });
+});
 
 function showXLink() {
     const username = document.getElementById('xUsernameInput').value.trim();

@@ -125,14 +125,12 @@
 
         <!-- XとInstagram：下段横並び -->
         <div class="sns-bottom-links">
-            <div class="sns-item">
-                <h2>X</h2>
-                <label>アカウント名（@なし）: 
-                  <input type="text" id="xUsernameInput" placeholder="ユーザー名を入力">
-                </label>
-                <button onclick="showXTimeline()">タイムラインを表示</button>
-                <div id="xTimelineContainer">ここにXタイムラインが表示されます</div>
-              </div>
+           <div class="sns-item">
+           <h2>X（旧Twitter）</h2>
+           <input type="text" id="xUsernameInput" placeholder="ユーザー名（@なし）を入力">
+           <button onclick="showXProfile()">表示</button>
+           <div id="xProfileDisplay"></div>
+           </div>
       
             <div class="sns-item">
               <h2>Instagram</h2>
@@ -160,17 +158,7 @@
   <script src="script.js"></script>
   <script src="youtube.js"></script>
   <script async src="https://www.tiktok.com/embed.js"></script>
-
-<!-- タイムラインのテスト表示（twitterdevは公式アカウントで公開） -->
-<div style="margin: 40px 0;">
-  <h2>Twitterタイムラインテスト</h2>
-  <a class="twitter-timeline" data-height="400" href="https://twitter.com/twitterdev?ref_src=twsrc%5Etfw">
-    Tweets by twitterdev
-  </a>
-</div>
-
-<!-- ウィジェット読み込みスクリプト -->
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 </body>
 </html>
