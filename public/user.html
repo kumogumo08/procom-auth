@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Procom - ユーザーページ</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>P r o c o m</h1>
+     <h2 id="page-title">Procom</h2>
+    <p class="tagline">あなたのすべてを、ここに集約。</p>
+    <p class="description">Procomは、あなたのSNS・プロフィール・活動情報を一つにまとめる自己発信プラットフォームです。</p>
+  </header>
+
+  <!-- 写真スライダー -->
+  <div class="carousel-wrapper" style="position: relative;">
+    <div class="carousel">
+      <div class="slide" style="--i: 0;"><img src="photo1.jpg" /></div>
+    </div>
+    <button class="prev" onclick="prevSlide()">‹</button>
+    <button class="next" onclick="nextSlide()">›</button>
+  </div>
+
+  <div class="photo-upload">
+  <h3>写真を登録(最大5枚)</h3>
+  <input type="file" id="photoInput" accept="image/*" multiple>
+  <button onclick="savePhotos()">写真を保存</button>
+</div>
+
+  <!-- 非表示の入力欄（連携型データのために必要） -->
+  <input type="file" id="photoInput" accept="image/*" multiple style="display:none" />
+  <input type="text" id="channelIdInput" placeholder="UCから始まるチャンネルID" style="display:none" />
+  <input type="text" id="instagramPostLink" placeholder="Instagram URL" style="display:none" />
+  <input type="text" id="xUsernameInput" placeholder="Xのユーザー名" style="display:none" />
+
+  <!-- プロフィール -->
+  <section class="profile">
+   <div class="profile-wrapper">
+  <div class="profile-info">
+    <h2 id="nameTitle"><span id="name"></span><span id="title"></span></h2>
+    <p id="bio"></p>
+
+    <!-- ✅ 編集セクションはここに入れる！ -->
+    <div id="edit-section" style="display: none;">
+      <button id="editBtn">プロフィールを編集</button>
+
+      <form id="editForm" class="hidden">
+        <div class="form-row">
+          <label for="nameInput">名前：</label>
+          <input type="text" id="nameInput">
+        </div>
+        <div class="form-row">
+          <label for="titleInput">肩書：</label>
+          <input type="text" id="titleInput">
+        </div>
+        <div class="form-row">
+          <label for="bioInput">プロフィール：</label>
+          <textarea id="bioInput" rows="5"></textarea>
+        </div>
+        <button type="button" id="saveBtn">保存</button>
+        <button type="button" id="cancelBtn">キャンセル</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ✅ カレンダーは profile-info の外 -->
+  <div id="calendar-container">
+    <div id="calendar"></div>
+      <!-- 予定入力フォーム -->
+      <div id="event-form">
+        <h3>予定を追加</h3>
+        <label>日付: <input type="date" id="event-date" /></label><br>
+        <label>内容: <input type="text" id="event-text" placeholder="イベント内容" /></label><br>
+        <button id="add-event-btn">追加</button>
+      </div>
+  </div>
+</div>
+
+    <!-- SNSリンク -->
+    <div class="sns-links">
+      <h3>SNSリンク</h3>
+      <div class="sns-embeds-wrapper">
+        <div class="sns-youtube-wrapper">
+          <div class="sns-item" id="youtube-section">
+            <h2>最新のYouTube動画</h2>
+            <div class="sns-section">
+                <input type="text" id="channelIdInput" placeholder="チャンネルID (UC〜で始まるID)">
+                <small>※@から始まるユーザー名ではなく、UCから始まるチャンネルIDを入力してください</small>
+                <button onclick="saveYouTubeChannelId()">保存</button>
+              </div>
+            <div id="youtubeCard" class="sns-card"></div>
+            <div id="videoContainer" class="video-container"></div>
+          </div>
+        </div>
+
+        <div class="sns-bottom-links">
+          <div class="sns-item">
+            <h2>X（旧Twitter）</h2>
+             <input type="text" id="xUsernameInput" placeholder="ユーザー名（@なし）を入力" />
+             <button onclick="showXProfile()">表示</button>
+              <div id="xProfileDisplay" style="margin-top: 10px;"></div>
+          </div>
+
+          <div class="sns-item">
+            <h2>Instagram</h2>
+            <small class="note">
+                プロフィールページまたはお気に入りのインスタ画像URLを入力ください
+              </small>
+              <label for="instagramPostLink" class="sr-only">Instagram投稿リンク</label>
+              <input type="text" id="instagramPostLink" placeholder="https://www.instagram.com/xxxxx/" />
+              <button onclick="embedInstagramPost()">Instagram投稿を表示</button>
+            <div id="instagramPostContainer">Instagram投稿が表示されます</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tiktok-section">
+       <h2>TikTok動画を登録（最大3つ）</h2>
+       <input type="text" class="tiktok-input" placeholder="動画URL 1" /><br />
+       <input type="text" class="tiktok-input" placeholder="動画URL 2" /><br />
+       <input type="text" class="tiktok-input" placeholder="動画URL 3" /><br />
+       <button onclick="saveTikTokVideos()">保存</button>
+        <div id="tiktok-container" class="tiktok-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <script src="/script.js"></script>
+  <script src="/user.js"></script>
+  <script src="/youtube.js"></script>
+  <script async src="https://www.tiktok.com/embed.js"></script>
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</body>
+</html>

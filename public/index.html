@@ -48,48 +48,50 @@
     <button onclick="savePhotos()">写真を保存</button>
   </div>
 
-  <!-- プロフィール -->
-  <section class="profile">
-    <div class="profile-wrapper">
-      <div class="profile-info">
-        <h2 id="nameTitle">
-          <span id="name"></span><span id="title"></span>
-        </h2>
-        <p id="bio"></p>
-        <div id="edit-section" style="display: none;"></div>
+<!-- プロフィール -->
+<section class="profile">
+  <div class="profile-wrapper">
+    <div class="profile-info">
+      <h2 id="nameTitle">
+        <span id="name"></span><span id="title"></span>
+      </h2>
+      <p id="bio"></p>
+
+      <!-- 編集ボタンと編集フォームをまとめて非表示にする -->
+      <div id="edit-section" style="display: none;">
         <button id="editBtn">プロフィールを編集</button>
+
+        <form id="editForm" class="hidden">
+          <div class="form-row">
+            <label for="nameInput">名前：</label>
+            <input type="text" id="nameInput">
+          </div>
+          <div class="form-row">
+            <label for="titleInput">肩書：</label>
+            <input type="text" id="titleInput">
+          </div>
+          <div class="form-row">
+            <label for="bioInput">プロフィール：</label>
+            <textarea id="bioInput" rows="5"></textarea>
+          </div>
+          <button type="button" id="saveBtn">保存</button>
+          <button type="button" id="cancelBtn">キャンセル</button>
+        </form>
       </div>
-  
-      <div id="calendar-container">
-        <div id="calendar"></div>
-        <!-- 予定入力フォーム -->
-<div id="event-form">
-  <h3>予定を追加</h3>
-  <label>日付: <input type="date" id="event-date" /></label><br>
-  <label>内容: <input type="text" id="event-text" placeholder="イベント内容" /></label><br>
-  <button id="add-event-btn">追加</button>
-</div>
+    </div>
+
+    <!-- カレンダーセクションはそのまま -->
+    <div id="calendar-container">
+      <div id="calendar"></div>
+      <!-- 予定入力フォーム -->
+      <div id="event-form">
+        <h3>予定を追加</h3>
+        <label>日付: <input type="date" id="event-date" /></label><br>
+        <label>内容: <input type="text" id="event-text" placeholder="イベント内容" /></label><br>
+        <button id="add-event-btn">追加</button>
       </div>
     </div>
-  </section>
-  
-  <form id="editForm" class="hidden">
-    <div class="form-row">
-      <label for="nameInput">名前：</label>
-      <input type="text" id="nameInput">
-    </div>
-    <div class="form-row">
-      <label for="titleInput">肩書：</label>
-      <input type="text" id="titleInput">
-    </div>
-    <div class="form-row">
-      <label for="bioInput">プロフィール：</label>
-      <textarea id="bioInput" rows="5"></textarea>
-    </div>
-    <button type="button" id="saveBtn">保存</button>
-    <button type="button" id="cancelBtn">キャンセル</button>
-  </form>
-  <div class="profile-calendar-wrapper">
+  </div>
   
   
 
@@ -139,7 +141,7 @@
               </small>
               <label for="instagramPostLink" class="sr-only">Instagram投稿リンク</label>
               <input type="text" id="instagramPostLink" placeholder="https://www.instagram.com/xxxxx/" />
-              <button onclick="saveInstagramPostLink()">Instagram投稿を表示</button>
+              <button onclick="embedInstagramPost()">Instagram投稿を表示</button>
               <div id="instagramPostContainer">Instagram投稿が表示されます</div>
             </div>
          </div>

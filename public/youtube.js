@@ -1,3 +1,4 @@
+// ==== X（旧Twitter）プロフィール表示機能 ====
 function showXProfile() {
   const username = document.getElementById('xUsernameInput').value.trim();
   const container = document.getElementById('xProfileDisplay');
@@ -7,223 +8,200 @@ function showXProfile() {
     return;
   }
 
+  const profileUrl = `https://twitter.com/${username}`;
+
   container.innerHTML = `
-    <a href="https://twitter.com/${username}" target="_blank" class="x-profile-link">
-      <img src="x-profile-black.png" alt="X プロフィール画像" class="x-profile-image" />
-      <p>@${username} さんのXプロフィールを見る</p>
-    </a>
+    <div style="text-align: center;">
+      <a href="${profileUrl}" target="_blank" style="display: block; font-weight: bold; margin-bottom: 8px;">
+        @${username} さんのXプロフィールを見る
+      </a>
+      <a href="${profileUrl}" target="_blank">
+        <img src="/x-profile.png" alt="Xプロフィール画像" style="width:100%; max-width:500px; border-radius:12px;" />
+      </a>
+    </div>
   `;
 
   localStorage.setItem('xUsername', username);
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('xUsername');
-  if (saved) {
-    document.getElementById('xUsernameInput').value = saved;
-    showXProfile();
-  }
-});
+// ==== Instagram投稿埋め込み機能 ====
+function embedInstagramPost() {
+  const url = document.getElementById('instagramPostLink').value;
+  const container = document.getElementById('instagramPostContainer');
 
-function showXLink() {
-    const username = document.getElementById('xUsernameInput').value.trim();
-    const container = document.getElementById('xTimelineContainer');
-    container.innerHTML = ''; // 表示のリセット
-  
-    if (!username) {
-      container.textContent = 'ユーザー名を入力してください';
-      return;
-    }
-  
-    // X（Twitter）プロフィールへのリンクを作成
-    const link = document.createElement('a');
-    link.href = `https://twitter.com/${username}`;
-    link.target = '_blank'; // 新しいタブで開く
-    link.rel = 'noopener noreferrer';
-    link.textContent = `${username} さんのXプロフィールを見る`;
-  
-    container.appendChild(link);
-  
-    // 入力を保存（ページリロード後も表示可能にする）
-    localStorage.setItem('xUsername', username);
+  if (!url || !url.includes('instagram.com')) {
+    container.innerHTML = '正しいInstagram投稿のURLを入力してください。';
+    return;
   }
-  
-  // ページ読み込み時に復元
-  window.addEventListener('DOMContentLoaded', () => {
-    const savedUsername = localStorage.getItem('xUsername');
-    if (savedUsername) {
-      document.getElementById('xUsernameInput').value = savedUsername;
-      showXLink();
-    }
-  });
 
-  // ==== Instagram投稿埋め込み機能 ====
-  
-  function embedInstagramPost() {
-    const url = document.getElementById('instagramPostUrl').value;
-    const embedArea = document.getElementById('instagramEmbedArea');
-  
-    if (!url || !url.includes('instagram.com')) {
-      embedArea.innerHTML = '正しいInstagram投稿のURLを入力してください。';
-      return;
-    }
-  
-    embedArea.innerHTML = `
-      <blockquote class="instagram-media" data-instgrm-permalink="${url}" data-instgrm-version="14" style="width:100%; max-width:540px;"></blockquote>
-    `;
-  
-    if (window.instgrm) {
-      window.instgrm.Embeds.process();
-    } else {
-      const script = document.createElement('script');
-      script.src = "https://www.instagram.com/embed.js";
-      document.body.appendChild(script);
-    }
-  
-    localStorage.setItem('instagramPostUrl', url);
-  }
-  
-  // ==== DOM読み込み後に保存されたInstagram・Xを表示 ====
-  
-  window.addEventListener('DOMContentLoaded', () => {
-    const savedUrl = localStorage.getItem('instagramPostUrl');
-    const input = document.getElementById('instagramPostUrl');
-  
-    if (savedUrl && input) {
-      input.value = savedUrl;
-      embedInstagramPost();
-    }
-  
-    const savedUsername = localStorage.getItem('xUsername');
-    const xInput = document.getElementById('xUsername');
-  
-    if (savedUsername && xInput) {
-      xInput.value = savedUsername;
-      loadTwitterTimeline();
-    }
-  
-    fetchLatestTwoVideos();// YouTube表示もここで呼び出し
-  });
-  
-  // ==== YouTubeの最新動画表示機能 ====
-  
-  const apiKey = 'AIzaSyAzSzwjwhvtCtUhkC0KR_e_NwDvQJpMxvM';
+  container.innerHTML = `
+    <blockquote class="instagram-media" data-instgrm-permalink="${url}" data-instgrm-version="14" style="width:100%; max-width:540px;"></blockquote>
+  `;
 
-  function saveYouTubeChannelId() {
-    let input = document.getElementById('channelIdInput').value.trim();
-    if (!input) return;
-  
-    // UCから始まるチャンネルIDを抽出
-    const match = input.match(/(UC[\w-]+)/);
-    if (!match) {
-      alert('チャンネルID（UCから始まるID）を入力してください');
-      return;
-    }
-  
-    const channelId = match[1];
-    localStorage.setItem('youtubeChannelId', channelId);
-    fetchLatestVideos(channelId);
-  }
-  
-  function fetchLatestVideos(channelId = null) {
-    channelId = channelId || localStorage.getItem('youtubeChannelId');
-    if (!channelId) return;
-  
-    fetch(
-      `https://www.googleapis.com/youtube/v3/search?` +
-      `key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=5`
-    )
-      .then(res => res.json())
-      .then(data => {
-        if (!data.items) throw new Error('動画が取得できません');
-  
-        const videos = data.items.filter(item => item.id.kind === 'youtube#video');
-        if (videos.length === 0) throw new Error('動画が見つかりません');
-  
-        const videoHTML = videos.slice(0, 2).map(video => {
-          const { videoId } = video.id;
-          const { title } = video.snippet;
-          return `
-            <div class="sns-card">
-              <iframe 
-                src="https://www.youtube.com/embed/${videoId}" 
-                frameborder="0" 
-                allowfullscreen 
-                width="100%" height="200">
-              </iframe>
-              <p>${title}</p>
-            </div>
-          `;
-        }).join('');
-  
-        document.getElementById('videoContainer').innerHTML = videoHTML;
-      })
-      .catch(err => {
-        console.error('YouTube API エラー:', err);
-        document.getElementById('videoContainer').innerText = '動画を表示できませんでした。';
-      });
-  }
-  
-  // 初期読み込み時に保存されたチャンネルIDがあれば自動読み込み
-  document.addEventListener('DOMContentLoaded', () => {
-    const savedId = localStorage.getItem('youtubeChannelId');
-    if (savedId) {
-      document.getElementById('channelIdInput').value = savedId;
-  
-      const lastFetched = localStorage.getItem('lastFetchTime');
-      const now = Date.now();
-  
-      if (!lastFetched || now - lastFetched > 10 * 60 * 1000) {
-        fetchLatestVideos(savedId);
-        localStorage.setItem('lastFetchTime', now);
-      } else {
-        console.log('10分未満なのでYouTubeは再取得しません');
-      }
-    }
-  });
-  
-  //TikTokの動画埋め込み
-  function saveTikTokVideos() {
-    const inputs = document.querySelectorAll('.tiktok-input');
-    const urls = Array.from(inputs)
-      .map(input => input.value.trim())
-      .filter(url => url.includes('tiktok.com/@') && url.includes('/video/'));
-  
-    if (urls.length === 0) {
-      alert('TikTokの正しい動画URLを1つ以上入力してください。');
-      return;
-    }
-  
-    localStorage.setItem('tiktokUrls', JSON.stringify(urls));
-    displayTikTokVideos(urls);
-  }
-  
-  function displayTikTokVideos(urls = null) {
-    const container = document.getElementById('tiktok-container');
-    container.innerHTML = '';
-  
-    const savedUrls = urls || JSON.parse(localStorage.getItem('tiktokUrls') || '[]');
-  
-    savedUrls.forEach(url => {
-      const match = url.match(/\/video\/(\d{10,})/);
-      if (!match) return;
-  
-      const videoId = match[1];
-  
-      const block = document.createElement('blockquote');
-      block.className = 'tiktok-embed';
-      block.setAttribute('cite', url);
-      block.setAttribute('data-video-id', videoId);
-      block.innerHTML = `<section></section>`;
-      container.appendChild(block);
-    });
-  
+  localStorage.setItem('instagramPostUrl', url);
+
+  // 埋め込みスクリプトが読み込まれていれば処理、なければ読み込む
+  if (window.instgrm) {
+    window.instgrm.Embeds.process();
+  } else {
     const script = document.createElement('script');
-    script.src = "https://www.tiktok.com/embed.js";
+    script.src = "https://www.instagram.com/embed.js";
     script.async = true;
     document.body.appendChild(script);
   }
-  
-  window.addEventListener('DOMContentLoaded', () => {
-    displayTikTokVideos();
+}
+
+// ==== YouTubeの最新動画表示機能 ====
+const apiKey = 'AIzaSyAzSzwjwhvtCtUhkC0KR_e_NwDvQJpMxvM';
+
+function saveYouTubeChannelId() {
+  const input = document.getElementById('channelIdInput').value.trim();
+  if (!input) return;
+
+  const match = input.match(/(UC[\w-]+)/);
+  if (!match) {
+    alert('チャンネルID（UCから始まるID）を入力してください');
+    return;
+  }
+
+  const channelId = match[1];
+  localStorage.setItem('youtubeChannelId', channelId);
+  fetchLatestVideos(channelId);
+}
+
+function fetchLatestVideos(channelId = null) {
+  channelId = channelId || localStorage.getItem('youtubeChannelId');
+  if (!channelId) return;
+
+  // 🔁 10分キャッシュ確認
+  const cacheKey = `cachedVideos_${channelId}`;
+  const cacheTimeKey = `lastFetchTime_${channelId}`;
+  const now = Date.now();
+  const lastFetch = localStorage.getItem(cacheTimeKey);
+
+  if (lastFetch && now - parseInt(lastFetch, 10) < 10 * 60 * 1000) {
+    console.log('📦 キャッシュからYouTube動画を表示します');
+    const cached = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+    displayYouTubeVideos(cached);
+    return;
+  }
+
+  // APIアクセス（ここから下はそのままでOK）
+  fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=5`)
+    .then(res => res.json())
+    .then(data => {
+      if (!data.items) throw new Error('動画が取得できません');
+      const videos = data.items.filter(item => item.id.kind === 'youtube#video');
+      if (videos.length === 0) throw new Error('動画が見つかりません');
+
+      // ✅ キャッシュ保存
+      localStorage.setItem(cacheKey, JSON.stringify(videos));
+      localStorage.setItem(cacheTimeKey, now.toString());
+
+      displayYouTubeVideos(videos);
+    })
+    .catch(err => {
+      console.error('YouTube API エラー:', err);
+      document.getElementById('videoContainer').innerText = '動画を表示できませんでした。';
+    });
+}
+
+function displayYouTubeVideos(videos) {
+  const videoHTML = videos.slice(0, 2).map(video => {
+    const { videoId } = video.id;
+    const { title } = video.snippet;
+    return `
+      <div class="youtube-card">
+        <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+        <p>${title}</p>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('videoContainer').innerHTML = videoHTML;
+}
+
+// ==== TikTok埋め込み ====
+function saveTikTokVideos() {
+  const inputs = document.querySelectorAll('.tiktok-input');
+  const urls = Array.from(inputs).map(input => input.value.trim())
+    .filter(url => url.includes('tiktok.com/@') && url.includes('/video/'));
+
+console.log('✅ 保存対象URL:', urls); // ←ここで確認
+
+  if (urls.length === 0) {
+    alert('TikTokの正しい動画URLを1つ以上入力してください。');
+    return;
+  }
+
+  localStorage.setItem('tiktokUrls', JSON.stringify(urls));
+  displayTikTokVideos(urls);
+
+  saveProfileAndEventsToServer(); // ← TikTok保存後にこれを呼び出す！
+}
+
+function displayTikTokVideos(urls = null) {
+  const container = document.getElementById('tiktok-container');
+  container.innerHTML = '';
+
+  const savedUrls = urls || JSON.parse(localStorage.getItem('tiktokUrls') || '[]');
+  savedUrls.forEach(url => {
+    const match = url.match(/\/video\/(\d{10,})/);
+    if (!match) return;
+    const videoId = match[1];
+
+    const block = document.createElement('blockquote');
+    block.className = 'tiktok-embed';
+    block.setAttribute('cite', url);
+    block.setAttribute('data-video-id', videoId);
+    block.innerHTML = '<section></section>';
+    container.appendChild(block);
   });
+
+  const script = document.createElement('script');
+  script.src = 'https://www.tiktok.com/embed.js';
+  script.async = true;
+  document.body.appendChild(script);
+}
+
+// ==== 初期読み込み ==== 
+window.addEventListener('DOMContentLoaded', () => {
+  const savedX = localStorage.getItem('xUsername');
+  if (savedX) {
+    document.getElementById('xUsernameInput').value = savedX;
+  }
+
+   const savedUrl = localStorage.getItem('instagramPostUrl');
+  if (savedUrl) {
+    document.getElementById('instagramPostLink').value = savedUrl;
+    embedInstagramPost();
+  }
+
+  const savedYT = localStorage.getItem('youtubeChannelId');
+  if (savedYT) {
+    document.getElementById('channelIdInput').value = savedYT;
+    fetchLatestVideos(savedYT);
+  }
+
+  displayTikTokVideos();
+  showXProfile();
+});
+
+xProfileImageUrl: localStorage.getItem('xProfileImageUrl') || '',
+
+window.addEventListener('DOMContentLoaded', () => {
+  const isUserPage = location.pathname.startsWith('/user/');
+  if (isUserPage) {
+    const username = location.pathname.split('/').pop();
+    fetch(`/api/user/${username}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.youtubeChannelId) {
+          fetchLatestVideos(data.youtubeChannelId);
+        }
+      });
+  } else {
+    // 自分のページ用処理
+    const savedId = localStorage.getItem('youtubeChannelId');
+    if (savedId) fetchLatestVideos(savedId);
+  }
+});

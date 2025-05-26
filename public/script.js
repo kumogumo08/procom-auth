@@ -1,6 +1,8 @@
-// グローバル変数
+// 🔁 グローバル変数
 let currentSlide = 0;
 let slides = [];
+let events = {};
+let currentDate = new Date();
 
 const editBtn = document.getElementById('editBtn');
 const editForm = document.getElementById('editForm');
@@ -13,158 +15,216 @@ const photoInput = document.getElementById('photoInput');
 const carousel = document.querySelector('.carousel');
 const titleDisplay = document.getElementById('title');
 const titleInput = document.getElementById('titleInput');
-const xUsernameInput = document.getElementById('xUsername');
-const instagramLinkInput = document.getElementById('instagramLink');
-const youtubeLinkInput = document.getElementById('youtubeLink');
-const twitterContainer = document.getElementById('twitterContainer');
 const cancelBtn = document.getElementById('cancelBtn');
+const twitterContainer = document.getElementById('twitterContainer');
 
-// 編集ボタン押下でフォーム表示と現在値セット
-editBtn.addEventListener('click', () => {
+
+// 📌 プロフィール編集
+editBtn?.addEventListener('click', () => {
   nameInput.value = nameDisplay.textContent.trim();
-  titleInput.value = titleDisplay.textContent.replace(/[（）]/g, '').trim(); // カッコ削除
+  titleInput.value = titleDisplay.textContent.replace(/[（）]/g, '').trim();
   bioInput.value = bioDisplay.innerText.trim();
   editForm.classList.remove('hidden');
 });
 
-cancelBtn.addEventListener('click', () => {
-  editForm.classList.add('hidden'); // 編集フォームを非表示にする
-});
-
-// 保存ボタン押下でフォームの内容を反映・保存
-function saveSNSLinks() {
-  const xUserVal = xUsernameInput.value.trim();
-  const instaVal = instagramLinkInput.value.trim();
-  const youtubeVal = youtubeLinkInput.value.trim();
-  const instaPostVal = document.getElementById('instagramPostLink').value.trim();
-
-  localStorage.setItem('xUsername', xUserVal);
-  localStorage.setItem('instagramLink', instaVal);
-  localStorage.setItem('youtubeLink', youtubeVal);
-  localStorage.setItem('instagramPostLink', instaPostVal)
-}
-
-saveBtn.addEventListener('click', () => {
-  const nameVal = nameInput.value.trim();
-  const titleVal = titleInput.value.trim();
-  const bioVal = bioInput.value.trim();
-
-  nameDisplay.textContent = nameVal;
-  titleDisplay.textContent = titleVal ? `（${titleVal}）` : '';
-  bioDisplay.innerHTML = bioVal.replace(/\n/g, '<br>');
-
-  localStorage.setItem('profile_name', nameVal);
-  localStorage.setItem('profile_title', titleVal);
-  localStorage.setItem('profile_bio', bioVal);
-
-  savePhotos();
-
-  saveSNSLinks();  // ここで呼び出す
-  updateSNSDisplay(); // ここで画面更新
-
+cancelBtn?.addEventListener('click', () => {
   editForm.classList.add('hidden');
 });
 
-//ログイン機能
-document.addEventListener('DOMContentLoaded', () => {
+saveBtn?.addEventListener('click', async () => {
+  // 表示を更新
+  nameDisplay.textContent = nameInput.value.trim();
+  titleDisplay.textContent = titleInput.value.trim() ? `（${titleInput.value.trim()}）` : '';
+  bioDisplay.innerHTML = bioInput.value.trim().replace(/\n/g, '<br>');
+
+  localStorage.setItem('profile_name', nameInput.value.trim());
+  localStorage.setItem('profile_title', titleInput.value.trim());
+  localStorage.setItem('profile_bio', bioInput.value.trim());
+
+  savePhotos();
+  editForm.classList.add('hidden');
+
+  saveProfileAndEventsToServer(); // ← ここ！
+});
+
+// 📌 認証 UI
+function updateAuthUI() {
+  fetch('/session', { credentials: 'include' })
+    .then(res => res.json())
+    .then(data => {
+      const authForms = document.querySelector('.auth-forms');
+      const editSection = document.getElementById('edit-section');
+      const photoUpload = document.querySelector('.photo-upload');
+      const eventForm = document.getElementById('event-form');
+      const youtubeInputSection = document.querySelector('.sns-section');
+      const instagramSection = document.querySelector('#instagramPostLink')?.parentElement;
+      const xSection = document.querySelector('#xUsernameInput')?.parentElement;
+      const tiktokSection = document.getElementById('tiktok-section');
+
+      if (!authForms) return;
+
+      if (data.loggedIn) {
+        authForms.innerHTML = `
+          <p>ようこそ、${data.username}さん！</p>
+          <form action="/logout" method="GET">
+            <button type="submit">ログアウト</button>
+          </form>
+        `;
+                // 🔽 ログインユーザー向け要素を表示
+        if (editSection) editSection.style.display = 'block';
+        if (photoUpload) photoUpload.style.display = 'block';
+        if (eventForm) eventForm.style.display = 'block';
+        if (youtubeInputSection) youtubeInputSection.style.display = 'block';
+        if (instagramSection) instagramSection.style.display = 'block';
+        if (xSection) xSection.style.display = 'block';
+        if (tiktokSection) tiktokSection.style.display = 'block';
+        authForms.style.display = 'block';
+
+        } else {
+        // ログインしてない場合、非表示にしておく
+         const editSection = document.getElementById('edit-section');
+        if (editSection) {
+         editSection.style.display = 'none';
+         }
+
+        authForms.innerHTML = `
+          <form id="login-form">
+            <input type="text" id="login-username" placeholder="ユーザー名" required />
+            <input type="password" id="login-password" placeholder="パスワード" required />
+            <button type="submit">ログイン</button>
+          </form>
+          <form id="register-form">
+            <input type="text" id="register-username" placeholder="新規ユーザー名" required />
+            <input type="password" id="register-password" placeholder="パスワード" required />
+            <button type="submit">登録</button>
+          </form>
+        `;
+
+                // 🔽 ログインしていないときは非表示に
+        if (editSection) editSection.style.display = 'none';
+        if (photoUpload) photoUpload.style.display = 'none';
+        if (eventForm) eventForm.style.display = 'none';
+        if (youtubeInputSection) youtubeInputSection.style.display = 'none';
+        if (instagramSection) instagramSection.style.display = 'none';
+        if (xSection) xSection.style.display = 'none';
+        if (tiktokSection) tiktokSection.style.display = 'none';
+
+        attachAuthFormHandlers();
+      }
+    });
+}
+
+function attachAuthFormHandlers() {
   const registerForm = document.getElementById('register-form');
   const loginForm = document.getElementById('login-form');
 
-  // 登録フォームの送信処理
-  registerForm.addEventListener('submit', async (e) => {
+  registerForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('register-username').value;
     const password = document.getElementById('register-password').value;
 
     const res = await fetch('/register', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+      credentials: 'include'
     });
 
-    if (res.ok) {
-      alert('登録完了！ログインしてください');
-      registerForm.reset();
-    } else {
-      const msg = await res.text();
-      alert(msg);
-    }
+    const msg = await res.text();
+    alert(msg);
+    updateAuthUI();
   });
 
-  // ログインフォームの送信処理
-  loginForm.addEventListener('submit', async (e) => {
+  loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    console.log("ログインフォーム送信！");
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
 
     const res = await fetch('/login', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+      credentials: 'include'
     });
 
     if (res.ok) {
-      alert('ログイン成功！');
-      window.location.reload(); // ログイン状態を反映するためにリロード
+      const data = await res.json();
+      alert(`ログイン成功！ようこそ ${data.username} さん`);
+     
+      // ✅ 自動リダイレクト
+      window.location.href = `/user/${data.username}`;
+
     } else {
-      const msg = await res.text();
-      alert(msg);
+      const errorText = await res.text();
+      alert(errorText);
     }
   });
+}
 
-  // ログイン状態を確認してUIを切り替える
-  fetch('/session')
-    .then(res => res.json())
-    .then(data => {
-      if (data.loggedIn) {
-        document.querySelector('.auth-forms').innerHTML = `
-          <p>ようこそ、${data.username}さん！</p>
-          <form action="/logout" method="GET">
-            <button type="submit">ログアウト</button>
-          </form>
-        `;
-      }
+document.addEventListener('submit', (e) => {
+  if (e.target.id === 'logout-form') {
+    setTimeout(() => {
+      window.location.reload();  // ← セッション切れた後に反映
+    }, 100); // すぐにリロード
+  }
+});
+
+// 例：URLが http://localhost:3000/user/flamingo の場合
+function getUsernameFromURL() {
+  const path = window.location.pathname;
+  const segments = path.split('/');
+  return segments[segments.length - 1]; // 最後の部分が username
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadUserProfile();
+});
+
+async function loadUserProfile() {
+  const username = getUsernameFromURL();
+  console.log('取得したユーザー名：', username);
+}
+
+function saveProfileAndEventsToServer() {
+  const nameVal = nameInput.value.trim();
+  const titleVal = titleInput.value.trim();
+  const bioVal = bioInput.value.trim();
+
+  const userData = {
+    name: nameVal,
+    title: titleVal,
+    bio: bioVal,
+    photos: JSON.parse(localStorage.getItem('photos') || '[]'),
+    youtubeChannelId: localStorage.getItem('youtubeChannelId') || '',
+    instagramPostUrl: localStorage.getItem('instagramPostUrl') || '',
+    xUsername: localStorage.getItem('xUsername') || '',
+    tiktokUrls: JSON.parse(localStorage.getItem('tiktokUrls') || '[]'),
+    calendarEvents: events
+  };
+
+  const username = window.location.pathname.split('/').pop();
+
+  fetch(`/api/user/${username}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(userData)
+  })
+    .then(res => res.text())
+    .then(result => {
+      console.log('保存結果:', result);
+    })
+    .catch(err => {
+      console.error('保存エラー:', err);
     });
-});
+}
 
-// カレンダー機能
-document.addEventListener('DOMContentLoaded', () => {
-  events = JSON.parse(localStorage.getItem('calendarEvents')) || {};
-
-  document.getElementById('add-event-btn').addEventListener('click', () => {
-    const date = document.getElementById('event-date').value;
-    const text = document.getElementById('event-text').value;
-
-    if (!date || !text) {
-      alert('日付と内容を入力してください。');
-      return;
-    }
-
-    if (!events[date]) {
-      events[date] = [];
-    }
-    events[date].push(text);
-
-    localStorage.setItem('calendarEvents', JSON.stringify(events));
-    alert('予定を追加しました。');
-    createCalendar(currentDate);
-  });
-
-  createCalendar(currentDate);
-});
-
-let currentDate = new Date();
-let events = {};
-
+// 📌 カレンダー
 function createCalendar(date = new Date()) {
   const calendar = document.getElementById('calendar');
   const year = date.getFullYear();
   const month = date.getMonth();
-
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const daysInMonth = lastDay.getDate();
@@ -194,7 +254,6 @@ function createCalendar(date = new Date()) {
 
   let row = document.createElement('div');
   row.className = 'calendar-row';
-
   for (let i = 0; i < startDay; i++) {
     const empty = document.createElement('div');
     empty.className = 'calendar-cell empty';
@@ -209,25 +268,19 @@ function createCalendar(date = new Date()) {
 
     if (events[fullDate]) {
       cell.classList.add('event-day');
-
       const popup = document.createElement('div');
       popup.className = 'popup';
-
-      // 各イベントと削除ボタンを生成
       events[fullDate].forEach((e, idx) => {
-        const eventItem = document.createElement('div');
-        eventItem.innerHTML = `・${e} <button class="delete-btn" data-date="${fullDate}" data-index="${idx}">×</button>`;
-        popup.appendChild(eventItem);
+        const item = document.createElement('div');
+        item.innerHTML = `・${e} <button class="delete-btn" data-date="${fullDate}" data-index="${idx}">×</button>`;
+        popup.appendChild(item);
       });
-
       cell.appendChild(popup);
-
       cell.addEventListener('mouseenter', () => popup.style.display = 'block');
       cell.addEventListener('mouseleave', () => popup.style.display = 'none');
     }
 
     row.appendChild(cell);
-
     if ((startDay + day) % 7 === 0 || day === daysInMonth) {
       calendar.appendChild(row);
       row = document.createElement('div');
@@ -244,18 +297,15 @@ function createCalendar(date = new Date()) {
     createCalendar(currentDate);
   };
 
-  // 削除ボタンのイベント追加（再描画ごとに設定）
   setTimeout(() => {
     document.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        e.stopPropagation(); // カレンダーのポップアップ閉じなどを防止
+        e.stopPropagation();
         const date = btn.getAttribute('data-date');
         const index = parseInt(btn.getAttribute('data-index'), 10);
         if (events[date]) {
           events[date].splice(index, 1);
-          if (events[date].length === 0) {
-            delete events[date];
-          }
+          if (events[date].length === 0) delete events[date];
           localStorage.setItem('calendarEvents', JSON.stringify(events));
           createCalendar(currentDate);
         }
@@ -264,66 +314,7 @@ function createCalendar(date = new Date()) {
   }, 0);
 }
 
-// Instagram投稿埋め込み表示（表示処理）
-const instaPostContainer = document.getElementById('instagramPostContainer');
-const savedPostLink = localStorage.getItem('instagramPostLink');
-
-function renderInstagramEmbed(link) {
-  const container = document.getElementById('instagramPostContainer');
-  if (!container) return;
-
-  container.innerHTML = '';
-  if (link) {
-    const embedHtml = `
-      <blockquote class="instagram-media" data-instgrm-permalink="${link}" data-instgrm-version="14" style="margin: 1em auto;"></blockquote>
-    `;
-    container.innerHTML = embedHtml;
-
-    if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
-      const script = document.createElement('script');
-      script.src = "https://www.instagram.com/embed.js";
-      script.async = true;
-      document.body.appendChild(script);
-    } else if (window.instgrm) {
-      window.instgrm.Embeds.process();
-    }
-  }
-}
-
-function saveInstagramPostLink() {
-  const postLink = document.getElementById('instagramPostLink').value.trim();
-  localStorage.setItem('instagramPostLink', postLink);
-  renderInstagramEmbed(postLink);
-}
-
-// ページ読み込み時に表示
-window.addEventListener('load', () => {
-  const savedLink = localStorage.getItem('instagramPostLink');
-  if (savedLink) renderInstagramEmbed(savedLink);
-});
-    
-    // Instagram埋め込み用スクリプト再読み込み
-
-      
-    
-
-    // 既にInstagramの埋め込みライブラリがロードされている場合
-    if (window.instgrm) {
-      window.instgrm.Embeds.process();
-    } else {
-      // ロードされていなければスクリプトを追加
-      const script = document.createElement('script');
-      script.src = "https://www.instagram.com/embed.js";
-      script.onload = () => {
-        if (window.instgrm) {
-          window.instgrm.Embeds.process();
-        }
-      };
-      document.body.appendChild(script);
-    }
-  
-
-// 写真保存関数（inputのファイルを読み込みローカルストレージに保存）
+// 📌 写真保存
 function savePhotos() {
   const input = document.getElementById('photoInput');
   const files = input.files;
@@ -347,13 +338,11 @@ function savePhotos() {
   }
 }
 
-// スライダー更新
 function updatePhotoSlider(photoURLs = null) {
   if (!photoURLs) {
     photoURLs = JSON.parse(localStorage.getItem('photos') || '[]');
   }
-  carousel.innerHTML = ''; // 中身リセット
-
+  carousel.innerHTML = '';
   photoURLs.forEach((url, index) => {
     const slideDiv = document.createElement('div');
     slideDiv.classList.add('slide');
@@ -363,13 +352,11 @@ function updatePhotoSlider(photoURLs = null) {
     slideDiv.appendChild(img);
     carousel.appendChild(slideDiv);
   });
-
   slides = carousel.querySelectorAll('.slide');
   currentSlide = 0;
   updateCarousel();
 }
 
-// スライダー表示更新
 function updateCarousel() {
   slides.forEach((slide, i) => {
     const offset = ((i - currentSlide + slides.length) % slides.length);
@@ -378,7 +365,6 @@ function updateCarousel() {
   });
 }
 
-// 左右ボタン用関数（HTMLにない場合はここで作ってください）
 function prevSlide() {
   if (slides.length === 0) return;
   currentSlide = (currentSlide - 1 + slides.length) % slides.length;
@@ -391,85 +377,47 @@ function nextSlide() {
   updateCarousel();
 }
 
-// SNSリンクを保存
-// SNSリンクを読み込んで表示
-function updateSNSDisplay() {
-  const xUser = localStorage.getItem('xUsername') || '';
-  const insta = localStorage.getItem('instagramLink') || '';
-  const youtube = localStorage.getItem('youtubeLink') || '';
-
-  // X（旧Twitter）
-  twitterContainer.innerHTML = '';
-  if (xUser) {
-    const twLink = document.createElement('a');
-    twLink.href = `https://twitter.com/${xUser}`;
-    twLink.textContent = `@${xUser}`;
-    twLink.target = '_blank';
-    twLink.rel = 'noopener noreferrer';
-    twitterContainer.appendChild(twLink);
-
-    if (window.twttr && window.twttr.widgets) {
-      window.twttr.widgets.load(twitterContainer);
-    }
-  }
-
-  // Instagramリンク表示
-  const instaContainer = document.getElementById('instagramLinkContainer');
-  if (instaContainer) {
-    instaContainer.innerHTML = '';
-    if (insta) {
-      const instaLink = document.createElement('a');
-      instaLink.href = insta;
-      instaLink.textContent = insta;
-      instaLink.target = '_blank';
-      instaLink.rel = 'noopener noreferrer';
-      instaContainer.appendChild(instaLink);
-    }
-  }
-
-  // YouTube（オプション）
-  if (youtube) {
-    loadYouTubeVideo(youtube);
-  }
-}
-
-// プロフィール情報をローカルストレージから読み込み
-function loadProfile() {
+// 📌 初期化処理
+window.addEventListener('DOMContentLoaded', () => {
+  updateAuthUI();
+  attachAuthFormHandlers();
   const savedName = localStorage.getItem('profile_name');
   if (savedName) nameDisplay.textContent = savedName;
-
   const savedTitle = localStorage.getItem('profile_title');
-  titleDisplay.textContent = savedTitle ? `（${savedTitle}）` : '';
-
+  if (savedTitle) titleDisplay.textContent = `（${savedTitle}）`;
   const savedBio = localStorage.getItem('profile_bio');
-  if (savedBio) {
-    bioDisplay.innerHTML = savedBio.replace(/\n/g, '<br>');
-  }
-
-  updateSNSDisplay();
+  if (savedBio) bioDisplay.innerHTML = savedBio.replace(/\n/g, '<br>');
   updatePhotoSlider();
-}
-
-// 初期化処理
-window.addEventListener('load', () => {
-  loadProfile();
+  events = JSON.parse(localStorage.getItem('calendarEvents')) || {};
+  createCalendar(currentDate);
 });
 
-// キーボード操作でスライド切り替え（もし必要なら）
-// document.addEventListener('keydown', (e) => {
-//   if (e.key === 'ArrowRight') nextSlide();
-//   else if (e.key === 'ArrowLeft') prevSlide();
-// });
+document.getElementById('add-event-btn')?.addEventListener('click', () => {
+  const date = document.getElementById('event-date').value;
+  const text = document.getElementById('event-text').value;
 
-function toggleInstagramEdit() {
-  const editor = document.getElementById('instagramPostEditor');
-  if (editor.style.display === 'none') {
-    editor.style.display = 'block';
-  } else {
-    editor.style.display = 'none';
+  if (!date || !text) {
+    alert('日付と内容を入力してください。');
+    return;
   }
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-  updatePhotoSlider(); // ページ読み込み時にスライドを復元表示
+  // ✅ 日付に対応するイベントリストを初期化
+  if (!events[date]) {
+    events[date] = [];
+  }
+
+  // ✅ 予定を追加
+  events[date].push(text);
+
+  // ✅ 保存（ローカルにも保存）
+  localStorage.setItem('calendarEvents', JSON.stringify(events));
+
+  // ✅ カレンダー再描画
+  createCalendar(currentDate);
+
+  // ✅ フォームをクリア
+  document.getElementById('event-date').value = '';
+  document.getElementById('event-text').value = '';
+
+  saveProfileAndEventsToServer();
 });
