@@ -36,7 +36,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background: #38385a;
+    background: white;
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -57,7 +57,7 @@ body {
   color: white;                /* 白文字 */
   border: none;
   padding: 8px 16px;
-  font-size: 1rem;
+  font-size: 0.8rem;
   border-radius: 6px;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
