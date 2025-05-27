@@ -67,6 +67,16 @@ body {
 .auth-forms button:hover {
   background-color: #e03e6f;
 }
+
+.auth-forms form button {
+  color: white;
+  background-color: #3b3b5c;
+  border: 1px solid #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
   
   .tagline {
     font-size: 1.3rem;
