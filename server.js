@@ -34,7 +34,7 @@ function writeUsers(users) {
   fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 }
 
-// ✅ ログイン処理に user_data ファイル作成を追加
+// ✅ ログイン処理（統合済み）
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const users = readUsers();
@@ -51,7 +51,7 @@ app.post('/login', async (req, res) => {
 
   req.session.username = username;
 
-  // ✅ ログイン成功時に user_data ファイルがなければ作成
+  // ✅ user_data の JSON ファイルがなければ作成
   const filePath = path.join(userDataDir, `${username}.json`);
   if (!fs.existsSync(filePath)) {
     const defaultProfile = {
@@ -69,26 +69,6 @@ app.post('/login', async (req, res) => {
     console.log(`✅ ${username}.json を user_data に作成しました`);
   }
 
-  res.json({ success: true, username });
-});
-
-
-// ログイン処理
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const users = readUsers();
-  const user = users.find(u => u.username === username);
-
-  if (!user) {
-    return res.status(401).send('ユーザーが存在しません');
-  }
-
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) {
-    return res.status(401).send('パスワードが間違っています');
-  }
-
-  req.session.username = username;
   res.json({ success: true, username });
 });
 
@@ -176,4 +156,13 @@ app.get('/logout', (req, res) => {
     }
     res.redirect('/'); // ← 明示的にログインページに戻す
   });
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.use((err, req, res, next) => {
+  console.error('💥 サーバーエラー:', err);
+  res.status(500).send('サーバー内部でエラーが発生しました');
 });
