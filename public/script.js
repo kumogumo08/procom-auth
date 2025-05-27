@@ -221,6 +221,21 @@ function saveProfileAndEventsToServer() {
     });
 }
 
+document.addEventListener('submit', (e) => {
+  if (e.target.action.endsWith('/logout')) {
+    e.preventDefault(); // ← フォームのデフォルト動作を止める
+
+    fetch('/logout', { method: 'GET', credentials: 'include' })
+      .then(() => {
+        window.location.href = '/'; // ← トップページにリダイレクト
+      })
+      .catch(err => {
+        console.error('ログアウト失敗:', err);
+        alert('ログアウトに失敗しました');
+      });
+  }
+});
+
 // 📌 カレンダー
 function createCalendar(date = new Date()) {
   const calendar = document.getElementById('calendar');

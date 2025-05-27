@@ -151,10 +151,9 @@ app.get('/session', (req, res) => {
 // 🔧 ログアウト処理
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
-    if (err) {
-      return res.status(500).send('ログアウトに失敗しました');
-    }
-    res.redirect('/'); // ← 明示的にログインページに戻す
+    if (err) return res.status(500).send('ログアウトに失敗しました');
+    res.clearCookie('connect.sid'); // ← クッキー削除
+    res.status(200).send('ログアウト完了');
   });
 });
 
