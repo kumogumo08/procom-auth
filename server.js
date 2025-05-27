@@ -174,6 +174,6 @@ app.get('/logout', (req, res) => {
     if (err) {
       return res.status(500).send('ログアウトに失敗しました');
     }
-    res.redirect('/'); // ← ログアウト後にトップページへリダイレクト
+    res.redirect('/index.html'); // ← 明示的にログインページに戻す
   });
 });
