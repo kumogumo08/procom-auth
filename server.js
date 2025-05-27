@@ -6,7 +6,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const USERS_FILE = path.join(__dirname, 'users.json');
 const userDataDir = path.join(__dirname, 'user_data');
