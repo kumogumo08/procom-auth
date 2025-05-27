@@ -64,10 +64,16 @@ window.addEventListener('DOMContentLoaded', async () => {
       createCalendar(currentDate);
     }
 
-  } catch (err) {
-    console.error('読み込みエラー:', err);
-    document.body.innerHTML = '<h2>ユーザーデータの取得に失敗しました。</h2>';
-  }
+   } catch (err) {
+     console.error('読み込みエラー:', err);
+
+    const errorContainer = document.createElement('div');
+    errorContainer.style.color = 'red';
+    errorContainer.style.padding = '1em';
+    errorContainer.innerText = 'ユーザーデータの取得に失敗しました。';
+
+    document.body.prepend(errorContainer);
+   }
 });
 
 document.getElementById('saveBtn')?.addEventListener('click', () => {
