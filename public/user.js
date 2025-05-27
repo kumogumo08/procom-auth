@@ -20,6 +20,15 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (editSection) editSection.style.display = 'block';
     }
 
+     const authForms = document.querySelector('.auth-forms');
+  if (authForms) {
+    authForms.innerHTML = `
+      <p>ようこそ、${session.username}さん！</p>
+      <form id="logout-form" action="/logout" method="GET">
+        <button type="submit">ログアウト</button>
+      </form>
+    `;
+  }
     // プロフィール表示
     document.getElementById('name').textContent = data.name || '';
     document.getElementById('title').textContent = data.title ? `（${data.title}）` : '';
