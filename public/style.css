@@ -617,3 +617,29 @@ body {
     border: 0 !important;
   }
   
+  .user-card {
+  background-color: #fff;
+  padding: 15px;
+  margin: 10px auto;
+  max-width: 600px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  line-height: 1.5;
+}
+.user-card h3 {
+  margin-top: 0;
+  color: #333;
+}
+.user-card p {
+  color: #555;
+}
+.user-card a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #4e73df;
+  text-decoration: none;
+  font-weight: bold;
+}
+.user-card a:hover {
+  text-decoration: underline;
+}

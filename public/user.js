@@ -4,7 +4,8 @@ const usernameFromURL = window.location.pathname.split('/').pop();
 
 window.addEventListener('DOMContentLoaded', async () => {
   updateAuthUI();
-  // ページタイトル表示（任意）
+
+  // ページタイトル
   const titleEl = document.getElementById('page-title');
   if (titleEl) titleEl.textContent = `Procom - ${usernameFromURL}さんのページ`;
 
@@ -16,28 +17,27 @@ window.addEventListener('DOMContentLoaded', async () => {
     const sessionRes = await fetch('/session');
     const session = await sessionRes.json();
     if (session.loggedIn && session.username === usernameFromURL) {
-    const editSection = document.getElementById('edit-section');
-    if (editSection) editSection.style.display = 'block';
+      const editSection = document.getElementById('edit-section');
+      if (editSection) editSection.style.display = 'block';
     }
 
-     const authForms = document.querySelector('.auth-forms');
-  if (authForms) {
-    authForms.innerHTML = `
-      <p>ようこそ、${session.username}さん！</p>
-      <form id="logout-form" action="/logout" method="GET">
-        <button type="submit">ログアウト</button>
-      </form>
-    `;
-  }
+    const authForms = document.querySelector('.auth-forms');
+    if (authForms) {
+      authForms.innerHTML = `
+        <p>ようこそ、${session.username}さん！</p>
+        <form id="logout-form" action="/logout" method="GET">
+          <button type="submit">ログアウト</button>
+        </form>
+      `;
+    }
+
     // プロフィール表示
     document.getElementById('name').textContent = data.name || '';
     document.getElementById('title').textContent = data.title ? `（${data.title}）` : '';
     document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
 
-    // スライダー写真
     if (data.photos) updatePhotoSlider(data.photos);
 
-    // 各SNS
     if (data.youtubeChannelId) {
       localStorage.setItem('youtubeChannelId', data.youtubeChannelId);
       fetchLatestVideos(data.youtubeChannelId);
@@ -58,36 +58,34 @@ window.addEventListener('DOMContentLoaded', async () => {
       displayTikTokVideos();
     }
 
-    // カレンダー
     if (data.calendarEvents) {
       events = data.calendarEvents;
       createCalendar(currentDate);
     }
 
-   } catch (err) {
-     console.error('読み込みエラー:', err);
+    // 🔍 ユーザー一覧の表示処理（※任意）
+    const resList = await fetch('/api/users');
+    const userList = await resList.json();
+    const list = document.getElementById('user-list');
+    if (list) {
+      userList.forEach(u => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="/user/${u.username}">${u.name || u.username} さん</a>`;
+        list.appendChild(li);
+      });
+    }
 
+  } catch (err) {
+    console.error('読み込みエラー:', err);
     const errorContainer = document.createElement('div');
     errorContainer.style.color = 'red';
     errorContainer.style.padding = '1em';
     errorContainer.innerText = 'ユーザーデータの取得に失敗しました。';
-
     document.body.prepend(errorContainer);
-   }
+  }
 });
 
+// ✅ 保存ボタンイベント
 document.getElementById('saveBtn')?.addEventListener('click', () => {
   saveUserDataToServer();
-});
-
-window.addEventListener('DOMContentLoaded', async () => {
-  const res = await fetch('/api/users');
-  const usernames = await res.json();
-
-  const list = document.getElementById('user-list');
-  usernames.forEach(name => {
-    const li = document.createElement('li');
-    li.innerHTML = `<a href="/user/${name}">${name}さんのページ</a>`;
-    list.appendChild(li);
-  });
 });

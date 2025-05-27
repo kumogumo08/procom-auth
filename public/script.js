@@ -162,14 +162,6 @@ function attachAuthFormHandlers() {
   });
 }
 
-document.addEventListener('submit', (e) => {
-  if (e.target.id === 'logout-form') {
-    setTimeout(() => {
-      window.location.reload();  // ← セッション切れた後に反映
-    }, 100); // すぐにリロード
-  }
-});
-
 // 例：URLが http://localhost:3000/user/flamingo の場合
 function getUsernameFromURL() {
   const path = window.location.pathname;

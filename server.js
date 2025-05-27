@@ -188,15 +188,20 @@ app.use((err, req, res, next) => {
 app.get('/api/users', (req, res) => {
   const files = fs.readdirSync(userDataDir);
   const profiles = files.map(filename => {
-    const data = fs.readFileSync(path.join(userDataDir, filename));
-    const json = JSON.parse(data);
-    return {
-      username: path.basename(filename, '.json'),
-      name: json.name || '',
-      title: json.title || '',
-      bio: json.bio || ''
-    };
-  });
+    try {
+      const data = fs.readFileSync(path.join(userDataDir, filename));
+      const json = JSON.parse(data);
+      return {
+        username: path.basename(filename, '.json'),
+        name: json.name || '',
+        title: json.title || '',
+        bio: json.bio || ''
+      };
+    } catch (err) {
+      console.error(`❌ 読み込み失敗: ${filename}`, err);
+      return null;
+    }
+  }).filter(Boolean);
   res.json(profiles);
 });
 

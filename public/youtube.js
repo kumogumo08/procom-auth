@@ -165,31 +165,24 @@ function displayTikTokVideos(urls = null) {
 
 // ==== 初期読み込み ==== 
 window.addEventListener('DOMContentLoaded', () => {
+  const isUserPage = location.pathname.startsWith('/user/');
   const savedX = localStorage.getItem('xUsername');
+  const savedUrl = localStorage.getItem('instagramPostUrl');
+  const savedYT = localStorage.getItem('youtubeChannelId');
+
+  // ▼ X表示（プロフィールページでもTOPでも共通）
   if (savedX) {
-    document.getElementById('xUsernameInput').value = savedX;
+    document.getElementById('xUsernameInput')?.value = savedX;
+    showXProfile();
   }
 
-   const savedUrl = localStorage.getItem('instagramPostUrl');
+  // ▼ Instagram表示
   if (savedUrl) {
-    document.getElementById('instagramPostLink').value = savedUrl;
+    document.getElementById('instagramPostLink')?.value = savedUrl;
     embedInstagramPost();
   }
 
-  const savedYT = localStorage.getItem('youtubeChannelId');
-  if (savedYT) {
-    document.getElementById('channelIdInput').value = savedYT;
-    fetchLatestVideos(savedYT);
-  }
-
-  displayTikTokVideos();
-  showXProfile();
-});
-
-xProfileImageUrl: localStorage.getItem('xProfileImageUrl') || '',
-
-window.addEventListener('DOMContentLoaded', () => {
-  const isUserPage = location.pathname.startsWith('/user/');
+  // ▼ YouTube表示
   if (isUserPage) {
     const username = location.pathname.split('/').pop();
     fetch(`/api/user/${username}`)
@@ -200,8 +193,12 @@ window.addEventListener('DOMContentLoaded', () => {
         }
       });
   } else {
-    // 自分のページ用処理
-    const savedId = localStorage.getItem('youtubeChannelId');
-    if (savedId) fetchLatestVideos(savedId);
+    if (savedYT) {
+      document.getElementById('channelIdInput')?.value = savedYT;
+      fetchLatestVideos(savedYT);
+    }
   }
+
+  // ▼ TikTok表示
+  displayTikTokVideos();
 });
