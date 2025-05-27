@@ -73,7 +73,7 @@ app.post('/login', async (req, res) => {
 });
 
 // ユーザー登録処理
-app.post('/register', async(req, res) => {
+app.post('/register', async (req, res) => {
   const { username, password } = req.body;
   const users = readUsers();
 
@@ -84,6 +84,24 @@ app.post('/register', async(req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   users.push({ username, password: hashedPassword });
   writeUsers(users);
+
+  // ✅ user_data ファイル作成
+  const filePath = path.join(userDataDir, `${username}.json`);
+  if (!fs.existsSync(filePath)) {
+    const defaultProfile = {
+      name: username,
+      title: '',
+      bio: '',
+      photos: [],
+      youtubeChannelId: '',
+      instagramPostUrl: '',
+      xUsername: '',
+      tiktokUrls: [],
+      calendarEvents: []
+    };
+    fs.writeFileSync(filePath, JSON.stringify(defaultProfile, null, 2));
+    console.log(`✅ ${username}.json を user_data に作成しました（登録時）`);
+  }
 
   res.send('登録成功');
 });
@@ -164,4 +182,24 @@ app.get('/', (req, res) => {
 app.use((err, req, res, next) => {
   console.error('💥 サーバーエラー:', err);
   res.status(500).send('サーバー内部でエラーが発生しました');
+});
+
+// 登録ユーザー一覧取得（検索用）
+app.get('/api/users', (req, res) => {
+  const files = fs.readdirSync(userDataDir);
+  const profiles = files.map(filename => {
+    const data = fs.readFileSync(path.join(userDataDir, filename));
+    const json = JSON.parse(data);
+    return {
+      username: path.basename(filename, '.json'),
+      name: json.name || '',
+      title: json.title || '',
+      bio: json.bio || ''
+    };
+  });
+  res.json(profiles);
+});
+
+app.get('/users', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'users.html'));
 });

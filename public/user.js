@@ -79,3 +79,15 @@ window.addEventListener('DOMContentLoaded', async () => {
 document.getElementById('saveBtn')?.addEventListener('click', () => {
   saveUserDataToServer();
 });
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const res = await fetch('/api/users');
+  const usernames = await res.json();
+
+  const list = document.getElementById('user-list');
+  usernames.forEach(name => {
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="/user/${name}">${name}さんのページ</a>`;
+    list.appendChild(li);
+  });
+});
