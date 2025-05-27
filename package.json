@@ -1,0 +1,24 @@
+{
+  "name": "procom-auth",
+  "version": "1.0.0",
+  "description": "Procom 認証サーバー",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kumogumo08/procom-auth.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kumogumo08/procom-auth/issues"
+  },
+  "homepage": "https://github.com/kumogumo08/procom-auth#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
