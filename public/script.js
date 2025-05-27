@@ -178,6 +178,7 @@ function getUsernameFromURL() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  updateAuthUI();
   loadUserProfile();
 });
 

@@ -3,6 +3,7 @@
 const usernameFromURL = window.location.pathname.split('/').pop();
 
 window.addEventListener('DOMContentLoaded', async () => {
+   updateAuthUI();
   // ページタイトル表示（任意）
   const titleEl = document.getElementById('page-title');
   if (titleEl) titleEl.textContent = `Procom - ${usernameFromURL}さんのページ`;
