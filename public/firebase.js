@@ -1,7 +1,7 @@
 
 // firebase.js（サーバー用）
 const admin = require('firebase-admin');
-const serviceAccount = require('./procom-fea80-firebase-adminsdk-fbsvc-c01a1f83ad.json');
+const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG_JSON);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
