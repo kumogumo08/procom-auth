@@ -202,7 +202,7 @@ function saveProfileAndEventsToServer() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include', // これはOK（セッション維持用）
-    body: JSON.stringify(userData)// ← ✅ これに変更
+    body: JSON.stringify(Data)// ← ✅ これに変更
     })
     .then(res => res.text())
     .then(result => {
