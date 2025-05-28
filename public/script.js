@@ -201,9 +201,9 @@ function saveProfileAndEventsToServer() {
   fetch(`/api/user/${username}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(userData)
-  })
+    credentials: 'include', // これはOK（セッション維持用）
+    body: JSON.stringify(data) // ← ✅ これに変更
+    })
     .then(res => res.text())
     .then(result => {
       console.log('保存結果:', result);
