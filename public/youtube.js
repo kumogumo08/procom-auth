@@ -1,13 +1,23 @@
 // ==== X（旧Twitter）プロフィール表示機能 ====
 window.showXProfile = function () {
+console.log("✅ showXProfile() が呼ばれました");
+
   const username = document.getElementById('xUsernameInput').value.trim();
+  console.log("▶ 入力された username:", username);
+
   const container = document.getElementById('xProfileDisplay');
+   if (!container) {
+    console.error("❌ container (xProfileDisplay) が見つかりません");
+    return;
+  }
 
   if (!username) {
+    console.warn("⚠ username が未入力です");
     container.innerHTML = 'ユーザー名を入力してください。';
     return;
   }
 
+  console.log("🛠 XプロフィールHTMLを埋め込みます");
   const profileUrl = `https://twitter.com/${username}`;
 
   container.innerHTML = `
