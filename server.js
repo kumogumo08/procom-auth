@@ -19,8 +19,8 @@ admin.initializeApp({
 const db = admin.firestore();
 
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' })); // ← 5mb → 10mb に拡張
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(session({
   secret: 'procomSecretKey',
   resave: false,
