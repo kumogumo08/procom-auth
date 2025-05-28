@@ -154,8 +154,8 @@ function saveProfileAndEventsToServer() {
     calendarEvents
   };
 
-  console.log("送信データ確認:", data);
-  
+  console.log("✅ 送信されるデータ:", data);
+
   fetch(`/api/user/${username}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

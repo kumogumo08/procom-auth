@@ -1,7 +1,5 @@
 // ==== X（旧Twitter）プロフィール表示機能 ====
 window.showXProfile = function () {
-console.log("✅ showXProfile() が呼ばれました");
-
   const username = document.getElementById('xUsernameInput').value.trim();
   console.log("▶ 入力された username:", username);
 
@@ -17,7 +15,6 @@ console.log("✅ showXProfile() が呼ばれました");
     return;
   }
 
-  console.log("🛠 XプロフィールHTMLを埋め込みます");
   const profileUrl = `https://twitter.com/${username}`;
 
   container.innerHTML = `
@@ -175,8 +172,6 @@ function displayTikTokVideos(urls = null) {
 }
 
 // ==== 初期読み込み ==== 
-console.log("✅ DOMContentLoaded が始まりました");
-
 window.addEventListener('DOMContentLoaded', () => {
   const isUserPage = location.pathname.startsWith('/user/');
   const savedX = localStorage.getItem('xUsername');
