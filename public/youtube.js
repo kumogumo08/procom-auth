@@ -25,7 +25,7 @@ function showXProfile() {
 }
 
 // ==== Instagram投稿埋め込み機能 ====
-function embedInstagramPost() {
+window.embedInstagramPost = function () {
   const url = document.getElementById('instagramPostLink').value;
   const container = document.getElementById('instagramPostContainer');
 
@@ -40,7 +40,6 @@ function embedInstagramPost() {
 
   localStorage.setItem('instagramPostUrl', url);
 
-  // 埋め込みスクリプトが読み込まれていれば処理、なければ読み込む
   if (window.instgrm) {
     window.instgrm.Embeds.process();
   } else {
@@ -49,7 +48,9 @@ function embedInstagramPost() {
     script.async = true;
     document.body.appendChild(script);
   }
-}
+
+  saveProfileAndEventsToServer(); // ← 忘れず呼ぶ
+};
 
 // ==== YouTubeの最新動画表示機能 ====
 const apiKey = 'AIzaSyAzSzwjwhvtCtUhkC0KR_e_NwDvQJpMxvM';
