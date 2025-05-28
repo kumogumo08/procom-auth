@@ -127,6 +127,39 @@ app.post('/api/user/:username', async (req, res) => {
   }
 });
 
+function saveProfileAndEventsToServer() {
+  const username = localStorage.getItem('loggedInUsername');
+  const name = document.getElementById('nameInput')?.value.trim() || '';
+  const title = document.getElementById('titleInput')?.value.trim() || '';
+  const bio = document.getElementById('bioInput')?.value.trim() || '';
+  const photos = JSON.parse(localStorage.getItem('userPhotos') || '[]');
+  const youtubeChannelId = localStorage.getItem('youtubeChannelId') || '';
+  const instagramPostUrl = localStorage.getItem('instagramPostUrl') || '';
+  const xUsername = localStorage.getItem('xUsername') || '';
+  const tiktokUrls = JSON.parse(localStorage.getItem('tiktokUrls') || '[]');
+  const calendarEvents = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+
+  const data = {
+    name,
+    title,
+    bio,
+    photos,
+    youtubeChannelId,
+    instagramPostUrl,
+    xUsername,
+    tiktokUrls,
+    calendarEvents
+  };
+
+  fetch(`/api/user/${username}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.text())
+  .then(msg => console.log("✅ 保存成功:", msg))
+  .catch(err => console.error("❌ 保存失敗:", err));
+}
 
 // ユーザー一覧取得（検索用）
 app.get('/api/users', async (req, res) => {
