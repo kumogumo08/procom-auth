@@ -114,6 +114,7 @@ app.post('/api/user/:username', async (req, res) => {
     if (!userDoc.exists) return res.status(404).send('ユーザーが存在しません');
 
     const existing = userDoc.data();
+    console.log("📩 サーバー受信データ:", req.body);
     await userRef.set({
     ...existing,
     profile: {
@@ -129,7 +130,7 @@ app.post('/api/user/:username', async (req, res) => {
   }
 });
 
-function saveProfileAndEventsToServer() {
+function saveProfileAndEventsToServer() {  
   const username = localStorage.getItem('loggedInUsername');
   const name = document.getElementById('nameInput')?.value.trim() || '';
   const title = document.getElementById('titleInput')?.value.trim() || '';

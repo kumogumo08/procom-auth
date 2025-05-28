@@ -198,6 +198,7 @@ function saveProfileAndEventsToServer() {
 
   const username = window.location.pathname.split('/').pop();
 
+  console.log("✅ 送信されるデータ:", data);
   fetch(`/api/user/${username}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
