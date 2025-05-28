@@ -115,11 +115,13 @@ app.post('/api/user/:username', async (req, res) => {
 
     const existing = userDoc.data();
     await userRef.set({
-      ...existing,
-      profile: {
-        ...req.body
-      }
-    });
+    ...existing,
+    profile: {
+    ...existing.profile,
+    ...req.body
+  }
+});
+
     res.status(200).send('Firestoreに保存完了');
   } catch (err) {
     console.error('Firestore保存エラー:', err);
