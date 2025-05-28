@@ -175,6 +175,7 @@ function displayTikTokVideos(urls = null) {
 }
 
 // ==== 初期読み込み ==== 
+console.log("✅ DOMContentLoaded が始まりました");
 window.addEventListener('DOMContentLoaded', () => {
   const isUserPage = location.pathname.startsWith('/user/');
   const savedX = localStorage.getItem('xUsername');
@@ -184,6 +185,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // ▼ X表示（プロフィールページでもTOPでも共通）
   if (savedX) {
     document.getElementById('xUsernameInput')?.value = savedX;
+    console.log("🔍 X 表示準備", savedX)
     showXProfile();
   }
 
