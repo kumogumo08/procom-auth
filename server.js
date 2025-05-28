@@ -101,16 +101,32 @@ app.get('/api/user/:username', async (req, res) => {
   res.json(data);
 });
 
-// ユーザーデータ保存
+// 🔧 ユーザーデータ保存（ログインしている本人のみ許可）
 app.post('/api/user/:username', async (req, res) => {
   if (!req.session.username || req.session.username !== req.params.username) {
     return res.status(403).send('権限がありません');
   }
 
   const userRef = db.collection('users').doc(req.params.username);
-  await userRef.update({ profile: req.body });
-  res.send('保存しました');
+
+  try {
+    const userDoc = await userRef.get();
+    if (!userDoc.exists) return res.status(404).send('ユーザーが存在しません');
+
+    const existing = userDoc.data();
+    await userRef.set({
+      ...existing,
+      profile: {
+        ...req.body
+      }
+    });
+    res.status(200).send('Firestoreに保存完了');
+  } catch (err) {
+    console.error('Firestore保存エラー:', err);
+    res.status(500).send('保存に失敗しました');
+  }
 });
+
 
 // ユーザー一覧取得（検索用）
 app.get('/api/users', async (req, res) => {
