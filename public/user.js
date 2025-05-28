@@ -1,5 +1,8 @@
 // user.js
 
+let events = [];
+let currentDate = new Date();  
+
 const usernameFromURL = window.location.pathname.split('/').pop();
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -32,9 +35,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     // プロフィール表示
-    document.getElementById('name').textContent = data.name || '';
-    document.getElementById('title').textContent = data.title ? `（${data.title}）` : '';
-    document.getElementById('bio').innerHTML = (data.bio || '').replace(/\n/g, '<br>');
+    const nameEl = document.getElementById('name');
+    if (nameEl) nameEl.textContent = data.name || '';
+    const titleEl = document.getElementById('title');
+    if (titleEl) titleEl.textContent = data.title ? `（${data.title}）` : '';
+
+    const bioEl = document.getElementById('bio');
+    if (bioEl) bioEl.innerHTML = (data.bio || '').replace(/\n/g, '<br>');
 
     if (data.photos) updatePhotoSlider(data.photos);
 
@@ -87,5 +94,5 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // ✅ 保存ボタンイベント
 document.getElementById('saveBtn')?.addEventListener('click', () => {
-  saveUserDataToServer();
+  saveProfileAndEventsToServer();
 });
