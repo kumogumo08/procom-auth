@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 // Firebase Admin SDK
 const admin = require('firebase-admin');
-const serviceAccount = require('./procom-fea80-firebase-adminsdk-fbsvc-c01a1f83ad.json'); // ←秘密鍵ファイル名に注意
+const serviceAccount = require('/etc/secrets/firebase-key.json'); // ←秘密鍵ファイル名に注意
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
