@@ -1,5 +1,5 @@
 // ==== X（旧Twitter）プロフィール表示機能 ====
-function showXProfile() {
+window.showXProfile = function () {
   const username = document.getElementById('xUsernameInput').value.trim();
   const container = document.getElementById('xProfileDisplay');
 
@@ -22,7 +22,7 @@ function showXProfile() {
   `;
 
   localStorage.setItem('xUsername', username);
-}
+};
 
 // ==== Instagram投稿埋め込み機能 ====
 window.embedInstagramPost = function () {
@@ -55,7 +55,7 @@ window.embedInstagramPost = function () {
 // ==== YouTubeの最新動画表示機能 ====
 const apiKey = 'AIzaSyAzSzwjwhvtCtUhkC0KR_e_NwDvQJpMxvM';
 
-function saveYouTubeChannelId() {
+window.saveYouTubeChannelId = function () {
   const input = document.getElementById('channelIdInput').value.trim();
   if (!input) return;
 
@@ -68,7 +68,7 @@ function saveYouTubeChannelId() {
   const channelId = match[1];
   localStorage.setItem('youtubeChannelId', channelId);
   fetchLatestVideos(channelId);
-}
+};
 
 function fetchLatestVideos(channelId = null) {
   channelId = channelId || localStorage.getItem('youtubeChannelId');
@@ -122,7 +122,7 @@ function displayYouTubeVideos(videos) {
 }
 
 // ==== TikTok埋め込み ====
-function saveTikTokVideos() {
+window.saveTikTokVideos = function () {
   const inputs = document.querySelectorAll('.tiktok-input');
   const urls = Array.from(inputs).map(input => input.value.trim())
     .filter(url => url.includes('tiktok.com/@') && url.includes('/video/'));
@@ -138,7 +138,7 @@ console.log('✅ 保存対象URL:', urls); // ←ここで確認
   displayTikTokVideos(urls);
 
   saveProfileAndEventsToServer(); // ← TikTok保存後にこれを呼び出す！
-}
+};
 
 function displayTikTokVideos(urls = null) {
   const container = document.getElementById('tiktok-container');

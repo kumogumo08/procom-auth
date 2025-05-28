@@ -29,7 +29,7 @@
   <div class="photo-upload">
   <h3>写真を登録(最大5枚)</h3>
   <input type="file" id="photoInput" accept="image/*" multiple>
-  <button onclick="savePhotos()">写真を保存</button>
+  <button type="button" onclick="savePhotos()">写真を保存</button>
 </div>
 
   <!-- プロフィール -->
@@ -85,7 +85,7 @@
             <div class="sns-section">
                 <input type="text" id="channelIdInput" placeholder="チャンネルID (UC〜で始まるID)">
                 <small>※@から始まるユーザー名ではなく、UCから始まるチャンネルIDを入力してください</small>
-                <button onclick="saveYouTubeChannelId()">保存</button>
+                <button type="button" onclick="saveYouTubeChannelId()">保存</button>
               </div>
             <div id="youtubeCard" class="sns-card"></div>
             <div id="videoContainer" class="video-container"></div>
@@ -96,7 +96,7 @@
           <div class="sns-item">
             <h2>X（旧Twitter）</h2>
              <input type="text" id="xUsernameInput" placeholder="ユーザー名（@なし）を入力" />
-             <button onclick="showXProfile()">表示</button>
+             <button type="button" onclick="showXProfile()">表示</button>
               <div id="xProfileDisplay" style="margin-top: 10px;"></div>
           </div>
 
@@ -107,7 +107,7 @@
               </small>
               <label for="instagramPostLink" class="sr-only">Instagram投稿リンク</label>
               <input type="text" id="instagramPostLink" placeholder="https://www.instagram.com/xxxxx/" />
-              <button onclick="embedInstagramPost()">Instagram投稿を表示</button>
+              <button type="button" onclick="embedInstagramPost()">Instagram投稿を表示</button>
             <div id="instagramPostContainer">Instagram投稿が表示されます</div>
           </div>
         </div>
@@ -118,7 +118,7 @@
        <input type="text" class="tiktok-input" placeholder="動画URL 1" /><br />
        <input type="text" class="tiktok-input" placeholder="動画URL 2" /><br />
        <input type="text" class="tiktok-input" placeholder="動画URL 3" /><br />
-       <button onclick="saveTikTokVideos()">保存</button>
+       <button type="button" onclick="saveTikTokVideos()">保存</button>
         <div id="tiktok-container" class="tiktok-grid"></div>
       </div>
     </div>
