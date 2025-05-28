@@ -161,6 +161,17 @@ function saveProfileAndEventsToServer() {
   .catch(err => console.error("❌ 保存失敗:", err));
 }
 
+saveYouTubeChannelId = function () {
+  const input = document.getElementById('channelIdInput').value.trim();
+  const match = input.match(/(UC[\w-]+)/);
+  if (match) {
+    const channelId = match[1];
+    localStorage.setItem('youtubeChannelId', channelId);
+    fetchLatestVideos(channelId);
+    saveProfileAndEventsToServer();  // ← これを忘れずに
+  }
+};
+
 // ユーザー一覧取得（検索用）
 app.get('/api/users', async (req, res) => {
   const snapshot = await db.collection('users').get();
