@@ -18,9 +18,6 @@ const titleInput = document.getElementById('titleInput');
 const cancelBtn = document.getElementById('cancelBtn');
 const twitterContainer = document.getElementById('twitterContainer');
 
-document.getElementById('saveProfileBtn').addEventListener('click', () => {
-  saveProfileAndEventsToServer();
-});
 
 // 📌 プロフィール編集
 editBtn?.addEventListener('click', () => {
