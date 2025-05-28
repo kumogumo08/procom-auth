@@ -155,6 +155,7 @@ function saveProfileAndEventsToServer() {
   };
 
   console.log("送信データ確認:", data);
+  
   fetch(`/api/user/${username}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
