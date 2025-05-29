@@ -157,6 +157,7 @@ function saveProfileAndEventsToServer() {
   fetch(`/api/user/${username}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',  // ← これを必ず追加！
     body: JSON.stringify(data)
   })
   .then(res => res.text())

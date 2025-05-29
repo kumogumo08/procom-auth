@@ -196,14 +196,16 @@ function saveProfileAndEventsToServer() {
     calendarEvents: events
   };
 
+  console.log("✅ 送信されるデータ:", userData); // ← デバッグ用
+
   const username = window.location.pathname.split('/').pop();
 
   fetch(`/api/user/${username}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include', // これはOK（セッション維持用）
-    body: JSON.stringify(Data)// ← ✅ これに変更
-    })
+    credentials: 'include',
+    body: JSON.stringify(userData)  // ← 正しく userData を送る
+  })
     .then(res => res.text())
     .then(result => {
       console.log('保存結果:', result);
