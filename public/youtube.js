@@ -70,7 +70,7 @@ if (isUserAction) {
 };
 
 // ==== YouTubeの最新動画表示機能 ====
-const apiKey = 'AIzaSyAzSzwjwhvtCtUhkC0KR_e_NwDvQJpMxvM';
+const apiKey = process.env.YOUTUBE_API_KEY;
 
 window.saveYouTubeChannelId = function () {
   const input = document.getElementById('channelIdInput').value.trim();

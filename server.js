@@ -1,12 +1,14 @@
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+require('dotenv').config();
 const path = require('path');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 
 // Firebase Admin SDK
 const admin = require('firebase-admin');
@@ -25,15 +27,22 @@ const storage = admin.storage();
 const bucket = storage.bucket();
 const bucketName = bucket.name;
 const db = admin.firestore();
+const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(express.static('public'));
-app.use(bodyParser.json({ limit: '10mb' })); // ← 5mb → 10mb に拡張
-app.use(express.json({ limit: '10mb' })); 
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(express.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
 app.use(session({
-  secret: 'procomSecretKey',
+  secret: process.env.SECRET_KEY || 'fallbackSecret',
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    secure: isProduction,
+    httpOnly: true,
+    sameSite: 'lax'
+  }
 }));
 
 // ユーザー登録
