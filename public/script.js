@@ -48,14 +48,18 @@ function updateAuthUI() {
 
       if (data.loggedIn) {
         authForms.innerHTML = `
-          <p>ようこそ、${data.username}さん！</p>
-          <form action="/logout" method="GET">
-            <button type="submit">ログアウト</button>
-          </form>
-          <div style="margin-top: 5px;">
-            <a href="/account.html">⚙ アカウント設定</a>
+          <div style="text-align: right; margin-top: 10px;">
+            <p>ようこそ、${data.username}さん！</p>
+            <form action="/logout" method="GET">
+              <button type="submit">ログアウト</button>
+            </form>
+            <div style="margin-top: 5px;">
+              <a href="/account.html">⚙ アカウント設定</a>
+            </div>
           </div>
         `;
+        authForms.style.display = 'block'; // ← これを追加
+
                 // 🔽 ログインユーザー向け要素を表示
         if (editSection) editSection.style.display = 'block';
         if (photoUpload) photoUpload.style.display = 'block';
@@ -73,7 +77,7 @@ function updateAuthUI() {
          }
 
         authForms.innerHTML = '';
-        
+
                 // 🔽 ログインしていないときは非表示に
         if (editSection) editSection.style.display = 'none';
         if (photoUpload) photoUpload.style.display = 'none';
