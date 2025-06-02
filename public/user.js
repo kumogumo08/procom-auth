@@ -127,7 +127,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
       });
       localStorage.setItem('calendarEvents', JSON.stringify(events));
-      createCalendar(currentDate);
+      createCalendar(currentDate, isOwnPage);
     }
 
     const resList = await fetch('/api/users');

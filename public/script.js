@@ -325,7 +325,7 @@ document.addEventListener('submit', (e) => {
 
 
 // 📌 カレンダー
-function createCalendar(date = new Date()) {
+function createCalendar(date = new Date(), isEditable = false) {
   const calendar = document.getElementById('calendar');
   const year = date.getFullYear();
   const month = date.getMonth();
@@ -376,7 +376,15 @@ function createCalendar(date = new Date()) {
       popup.className = 'popup';
       events[fullDate].forEach((e, idx) => {
         const item = document.createElement('div');
-        item.innerHTML = `・${e} <button class="delete-btn" data-date="${fullDate}" data-index="${idx}">×</button>`;
+        item.innerHTML = `・${e}`;
+        if (isEditable) {
+          const delBtn = document.createElement('button');
+          delBtn.textContent = '×';
+          delBtn.className = 'delete-btn';
+          delBtn.dataset.date = fullDate;
+          delBtn.dataset.index = idx;
+          item.appendChild(delBtn);
+        }
         popup.appendChild(item);
       });
       cell.appendChild(popup);
@@ -398,7 +406,13 @@ function createCalendar(date = new Date()) {
   };
   document.getElementById('next-month').onclick = () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    createCalendar(currentDate);
+    const currentUser = getUsernameFromURL();
+   fetch('/session', { credentials: 'include' })
+  .then(res => res.json())
+  .then(data => {
+    const isEditable = data.loggedIn && data.username === getUsernameFromURL();
+    createCalendar(currentDate, isEditable);
+  });
   };
 
   setTimeout(() => {
