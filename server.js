@@ -187,57 +187,64 @@ app.post('/api/user/:username', async (req, res) => {
     }
 
     // base64画像がある場合はアップロード処理
-    if (incoming.photos?.some(photo => photo.startsWith('data:image/'))) {
-      const uploadedPhotoUrls = [];
+  if (Array.isArray(incoming.photos)) {
+  if (incoming.photos.some(photo => photo.startsWith('data:image/'))) {
+    const uploadedPhotoUrls = [];
 
-      // 古い画像削除
-      if (existing.profile?.photos && Array.isArray(existing.profile.photos)) {
-        const deletedSet = new Set();
-        for (const oldUrl of existing.profile.photos) {
-          try {
-            const match = decodeURIComponent(oldUrl).match(/\/o\/(.+)\?alt=media/);
-            if (match && match[1]) {
-              const oldFilePath = match[1];
-              if (!deletedSet.has(oldFilePath)) {
-                await bucket.file(oldFilePath).delete();
-                console.log(`🗑️ 削除済: ${oldFilePath}`);
-                deletedSet.add(oldFilePath);
-              }
+    // 古い画像削除
+    if (existing.profile?.photos && Array.isArray(existing.profile.photos)) {
+      const deletedSet = new Set();
+      for (const oldUrl of existing.profile.photos) {
+        try {
+          const match = decodeURIComponent(oldUrl).match(/\/o\/(.+)\?alt=media/);
+          if (match && match[1]) {
+            const oldFilePath = match[1];
+            if (!deletedSet.has(oldFilePath)) {
+              await bucket.file(oldFilePath).delete();
+              console.log(`🗑️ 削除済: ${oldFilePath}`);
+              deletedSet.add(oldFilePath);
             }
-          } catch (err) {
-            console.warn(`⚠️ 削除失敗: ${oldUrl}`, err.message);
           }
+        } catch (err) {
+          console.warn(`⚠️ 削除失敗: ${oldUrl}`, err.message);
         }
       }
-
-      // 新しい画像アップロード
-      for (const base64Data of incoming.photos) {
-        const matches = base64Data.match(/^data:(image\/.+);base64,(.+)$/);
-        if (!matches) continue;
-
-        const contentType = matches[1];
-        const buffer = Buffer.from(matches[2], 'base64');
-        const ext = contentType.split('/')[1];
-        const fileName = `photos/${req.params.username}/${uuidv4()}.${ext}`;
-        const file = bucket.file(fileName);
-
-        await file.save(buffer, {
-          metadata: {
-            contentType,
-            metadata: {
-              firebaseStorageDownloadTokens: uuidv4(),
-            },
-          },
-        });
-
-        const [metadata] = await file.getMetadata();
-        const token = metadata.metadata.firebaseStorageDownloadTokens;
-        const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media&token=${token}`;
-        uploadedPhotoUrls.push(downloadURL);
-      }
-
-      profile.photos = uploadedPhotoUrls;
     }
+
+    // 新しい画像アップロード
+    for (const base64Data of incoming.photos) {
+      const matches = base64Data.match(/^data:(image\/.+);base64,(.+)$/);
+      if (!matches) continue;
+
+      const contentType = matches[1];
+      const buffer = Buffer.from(matches[2], 'base64');
+      const ext = contentType.split('/')[1];
+      const fileName = `photos/${req.params.username}/${uuidv4()}.${ext}`;
+      const file = bucket.file(fileName);
+
+      await file.save(buffer, {
+        metadata: {
+          contentType,
+          metadata: {
+            firebaseStorageDownloadTokens: uuidv4(),
+          },
+        },
+      });
+
+      const [metadata] = await file.getMetadata();
+      const token = metadata.metadata.firebaseStorageDownloadTokens;
+      const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media&token=${token}`;
+      uploadedPhotoUrls.push(downloadURL);
+    }
+
+    profile.photos = uploadedPhotoUrls;
+
+  } else {
+    // base64ではなくURL配列の場合
+    profile.photos = incoming.photos;
+  }
+}
+
 
     // 🔧 profileの正規化
    const cleanedProfile = {
