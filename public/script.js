@@ -576,6 +576,26 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedBio = localStorage.getItem('profile_bio');
   if (savedBio) bioDisplay.innerHTML = savedBio.replace(/\n/g, '<br>');
 
+  // Firestoreから取得して表示する部分
+  fetch(`/api/user/${getUsernameFromURL()}`)
+    .then(res => res.json())
+    .then(data => {
+      const profile = data.profile || data;
+
+      if (profile.xUsername) {
+        document.getElementById('xUsernameInput').value = profile.xUsername;
+        localStorage.setItem('xUsername', profile.xUsername);
+      }
+
+      if (profile.instagramPostUrl) {
+        document.getElementById('instagramPostLink').value = profile.instagramPostUrl;
+        localStorage.setItem('instagramPostUrl', profile.instagramPostUrl);
+      }
+    })
+  .catch(err => {
+    console.error("❌ プロフィール読み込みエラー:", err);
+  });
+
   updatePhotoSlider();
 
   events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
