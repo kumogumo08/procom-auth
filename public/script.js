@@ -118,7 +118,7 @@ function updateAuthUI() {
     //updateAuthUI(); // フォーム再描画
   });
 
-  // 🔹 ログイン処理
+// 🔐 ログイン処理
 // 🔐 ログイン処理
 loginForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -129,21 +129,21 @@ loginForm?.addEventListener('submit', async (e) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
-    credentials: 'include'
+    credentials: 'include'  // ← ✅ セッション維持に必須
   });
 
   if (res.ok) {
     const data = await res.json();
     alert(`ログイン成功！ようこそ ${data.username} さん`);
 
-    // ✅ サーバーがセッション保存する時間を確保
+    // ✅ セッション保存のタイミングを確保（超重要）
     setTimeout(() => {
       window.location.href = `/user/${data.username}`;
-    }, 500); // ← 遅延させてCookieが確実に保存されるようにする
+    }, 500);
 
   } else {
     const errorText = await res.text();
-    alert(errorText);
+    alert(`ログイン失敗: ${errorText}`);
   }
 });
 }
