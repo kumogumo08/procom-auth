@@ -111,7 +111,7 @@ app.post('/login', async (req, res) => {
   }
 
   req.session.username = userDoc.id;
-  res.redirect(`/user/${userDoc.id}`);
+  res.json({ username: userDoc.id });
 });
 
 
