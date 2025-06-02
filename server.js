@@ -290,7 +290,7 @@ app.get('/api/user/:username', async (req, res) => {
   try {
     const userDoc = await userRef.get();
     if (!userDoc.exists) {
-      return res.status(404).send('ユーザーが見つかりません');
+       return res.status(404).json({ error: 'ユーザーが見つかりません' });
     }
 
     const data = userDoc.data();

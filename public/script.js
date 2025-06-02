@@ -111,7 +111,7 @@ function updateAuthUI() {
 
     const msg = await res.text();
     alert(msg);
-    updateAuthUI(); // フォーム再描画
+    //updateAuthUI(); // フォーム再描画
   });
 
   // 🔹 ログイン処理
@@ -572,25 +572,34 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedBio = localStorage.getItem('profile_bio');
   if (savedBio) bioDisplay.innerHTML = savedBio.replace(/\n/g, '<br>');
 
-  // Firestoreから取得して表示する部分
-  fetch(`/api/user/${getUsernameFromURL()}`)
-    .then(res => res.json())
-    .then(data => {
-      const profile = data.profile || data;
+// Firestoreから取得して表示する部分
+fetch(`/api/user/${getUsernameFromURL()}`)
+  .then(async res => {
+    if (!res.ok) {
+      const errorText = await res.text(); // ← JSON以外のメッセージを読む
+      throw new Error(errorText);         // ← catch に投げる
+    }
+    return res.json();
+  })
+  .then(data => {
+    const profile = data.profile || data;
 
-      if (profile.xUsername) {
-        document.getElementById('xUsernameInput').value = profile.xUsername;
-        localStorage.setItem('xUsername', profile.xUsername);
-      }
+    if (profile.xUsername) {
+      document.getElementById('xUsernameInput').value = profile.xUsername;
+      localStorage.setItem('xUsername', profile.xUsername);
+    }
 
-      if (profile.instagramPostUrl) {
-        document.getElementById('instagramPostLink').value = profile.instagramPostUrl;
-        localStorage.setItem('instagramPostUrl', profile.instagramPostUrl);
-      }
-    })
+    if (profile.instagramPostUrl) {
+      document.getElementById('instagramPostLink').value = profile.instagramPostUrl;
+      localStorage.setItem('instagramPostUrl', profile.instagramPostUrl);
+    }
+  })
   .catch(err => {
-    console.error("❌ プロフィール読み込みエラー:", err);
+    console.error("❌ プロフィール読み込みエラー:", err.message);
+    // 必要ならユーザーにメッセージ表示も可能
+    // alert(err.message);
   });
+
 
   updatePhotoSlider();
 
