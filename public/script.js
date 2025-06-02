@@ -32,6 +32,7 @@ cancelBtn?.addEventListener('click', () => {
 
 // 📌 認証 UI
 function updateAuthUI() {
+  console.log("✅ updateAuthUI 呼び出し開始");
   fetch('/session', { credentials: 'include' })
     .then(res => res.json())
     .then(data => {
