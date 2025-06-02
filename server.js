@@ -547,3 +547,27 @@ app.post('/account/update', async (req, res) => {
     return res.status(500).send('アカウント情報の更新に失敗しました');
   }
 });
+
+// ✅ YouTube APIプロキシ
+app.get('/api/youtube/:channelId', async (req, res) => {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  const { channelId } = req.params;
+
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?` +
+      `key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=5`
+    );
+
+    if (!response.ok) {
+      console.error('❌ YouTube APIエラー:', response.statusText);
+      return res.status(500).send('YouTubeデータの取得に失敗しました');
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error('❌ YouTube API通信エラー:', err);
+    res.status(500).send('YouTube APIへの通信に失敗しました');
+  }
+});
