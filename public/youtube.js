@@ -69,15 +69,6 @@ if (isUserAction) {
 }
 };
 
-// ==== YouTubeの最新動画表示機能 ====
-async function fetchLatestVideos(channelId) {
-  const res = await fetch(`/api/youtube/${channelId}`);
-  const data = await res.json();
-
-  // ↓ここはあなたの既存の動画表示処理
-  console.log(data);
-}
-
 window.saveYouTubeChannelId = function () {
   const input = document.getElementById('channelIdInput').value.trim();
   if (!input) return;
@@ -110,15 +101,16 @@ function fetchLatestVideos(channelId = null) {
     return;
   }
 
-  // APIアクセス（ここから下はそのままでOK）
-  fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=5`)
-    .then(res => res.json())
+  // ✅ サーバー経由でAPI呼び出し
+  fetch(`/api/youtube/${channelId}`)
+    .then(res => {
+      if (!res.ok) throw new Error('ユーザーデータの取得に失敗しました。');
+      return res.json();
+    })
     .then(data => {
-      if (!data.items) throw new Error('動画が取得できません');
-      const videos = data.items.filter(item => item.id.kind === 'youtube#video');
+      const videos = (data.items || []).filter(item => item.id.kind === 'youtube#video');
       if (videos.length === 0) throw new Error('動画が見つかりません');
 
-      // ✅ キャッシュ保存
       localStorage.setItem(cacheKey, JSON.stringify(videos));
       localStorage.setItem(cacheTimeKey, now.toString());
 
