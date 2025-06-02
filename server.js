@@ -17,6 +17,9 @@ const { v4: uuidv4 } = require('uuid');
 // 🔄 JSON文字列をパースして認証情報として渡す
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY_JSON);
 
+// 🔧 改行コードを正規の改行に変換
+serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
