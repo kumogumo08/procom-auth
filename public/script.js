@@ -119,28 +119,33 @@ function updateAuthUI() {
   });
 
   // 🔹 ログイン処理
-  loginForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    console.log("ログインフォーム送信！");
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
+// 🔐 ログイン処理
+loginForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
 
-    const res = await fetch('/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-      credentials: 'include'
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      alert(`ログイン成功！ようこそ ${data.username} さん`);
-      window.location.href = `/user/${data.username}`;
-    } else {
-      const errorText = await res.text();
-      alert(errorText);
-    }
+  const res = await fetch('/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+    credentials: 'include'
   });
+
+  if (res.ok) {
+    const data = await res.json();
+    alert(`ログイン成功！ようこそ ${data.username} さん`);
+
+    // ✅ サーバーがセッション保存する時間を確保
+    setTimeout(() => {
+      window.location.href = `/user/${data.username}`;
+    }, 500); // ← 遅延させてCookieが確実に保存されるようにする
+
+  } else {
+    const errorText = await res.text();
+    alert(errorText);
+  }
+});
 }
 
 
