@@ -35,7 +35,8 @@ console.log("✅ showXProfile() が呼ばれました");
 };
 
 // ==== Instagram投稿埋め込み機能 ====
-window.embedInstagramPost = function () {
+// isUserAction を受け取る（デフォルト: true）
+window.embedInstagramPost = function (isUserAction = true) {
   const url = document.getElementById('instagramPostLink').value;
   const container = document.getElementById('instagramPostContainer');
 
@@ -59,7 +60,13 @@ window.embedInstagramPost = function () {
     document.body.appendChild(script);
   }
 
-  saveProfileAndEventsToServer(); // ← 忘れず呼ぶ
+  // ✅ 初期表示のときは保存させない
+if (isUserAction) {
+  console.log("👍 ユーザー操作によりSNSが変更されました");
+  // ここでは保存しない（ボタンでのみ保存）
+} else {
+  console.log("📄 初期表示なのでプロフィール保存はスキップ");
+}
 };
 
 // ==== YouTubeの最新動画表示機能 ====
@@ -132,12 +139,12 @@ function displayYouTubeVideos(videos) {
 }
 
 // ==== TikTok埋め込み ====
-window.saveTikTokVideos = function () {
+window.saveTikTokVideos = function (isUserAction = true) {
   const inputs = document.querySelectorAll('.tiktok-input');
   const urls = Array.from(inputs).map(input => input.value.trim())
     .filter(url => url.includes('tiktok.com/@') && url.includes('/video/'));
 
-console.log('✅ 保存対象URL:', urls); // ←ここで確認
+  console.log('✅ 保存対象URL:', urls);
 
   if (urls.length === 0) {
     alert('TikTokの正しい動画URLを1つ以上入力してください。');
@@ -147,8 +154,13 @@ console.log('✅ 保存対象URL:', urls); // ←ここで確認
   localStorage.setItem('tiktokUrls', JSON.stringify(urls));
   displayTikTokVideos(urls);
 
-  saveProfileAndEventsToServer(); // ← TikTok保存後にこれを呼び出す！
-};
+    if (isUserAction) {
+      console.log("👍 ユーザー操作によりSNSが変更されました");
+      // ここでは保存しない（ボタンでのみ保存）
+    } else {
+      console.log("📄 初期表示なのでプロフィール保存はスキップ");
+    }
+  };
 
 function displayTikTokVideos(urls = null) {
   const container = document.getElementById('tiktok-container');

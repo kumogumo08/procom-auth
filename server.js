@@ -11,15 +11,24 @@ const PORT = process.env.PORT || 3000;
 // Firebase Admin SDK
 const admin = require('firebase-admin');
 const serviceAccount = require('/etc/secrets/firebase-key.json'); // ←秘密鍵ファイル名に注意
+//const serviceAccount = require('./firebase-key.json');             // ←秘密鍵ファイルローカルサーバー用
+const { v4: uuidv4 } = require('uuid');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: 'procom-fea80.firebasestorage.app' // ← あなたのプロジェクトIDに合わせて変更
+  });
+}
 
+const storage = admin.storage();
+const bucket = storage.bucket();
+const bucketName = bucket.name;
 const db = admin.firestore();
 
 app.use(express.static('public'));
 app.use(bodyParser.json({ limit: '10mb' })); // ← 5mb → 10mb に拡張
+app.use(express.json({ limit: '10mb' })); 
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(session({
   secret: 'procomSecretKey',
@@ -28,17 +37,30 @@ app.use(session({
 }));
 
 // ユーザー登録
+// ✅ registerルートの更新（username, email, password で登録）
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  let { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).send('全項目を入力してください');
+  }
+
+  username = username.trim().toLowerCase();
   const userRef = db.collection('users').doc(username);
   const userDoc = await userRef.get();
 
+  const emailSnapshot = await db.collection('users').where('email', '==', email).get();
+  if (!emailSnapshot.empty) {
+    return res.status(409).send('メールアドレスは既に使用されています');
+  }
+
   if (userDoc.exists) {
-    return res.status(409).send('すでに登録されています');
+    return res.status(409).send('ユーザー名は既に使用されています');
   }
 
   const hashed = await bcrypt.hash(password, 10);
   await userRef.set({
+    email,
     password: hashed,
     profile: {
       name: username,
@@ -53,24 +75,32 @@ app.post('/register', async (req, res) => {
     }
   });
 
-  res.send('登録成功');
-});
-
-// ログイン
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const userRef = db.collection('users').doc(username);
-  const userDoc = await userRef.get();
-
-  if (!userDoc.exists) return res.status(401).send('ユーザーが存在しません');
-
-  const user = userDoc.data();
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(401).send('パスワードが間違っています');
-
   req.session.username = username;
-  res.json({ success: true, username });
+  res.redirect(`/user/${username}`);
 });
+
+// ✅ loginルートの更新（email でログイン）
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  const usersRef = db.collection('users');
+  const snapshot = await usersRef.where('email', '==', email).get();
+  if (snapshot.empty) {
+    return res.status(401).send('ユーザーが存在しません');
+  }
+
+  const userDoc = snapshot.docs[0];
+  const user = userDoc.data();
+
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return res.status(401).send('パスワードが間違っています');
+  }
+
+  req.session.username = userDoc.id;
+  res.redirect(`/user/${userDoc.id}`);
+});
+
 
 // ログアウト
 app.get('/logout', (req, res) => {
@@ -90,21 +120,37 @@ app.get('/session', (req, res) => {
   }
 });
 
-// ユーザーデータ取得
-app.get('/api/user/:username', async (req, res) => {
-  const userRef = db.collection('users').doc(req.params.username);
-  const userDoc = await userRef.get();
-
-  if (!userDoc.exists) return res.status(404).send('ユーザーが見つかりません');
-
-  const data = userDoc.data().profile;
-  res.json(data);
-});
+function cleanData(obj) {
+  const cleaned = {};
+  for (const key in obj) {
+    const value = obj[key];
+    // 空文字列・空配列・undefined/null を除外
+    if (
+      value !== undefined &&
+      value !== null &&
+      !(typeof value === 'string' && value.trim() === '') &&
+      !(Array.isArray(value) && value.length === 0)
+    ) {
+      cleaned[key] = value;
+    }
+  }
+  return cleaned;
+}
 
 // 🔧 ユーザーデータ保存（ログインしている本人のみ許可）
 app.post('/api/user/:username', async (req, res) => {
   if (!req.session.username || req.session.username !== req.params.username) {
     return res.status(403).send('権限がありません');
+  }
+
+  const incoming = req.body;
+  console.log("📩 POST /api/user - 受信データ:", incoming);
+
+  const profile = incoming.profile;
+  console.log("📦 profile内容:", profile);
+
+  if (!profile || typeof profile !== 'object') {
+    return res.status(400).send('プロフィール情報が正しくありません');
   }
 
   const userRef = db.collection('users').doc(req.params.username);
@@ -114,67 +160,138 @@ app.post('/api/user/:username', async (req, res) => {
     if (!userDoc.exists) return res.status(404).send('ユーザーが存在しません');
 
     const existing = userDoc.data();
-    await userRef.set({
-    ...existing,
-    profile: {
-    ...existing.profile,
-    ...req.body
-  }
-});
 
-    res.status(200).send('Firestoreに保存完了');
+    // calendarEventsの整形
+    if (
+      profile.calendarEvents &&
+      typeof profile.calendarEvents === 'object' &&
+      !Array.isArray(profile.calendarEvents)
+    ) {
+      profile.calendarEvents = Object.entries(profile.calendarEvents)
+        .filter(([date, events]) => /^\d{4}-\d{2}-\d{2}$/.test(date))
+        .map(([date, events]) => ({
+          date,
+          events: Array.isArray(events) ? events : [events]
+        }));
+    }
+
+    if (Array.isArray(profile.calendarEvents)) {
+      profile.calendarEvents = profile.calendarEvents
+        .filter(e => typeof e === 'object' && e.date && Array.isArray(e.events))
+        .map(e => ({
+          date: String(e.date),
+          events: e.events.map(ev => String(ev))
+        }));
+    } else {
+      delete profile.calendarEvents;
+    }
+
+    // base64画像がある場合はアップロード処理
+    if (incoming.photos?.some(photo => photo.startsWith('data:image/'))) {
+      const uploadedPhotoUrls = [];
+
+      // 古い画像削除
+      if (existing.profile?.photos && Array.isArray(existing.profile.photos)) {
+        const deletedSet = new Set();
+        for (const oldUrl of existing.profile.photos) {
+          try {
+            const match = decodeURIComponent(oldUrl).match(/\/o\/(.+)\?alt=media/);
+            if (match && match[1]) {
+              const oldFilePath = match[1];
+              if (!deletedSet.has(oldFilePath)) {
+                await bucket.file(oldFilePath).delete();
+                console.log(`🗑️ 削除済: ${oldFilePath}`);
+                deletedSet.add(oldFilePath);
+              }
+            }
+          } catch (err) {
+            console.warn(`⚠️ 削除失敗: ${oldUrl}`, err.message);
+          }
+        }
+      }
+
+      // 新しい画像アップロード
+      for (const base64Data of incoming.photos) {
+        const matches = base64Data.match(/^data:(image\/.+);base64,(.+)$/);
+        if (!matches) continue;
+
+        const contentType = matches[1];
+        const buffer = Buffer.from(matches[2], 'base64');
+        const ext = contentType.split('/')[1];
+        const fileName = `photos/${req.params.username}/${uuidv4()}.${ext}`;
+        const file = bucket.file(fileName);
+
+        await file.save(buffer, {
+          metadata: {
+            contentType,
+            metadata: {
+              firebaseStorageDownloadTokens: uuidv4(),
+            },
+          },
+        });
+
+        const [metadata] = await file.getMetadata();
+        const token = metadata.metadata.firebaseStorageDownloadTokens;
+        const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media&token=${token}`;
+        uploadedPhotoUrls.push(downloadURL);
+      }
+
+      profile.photos = uploadedPhotoUrls;
+    }
+
+    // 🔧 profileの正規化
+   const cleanedProfile = {
+     name: profile.name ?? existing.profile?.name ?? '',
+     title: profile.title ?? existing.profile?.title ?? '',
+     bio: profile.bio ?? existing.profile?.bio ?? '',
+     calendarEvents: profile.calendarEvents ?? existing.profile?.calendarEvents ?? [],
+     photos: profile.photos ?? existing.profile?.photos ?? [],
+     youtubeChannelId: profile.youtubeChannelId ?? existing.profile?.youtubeChannelId ?? '',
+     instagramPostUrl: profile.instagramPostUrl ?? existing.profile?.instagramPostUrl ?? '',
+     xUsername: profile.xUsername ?? existing.profile?.xUsername ?? '',
+     tiktokUrls: profile.tiktokUrls ?? existing.profile?.tiktokUrls ?? []
+};
+
+    // 保存
+    await userRef.set({ profile: cleanedProfile }, { merge: true });
+    res.send('User profile updated');
+
   } catch (err) {
-    console.error('Firestore保存エラー:', err);
+    console.error("Firestore保存エラー:", err);
     res.status(500).send('保存に失敗しました');
   }
 });
 
-function saveProfileAndEventsToServer() {
-  const username = localStorage.getItem('loggedInUsername');
-  const name = document.getElementById('nameInput')?.value.trim() || '';
-  const title = document.getElementById('titleInput')?.value.trim() || '';
-  const bio = document.getElementById('bioInput')?.value.trim() || '';
-  const photos = JSON.parse(localStorage.getItem('userPhotos') || '[]');
-  const youtubeChannelId = localStorage.getItem('youtubeChannelId') || '';
-  const instagramPostUrl = localStorage.getItem('instagramPostUrl') || '';
-  const xUsername = localStorage.getItem('xUsername') || '';
-  const tiktokUrls = JSON.parse(localStorage.getItem('tiktokUrls') || '[]');
-  const calendarEvents = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+// 🔍 ユーザーデータ取得（プロフィール表示用）
+app.get('/api/user/:username', async (req, res) => {
+  const username = req.params.username;
+  const userRef = db.collection('users').doc(username);
 
-  const data = {
-    name,
-    title,
-    bio,
-    photos,
-    youtubeChannelId,
-    instagramPostUrl,
-    xUsername,
-    tiktokUrls,
-    calendarEvents
-  };
+  try {
+    const userDoc = await userRef.get();
+    if (!userDoc.exists) {
+      return res.status(404).send('ユーザーが見つかりません');
+    }
 
-  console.log("送信データ確認:", data);
-  fetch(`/api/user/${username}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',  // ← これを必ず追加！
-    body: JSON.stringify(data)
-  })
-  .then(res => res.text())
-  .then(msg => console.log("✅ 保存成功:", msg))
-  .catch(err => console.error("❌ 保存失敗:", err));
-}
+    const data = userDoc.data();
+    res.json(data.profile || {
+    name: '',
+    title: '',
+    bio: '',
+    photos: [],
+    youtubeChannelId: '',
+    instagramPostUrl: '',
+    xUsername: '',
+    tiktokUrls: [],
+    calendarEvents: []
+});
 
-saveYouTubeChannelId = function () {
-  const input = document.getElementById('channelIdInput').value.trim();
-  const match = input.match(/(UC[\w-]+)/);
-  if (match) {
-    const channelId = match[1];
-    localStorage.setItem('youtubeChannelId', channelId);
-    fetchLatestVideos(channelId);
-    saveProfileAndEventsToServer();  // ← これを忘れずに
+   // profileだけ返すように
+  } catch (err) {
+    console.error('❌ ユーザーデータ取得エラー:', err);
+    res.status(500).send('ユーザーデータの取得に失敗しました');
   }
-};
+});
 
 // ユーザー一覧取得（検索用）
 app.get('/api/users', async (req, res) => {
@@ -185,12 +302,21 @@ app.get('/api/users', async (req, res) => {
       username: doc.id,
       name: profile.name || '',
       title: profile.title || '',
-      bio: profile.bio || ''
+      bio: profile.bio || '',
+      photoUrl: profile.photos?.[0] || ''
     };
   });
   res.json(list);
 });
 
+// アカウントページへのアクセスをセッションで保護
+app.get('/account.html', (req, res, next) => {
+  if (!req.session.username) {
+    // 未ログインならリダイレクト
+    return res.redirect('/');
+  }
+ res.sendFile(path.join(__dirname, 'public', 'account.html'));
+});
 // HTML表示
 app.get('/user/:username', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'user.html'));
@@ -202,6 +328,188 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ✅ アカウント削除（Firestore + Storage + セッション削除）
+app.delete('/account/delete', async (req, res) => {
+  if (!req.session || !req.session.username) {
+    return res.status(401).send('ログインが必要です');
+  }
+
+  const username = req.session.username;
+
+  try {
+    // Firestoreからユーザー削除
+    await db.collection('users').doc(username).delete();
+    console.log(`✅ Firestore: ${username} を削除しました`);
+
+    // Storageから画像削除
+    const [files] = await bucket.getFiles({ prefix: `photos/${username}` });
+    const deletionPromises = files.map(file => file.delete());
+    await Promise.all(deletionPromises);
+    console.log(`✅ Storage: ${username} の写真を削除しました`);
+
+    // セッション破棄
+    req.session.destroy(() => {
+      res.clearCookie('connect.sid'); // ← Cookie も削除
+      res.json({ success: true });  // ← 退会完了ページに遷移
+    });
+
+  } catch (err) {
+    console.error("❌ 退会処理エラー:", err);
+    res.status(500).send('退会処理に失敗しました');
+  }
+});
+
+app.get('/deleted.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'deleted.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`🌐 Server running on http://localhost:${PORT}`);
+});
+
+// 🔥 古い写真削除API（savePhotos()から呼び出し用）
+app.post('/api/deletePhotos', async (req, res) => {
+  const { urls } = req.body;
+
+  if (!Array.isArray(urls)) {
+    return res.status(400).send('不正な形式です');
+  }
+
+  if (!req.session.username) {
+    return res.status(403).send('ログインが必要です');
+  }
+
+  try {
+    const deletedSet = new Set();
+
+    for (const url of urls) {
+      try {
+        const match = decodeURIComponent(url).match(/\/o\/(.+)\?alt=media/);
+        if (match && match[1]) {
+          const filePath = match[1];
+
+          // 自分のフォルダ以外の削除を防ぐ
+          if (!filePath.startsWith(`photos/${req.session.username}/`)) {
+            console.warn(`⚠️ 不正なファイルパス: ${filePath}`);
+            continue;
+          }
+
+          if (!deletedSet.has(filePath)) {
+            await bucket.file(filePath).delete();
+            console.log(`🗑️ 削除完了: ${filePath}`);
+            deletedSet.add(filePath);
+          }
+        }
+      } catch (err) {
+        console.warn(`⚠️ 削除失敗: ${url}`, err.message);
+      }
+    }
+
+    res.send('写真の削除完了');
+  } catch (err) {
+    console.error('❌ 写真削除エラー:', err);
+    res.status(500).send('写真の削除に失敗しました');
+  }
+});
+
+app.post('/api/uploadPhotos', async (req, res) => {
+  const username = req.session.username;
+  if (!username) {
+    return res.status(401).send('未ログインです');
+  }
+
+  const { base64Images } = req.body;
+  if (!Array.isArray(base64Images) || base64Images.length === 0) {
+    return res.status(400).send('画像データが不正です');
+  }
+
+  try {
+    const urls = [];
+
+    for (const base64 of base64Images) {
+      const base64Data = base64.split(',')[1];
+      const buffer = Buffer.from(base64Data, 'base64');
+      const filename = `photos/${username}_${uuidv4()}.jpg`;
+      const file = storage.bucket().file(filename);
+
+      const token = uuidv4();
+      await file.save(buffer, {
+      metadata: {
+      contentType: 'image/jpeg',
+      metadata: {
+      firebaseStorageDownloadTokens: token
+      }
+      }
+    });
+
+        const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
+        urls.push(publicUrl);
+    }
+
+    res.json({ urls });
+  } catch (err) {
+    console.error('❌ Firebase Storageアップロードエラー:', err);
+    res.status(500).send('アップロード失敗');
+  }
+});
+
+const saltRounds = 10;
+
+app.post('/account/update', async (req, res) => {
+  if (!req.session || !req.session.username) {
+    return res.status(401).send('ログインしていません');
+  }
+
+  const currentUsername = req.session.username;
+  const { newUsername, newEmail, newPassword } = req.body;
+
+  try {
+    const userDocRef = db.collection('users').doc(currentUsername);
+    const userDoc = await userDocRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).send('ユーザーが見つかりませんでした');
+    }
+
+    const userData = userDoc.data();
+
+    const updates = {};
+
+    // ユーザー名変更
+    if (newUsername && newUsername !== currentUsername) {
+      const newUserRef = db.collection('users').doc(newUsername);
+      const newUserDoc = await newUserRef.get();
+      if (newUserDoc.exists) {
+        return res.status(409).send('そのユーザー名は既に使われています');
+      }
+
+      // Firestore上のドキュメントを新しいIDにコピーして古い方を削除
+      await newUserRef.set(userData);
+      await userDocRef.delete();
+
+      // セッションを更新
+      req.session.username = newUsername;
+      return res.status(200).send(JSON.stringify({ username: newUsername }));
+    }
+
+    // メール変更
+    if (newEmail) {
+      updates.email = newEmail;
+    }
+
+    // パスワード変更
+    if (newPassword) {
+      const hashed = await bcrypt.hash(newPassword, saltRounds);
+      updates.password = hashed;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await userDocRef.update(updates);
+    }
+
+    return res.status(200).send(JSON.stringify({ username: currentUsername }));
+  } catch (err) {
+    console.error('アカウント更新エラー:', err);
+    return res.status(500).send('アカウント情報の更新に失敗しました');
+  }
 });

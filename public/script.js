@@ -6,7 +6,6 @@ let currentDate = new Date();
 
 const editBtn = document.getElementById('editBtn');
 const editForm = document.getElementById('editForm');
-const saveBtn = document.getElementById('saveBtn');
 const nameDisplay = document.getElementById('name');
 const bioDisplay = document.getElementById('bio');
 const nameInput = document.getElementById('nameInput');
@@ -31,22 +30,6 @@ cancelBtn?.addEventListener('click', () => {
   editForm.classList.add('hidden');
 });
 
-saveBtn?.addEventListener('click', async () => {
-  // 表示を更新
-  nameDisplay.textContent = nameInput.value.trim();
-  titleDisplay.textContent = titleInput.value.trim() ? `（${titleInput.value.trim()}）` : '';
-  bioDisplay.innerHTML = bioInput.value.trim().replace(/\n/g, '<br>');
-
-  localStorage.setItem('profile_name', nameInput.value.trim());
-  localStorage.setItem('profile_title', titleInput.value.trim());
-  localStorage.setItem('profile_bio', bioInput.value.trim());
-
-  savePhotos();
-  editForm.classList.add('hidden');
-
-  saveProfileAndEventsToServer(); // ← ここ！
-});
-
 // 📌 認証 UI
 function updateAuthUI() {
   fetch('/session', { credentials: 'include' })
@@ -57,8 +40,8 @@ function updateAuthUI() {
       const photoUpload = document.querySelector('.photo-upload');
       const eventForm = document.getElementById('event-form');
       const youtubeInputSection = document.querySelector('.sns-section');
-      const instagramSection = document.querySelector('#instagramPostLink')?.parentElement;
-      const xSection = document.querySelector('#xUsernameInput')?.parentElement;
+      const instagramSection = document.querySelector('#editForm #instagramPostLink')?.parentElement;
+      const xSection = editSection?.querySelector('#xUsernameInput')?.parentElement;
       const tiktokSection = document.getElementById('tiktok-section');
 
       if (!authForms) return;
@@ -82,7 +65,6 @@ function updateAuthUI() {
 
         } else {
         // ログインしてない場合、非表示にしておく
-         const editSection = document.getElementById('edit-section');
         if (editSection) {
          editSection.style.display = 'none';
          }
@@ -114,10 +96,11 @@ function updateAuthUI() {
     });
 }
 
-function attachAuthFormHandlers() {
+ function attachAuthFormHandlers() {
   const registerForm = document.getElementById('register-form');
   const loginForm = document.getElementById('login-form');
 
+  // 🔹 登録処理
   registerForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('register-username').value;
@@ -125,16 +108,17 @@ function attachAuthFormHandlers() {
 
     const res = await fetch('/register', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
       credentials: 'include'
     });
 
     const msg = await res.text();
     alert(msg);
-    updateAuthUI();
+    updateAuthUI(); // フォーム再描画
   });
 
+  // 🔹 ログイン処理
   loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     console.log("ログインフォーム送信！");
@@ -143,18 +127,15 @@ function attachAuthFormHandlers() {
 
     const res = await fetch('/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
       credentials: 'include'
     });
 
     if (res.ok) {
       const data = await res.json();
       alert(`ログイン成功！ようこそ ${data.username} さん`);
-     
-      // ✅ 自動リダイレクト
       window.location.href = `/user/${data.username}`;
-
     } else {
       const errorText = await res.text();
       alert(errorText);
@@ -162,56 +143,144 @@ function attachAuthFormHandlers() {
   });
 }
 
+
 // 例：URLが http://localhost:3000/user/flamingo の場合
 function getUsernameFromURL() {
   const path = window.location.pathname;
   const segments = path.split('/');
-  return segments[segments.length - 1]; // 最後の部分が username
+  const username = segments[segments.length - 1];
+  return username || localStorage.getItem('currentUsername'); // 空ならバックアップ
 }
-
-window.addEventListener('DOMContentLoaded', () => {
-  updateAuthUI();
-  loadUserProfile();
-});
 
 async function loadUserProfile() {
   const username = getUsernameFromURL();
   console.log('取得したユーザー名：', username);
 }
 
-function saveProfileAndEventsToServer() {
-  const nameVal = nameInput.value.trim();
-  const titleVal = titleInput.value.trim();
-  const bioVal = bioInput.value.trim();
+function saveProfileAndEventsToServer(includePhotos = false, customPhotos = null) {
+  fetch('/session')
+    .then(res => res.json())
+    .then(data => {
+      if (!data.loggedIn) {
+        console.log("🛑 未ログイン状態のためプロフィール保存を中止");
+        return;
+      }
+      proceedWithSave(data.username, includePhotos, customPhotos);
+    });
+}
 
-  const userData = {
-    name: nameVal,
-    title: titleVal,
-    bio: bioVal,
-    photos: JSON.parse(localStorage.getItem('photos') || '[]'),
-    youtubeChannelId: localStorage.getItem('youtubeChannelId') || '',
-    instagramPostUrl: localStorage.getItem('instagramPostUrl') || '',
-    xUsername: localStorage.getItem('xUsername') || '',
-    tiktokUrls: JSON.parse(localStorage.getItem('tiktokUrls') || '[]'),
-    calendarEvents: events
-  };
+function proceedWithSave(username, includePhotos = false, customPhotos = null) {
+  const name = document.getElementById('nameInput')?.value.trim();
+  const title = document.getElementById('titleInput')?.value.trim();
+  const bio = document.getElementById('bioInput')?.value.trim();
 
-  console.log("✅ 送信されるデータ:", userData); // ← デバッグ用
+// 入力要素を事前に取得
+  const nameInput = document.getElementById('nameInput');
+  const titleInput = document.getElementById('titleInput');
+  const bioInput = document.getElementById('bioInput');
 
-  const username = window.location.pathname.split('/').pop();
+  nameInput?.addEventListener('input', () => {
+  delete nameInput.dataset.cleared;
+  });
+  titleInput?.addEventListener('input', () => {
+    delete titleInput.dataset.cleared;
+  });
+  bioInput?.addEventListener('input', () => {
+    delete bioInput.dataset.cleared;
+  });
+
+  const profile = {};
+
+  // ✅ まずは削除操作を優先（data-cleared が true のときだけ上書き）
+  if (nameInput?.dataset.cleared === 'true') {
+    profile.name = '';
+  } else if (name) {
+    profile.name = name;
+  }
+
+  if (titleInput?.dataset.cleared === 'true') {
+    profile.title = '';
+  } else if (title) {
+    profile.title = title;
+  }
+
+  if (bioInput?.dataset.cleared === 'true') {
+    profile.bio = '';
+  } else if (bio) {
+    profile.bio = bio;
+  }
+
+  const youtubeChannelId = localStorage.getItem('youtubeChannelId');
+  if (youtubeChannelId) profile.youtubeChannelId = youtubeChannelId;
+
+  const instagramPostUrl = localStorage.getItem('instagramPostUrl');
+  if (instagramPostUrl) profile.instagramPostUrl = instagramPostUrl;
+
+  const xUsername = localStorage.getItem('xUsername');
+  if (xUsername) profile.xUsername = xUsername;
+
+  const tiktokUrls = JSON.parse(localStorage.getItem('tiktokUrls') || '[]');
+  if (Array.isArray(tiktokUrls) && tiktokUrls.length > 0) {
+    profile.tiktokUrls = tiktokUrls;
+  }
+
+  const photos = customPhotos || JSON.parse(localStorage.getItem('photos') || '[]');
+  if (includePhotos && Array.isArray(photos) && photos.length > 0) {
+    profile.photos = photos;
+  }
+
+  const calendarEvents = Object.entries(events)
+    .filter(([date, evs]) => /^\d{4}-\d{2}-\d{2}$/.test(date) && Array.isArray(evs) && evs.length > 0)
+    .map(([date, evs]) => ({ date, events: evs }));
+
+  if (calendarEvents.length > 0) {
+    profile.calendarEvents = calendarEvents;
+  }
+
+  if (Object.keys(profile).length === 0) {
+    const isProfileEmpty =
+      !name && !title && !bio &&
+      !youtubeChannelId &&
+      !instagramPostUrl &&
+      !xUsername &&
+      (!Array.isArray(tiktokUrls) || tiktokUrls.length === 0) &&
+      (!includePhotos || !Array.isArray(photos) || photos.length === 0) &&
+      calendarEvents.length === 0;
+
+    if (isProfileEmpty) {
+      console.log("🛑 入力内容が空のため保存スキップ");
+      return;
+    }
+  }
+
+  const data = { profile };
+  console.log("✅ 最終送信データ:", data);
 
   fetch(`/api/user/${username}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify(userData)  // ← 正しく userData を送る
+    body: JSON.stringify(data)
   })
-    .then(res => res.text())
-    .then(result => {
-      console.log('保存結果:', result);
+    .then(res => {
+      if (!res.ok) throw new Error('保存失敗');
+      return res.text();
+    })
+    .then(msg => {
+      console.log("✅ 保存成功:", msg);
+      alert('プロフィールが保存されました');
+
+      // DOM 反映（オプション）
+      if (nameDisplay) nameDisplay.textContent = profile.name || '';
+      if (titleDisplay) titleDisplay.textContent = profile.title ? `（${profile.title}）` : '';
+      if (bioDisplay) bioDisplay.innerHTML = (profile.bio || '').replace(/\n/g, '<br>');
+
+    // 🔽 編集フォームを非表示（オプション）
+        if (editForm) editForm.classList.add('hidden');
     })
     .catch(err => {
-      console.error('保存エラー:', err);
+      console.error("❌ 保存エラー:", err);
+      alert('プロフィールの保存に失敗しました');
     });
 }
 
@@ -229,6 +298,31 @@ document.addEventListener('submit', (e) => {
       });
   }
 });
+
+    // 名前削除
+    document.getElementById('deleteNameBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const nameInput = document.getElementById('nameInput');
+      nameInput.value = '';
+      nameInput.dataset.cleared = 'true'; // ← 追加
+    });
+
+    // 肩書き削除
+    document.getElementById('deleteTitleBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const titleInput = document.getElementById('titleInput');
+      titleInput.value = '';
+      titleInput.dataset.cleared = 'true'; // ← 追加
+    });
+
+    // プロフィール削除
+    document.getElementById('deleteBioBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const bioInput = document.getElementById('bioInput');
+      bioInput.value = '';
+      bioInput.dataset.cleared = 'true'; // ← 追加
+    });
+
 
 // 📌 カレンダー
 function createCalendar(date = new Date()) {
@@ -324,27 +418,96 @@ function createCalendar(date = new Date()) {
   }, 0);
 }
 
-// 📌 写真保存
-function savePhotos() {
-  const input = document.getElementById('photoInput');
-  const files = input.files;
-  if (!files.length) return;
+let isSavingPhotos = false;
 
+async function savePhotos() {
   const maxPhotos = 5;
-  const photoURLs = [];
-  let loadedCount = 0;
+  const files = photoInput?.files || [];
+  if (!files.length) {
+    console.log("📛 ファイルが選択されていないため、保存処理をスキップします");
+    return;
+  }
 
-  for (let i = 0; i < Math.min(files.length, maxPhotos); i++) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      photoURLs.push(e.target.result);
-      loadedCount++;
-      if (loadedCount === Math.min(files.length, maxPhotos)) {
-        localStorage.setItem('photos', JSON.stringify(photoURLs));
-        updatePhotoSlider(photoURLs);
-      }
-    };
-    reader.readAsDataURL(files[i]);
+  isSavingPhotos = true;
+  console.time("📸 写真保存処理時間");
+
+  try {
+    // 🔽 リサイズ付き base64 変換
+    const base64Images = await Promise.all(
+      Array.from(files).slice(0, maxPhotos).map(file => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const maxWidth = 1280;
+              const maxHeight = 720;
+              let width = img.width;
+              let height = img.height;
+
+              // サイズ調整
+              if (width > height) {
+                if (width > maxWidth) {
+                  height *= maxWidth / width;
+                  width = maxWidth;
+                }
+              } else {
+                if (height > maxHeight) {
+                  width *= maxHeight / height;
+                  height = maxHeight;
+                }
+              }
+
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              const resizedBase64 = canvas.toDataURL('image/jpeg', 0.8); // 画質80%
+              resolve(resizedBase64);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      })
+    );
+
+    // 旧画像削除（任意）
+    const deleteRes = await fetch('/api/deletePhotos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ urls: [] })
+    });
+    const deleteMsg = await deleteRes.text();
+    console.log('🧹 古い画像削除:', deleteMsg);
+
+    // 新画像アップロード
+    const uploadRes = await fetch('/api/uploadPhotos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ base64Images })
+    });
+    if (!uploadRes.ok) throw new Error('画像アップロード失敗');
+
+    const { urls } = await uploadRes.json();
+    console.log("✅ アップロード完了URL一覧:", urls);
+
+    updatePhotoSlider(urls);
+    localStorage.setItem('photos', JSON.stringify(urls));
+
+    alert("✅ 写真が保存されました。プロフィールも保存するには『プロフィールを保存』ボタンを押してください。");
+
+  } catch (err) {
+    console.error("❌ 写真保存エラー:", err);
+    alert("写真の保存に失敗しました");
+  } finally {
+    console.timeEnd("📸 写真保存処理時間");
+    isSavingPhotos = false;
   }
 }
 
@@ -391,43 +554,75 @@ function nextSlide() {
 window.addEventListener('DOMContentLoaded', () => {
   updateAuthUI();
   attachAuthFormHandlers();
+
   const savedName = localStorage.getItem('profile_name');
   if (savedName) nameDisplay.textContent = savedName;
   const savedTitle = localStorage.getItem('profile_title');
   if (savedTitle) titleDisplay.textContent = `（${savedTitle}）`;
   const savedBio = localStorage.getItem('profile_bio');
   if (savedBio) bioDisplay.innerHTML = savedBio.replace(/\n/g, '<br>');
+
   updatePhotoSlider();
-  events = JSON.parse(localStorage.getItem('calendarEvents')) || {};
+
+  events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
   createCalendar(currentDate);
-});
+
+  document.getElementById('saveProfileBtnTop')?.addEventListener('click', () => {
+    saveProfileAndEventsToServer(true);
+  });
+  document.getElementById('saveProfileBtnBottom')?.addEventListener('click', () => {
+    saveProfileAndEventsToServer(true);
+  });
+
+    const savePhotosBtn = document.getElementById('savePhotosBtn');
+    if (savePhotosBtn && !savePhotosBtn.dataset.listenerAdded) {
+        savePhotosBtn.addEventListener('click', () => {
+          console.time("📸 写真保存処理時間"); // 開始ログ
+          console.log("📸 写真保存ボタンがクリックされました");
+          savePhotos().then(() => {
+            console.timeEnd("📸 写真保存処理時間"); // 終了ログ
+        });
+      });
+      savePhotosBtn.dataset.listenerAdded = 'true'; // 重複防止
+    }
+
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', () => {
+      console.log("💾 プロフィール保存ボタンがクリックされました");
+      saveProfileAndEventsToServer();
+    });
+  }
+}); 
+
+function getEventsForDate(date, eventsArray) {
+  const entry = eventsArray.find(e => e.date === date);
+  return entry ? entry.events : [];
+}
 
 document.getElementById('add-event-btn')?.addEventListener('click', () => {
-  const date = document.getElementById('event-date').value;
-  const text = document.getElementById('event-text').value;
+  const date = document.getElementById('event-date').value.trim();
+  const text = document.getElementById('event-text').value.trim();
 
   if (!date || !text) {
     alert('日付と内容を入力してください。');
     return;
   }
 
-  // ✅ 日付に対応するイベントリストを初期化
   if (!events[date]) {
     events[date] = [];
   }
 
-  // ✅ 予定を追加
   events[date].push(text);
 
-  // ✅ 保存（ローカルにも保存）
-  localStorage.setItem('calendarEvents', JSON.stringify(events));
+  try {
+    localStorage.setItem('calendarEvents', JSON.stringify(events));
+  } catch (e) {
+    console.error(`ローカル保存に失敗しました（${date}）:`, e);
+  }
 
-  // ✅ カレンダー再描画
   createCalendar(currentDate);
 
-  // ✅ フォームをクリア
   document.getElementById('event-date').value = '';
   document.getElementById('event-text').value = '';
-
-  saveProfileAndEventsToServer();
 });

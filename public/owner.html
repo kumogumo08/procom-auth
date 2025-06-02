@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>運営者情報 - Procom</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: #f7f7f7;
+      color: #333;
+      padding: 40px 20px;
+      line-height: 1.8;
+    }
+
+    h1 {
+      color: #1f1f2e;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    section {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #38385a;
+      margin-top: 30px;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 20px;
+      text-align: center;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+    <div id="common-header"></div>
+        <script>
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(html => {
+            document.getElementById('common-header').innerHTML = html;
+            });
+        </script>  
+  <section>
+    <h1>運営者情報</h1>
+
+    <p>当サイト「Procom」は、個人または小規模チームによって運営されており、クリエイター・パフォーマー・フリーランスの方々が自身の活動を発信・整理できるプラットフォームを提供しています。</p>
+
+    <h2>サイト名</h2>
+    <p>Procom（プロコム）</p>
+
+    <h2>運営責任者</h2>
+    <p>エビサワ タカシ</p>
+
+    <h2>お問い合わせ</h2>
+    <p>ご不明点やお問い合わせは <a href="/help.html">ヘルプページ</a> またはお問い合わせフォームよりご連絡ください。</p>
+
+    <h2>所在地</h2>
+    <p>東京都内（詳細はお問い合わせに応じて開示）</p>
+
+    <h2>運営開始日</h2>
+    <p>2025年5月</p>
+
+    <h2>目的</h2>
+    <p>
+      本サイトは、YouTuber、インスタグラマー、ダンサー、フリーランスなど個人で活動するユーザーが、
+      自分のSNSをまとめて紹介できるスペースを提供することを目的としています。
+    </p>
+  </section>
+
+  <footer>
+    &copy; 2025 Procom
+  </footer>
+</body>
+  <div id="common-footer"></div>
+  <script>
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('common-footer').innerHTML = html;
+      });
+  </script>
+</html>

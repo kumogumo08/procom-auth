@@ -4,18 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Procom - ユーザーページ</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
   <link rel="stylesheet" href="/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
-    <h1>P r o c o m</h1>
+    <h1><a href="/top.html" style="color: inherit; text-decoration: none;">P r o c o m</a></h1>
      <h2 id="page-title">Procom</h2>
     <p class="tagline">あなたのすべてを、ここに集約。</p>
     <p class="description">Procomは、あなたのSNS・プロフィール・活動情報を一つにまとめる自己発信プラットフォームです。</p>
+    <div class="search-wrapper">
+    <form action="/users.html" method="GET" class="search-form">
+    <input type="text" name="q" placeholder="名前や肩書きで検索" required />
+    <button type="submit">検索</button>
+  </form>
+</div>
   </header>
 
-  <div class="auth-forms"></div>
+  <div class="auth-forms">
+  <form action="/logout" method="GET" style="text-align: right; margin-top: 10px;">
+    <button type="submit">ログアウト</button>
+  </form>
+  <div style="text-align: right; margin-top: 5px;">
+    <a href="/account.html">⚙ アカウント設定</a>
+  </div>
+</div>
 
   <!-- 写真スライダー -->
   <div class="carousel-wrapper" style="position: relative;">
@@ -29,107 +47,150 @@
   <div class="photo-upload">
   <h3>写真を登録(最大5枚)</h3>
   <input type="file" id="photoInput" accept="image/*" multiple>
-  <button type="button" onclick="savePhotos()">写真を保存</button>
-  <button type="button" id="saveProfileBtn">プロフィールを保存</button>
+  <button type="button" id="savePhotosBtn">写真を保存</button>
+  </div>
+
+    <!-- 🔼 プロフィール保存ボタン（上部） -->
+  <div style="text-align: center; margin: 20px 0;">
+    <button id="saveProfileBtnTop" class="save-profile-button">プロフィールを保存</button>
   </div>
 
   <!-- プロフィール -->
-  <section class="profile">
-   <div class="profile-wrapper">
-  <div class="profile-info">
-    <h2 id="nameTitle"><span id="name"></span><span id="title"></span></h2>
-    <p id="bio"></p>
+ <section class="profile">
+  <div class="profile-wrapper"> <!-- 横並び用ラッパー -->
 
-    <!-- ✅ 編集セクションはここに入れる！ -->
-    <div id="edit-section" style="display: none;">
-      <button id="editBtn">プロフィールを編集</button>
+    <!-- 左：プロフィール表示と編集 -->
+    <div class="profile-info">
+      <h2 id="nameTitle"><span id="name"></span><span id="title"></span></h2>
+      <p id="bio"></p>
 
-      <form id="editForm" class="hidden">
-        <div class="form-row">
-          <label for="nameInput">名前：</label>
-          <input type="text" id="nameInput">
-        </div>
-        <div class="form-row">
-          <label for="titleInput">肩書：</label>
-          <input type="text" id="titleInput">
-        </div>
-        <div class="form-row">
-          <label for="bioInput">プロフィール：</label>
-          <textarea id="bioInput" rows="5"></textarea>
-        </div>
-        <button type="button" id="saveBtn">保存</button>
-        <button type="button" id="cancelBtn">キャンセル</button>
-      </form>
+      <div id="edit-section">
+        <button id="editBtn">プロフィールを編集</button>
+        <form id="editForm" class="hidden">
+          <form id="editForm" class="hidden">
+
+            <div class="form-row">
+            <label for="nameInput">名前：</label>
+            <input type="text" id="nameInput">
+            <button type="button" id="deleteNameBtn" class="delete-btn">✖</button>
+          </div>
+
+          <div class="form-row">
+            <label for="titleInput">肩書：</label>
+            <input type="text" id="titleInput">
+            <button type="button" id="deleteTitleBtn" class="delete-btn">✖</button>
+          </div>
+
+          <div class="form-row">
+            <label for="bioInput">プロフィール：</label>
+            <textarea id="bioInput" rows="5"></textarea>
+            <button type="button" id="deleteBioBtn" class="delete-btn">✖</button>
+          </div>
+
+          <button type="button" id="saveBtn">保存</button>
+          <button type="button" id="cancelBtn">キャンセル</button>
+        </form>
+
+        </form>
+      </div>
     </div>
-  </div>
 
-  <!-- ✅ カレンダーは profile-info の外 -->
-  <div id="calendar-container">
-    <div id="calendar"></div>
-      <!-- 予定入力フォーム -->
+    <!-- 右：カレンダー -->
+    <div id="calendar-container">
+      <div id="calendar"></div>
       <div id="event-form">
         <h3>予定を追加</h3>
         <label>日付: <input type="date" id="event-date" /></label><br>
         <label>内容: <input type="text" id="event-text" placeholder="イベント内容" /></label><br>
         <button id="add-event-btn">追加</button>
       </div>
-  </div>
-</div>
+    </div>
 
-    <!-- SNSリンク -->
-    <div class="sns-links">
-      <h3>SNSリンク</h3>
-      <div class="sns-embeds-wrapper">
-        <div class="sns-youtube-wrapper">
-          <div class="sns-item" id="youtube-section">
-            <h2>最新のYouTube動画</h2>
-            <div class="sns-section">
-                <input type="text" id="channelIdInput" placeholder="チャンネルID (UC〜で始まるID)">
-                <small>※@から始まるユーザー名ではなく、UCから始まるチャンネルIDを入力してください</small>
-                <button type="button" onclick="saveYouTubeChannelId()">保存</button>
-              </div>
-            <div id="youtubeCard" class="sns-card"></div>
-            <div id="videoContainer" class="video-container"></div>
-          </div>
+  </div> <!-- 🔚 profile-wrapper -->
+</section>
+
+
+<!-- SNSリンク -->
+<div id="sns-section" class="sns-links">
+  <h3>SNSリンク</h3>
+  <div class="sns-embeds-wrapper">
+
+    <!-- ✅ YouTubeだけ独立 -->
+    <div class="youtube-grid">
+      <div class="sns-item" id="youtube-section">
+        <h2>最新のYouTube動画</h2>
+        <div class="sns-section" id="youtubeInputGroup">
+          <input type="text" id="channelIdInput" placeholder="チャンネルID (UC〜で始まるID)">
+          <button type="button" onclick="saveYouTubeChannelId()">保存</button>
         </div>
-
-        <div class="sns-bottom-links">
-          <div class="sns-item">
-            <h2>X（旧Twitter）</h2>
-             <input type="text" id="xUsernameInput" placeholder="ユーザー名（@なし）を入力" />
-             <button type="button" onclick="showXProfile()">表示</button>
-              <div id="xProfileDisplay" style="margin-top: 10px;"></div>
-          </div>
-
-          <div class="sns-item">
-            <h2>Instagram</h2>
-            <small class="note">
-                プロフィールページまたはお気に入りのインスタ画像URLを入力ください
-              </small>
-              <label for="instagramPostLink" class="sr-only">Instagram投稿リンク</label>
-              <input type="text" id="instagramPostLink" placeholder="https://www.instagram.com/xxxxx/" />
-              <button type="button" onclick="embedInstagramPost()">Instagram投稿を表示</button>
-            <div id="instagramPostContainer">Instagram投稿が表示されます</div>
-          </div>
-        </div>
+        <div id="videoContainer" class="video-container"></div>
       </div>
+    </div>
 
-      <div id="tiktok-section">
-       <h2>TikTok動画を登録（最大3つ）</h2>
-       <input type="text" class="tiktok-input" placeholder="動画URL 1" /><br />
-       <input type="text" class="tiktok-input" placeholder="動画URL 2" /><br />
-       <input type="text" class="tiktok-input" placeholder="動画URL 3" /><br />
-       <button type="button" onclick="saveTikTokVideos()">保存</button>
+    <!-- ✅ X & Instagram（2カラム） -->
+    <div class="sns-middle-row">
+      <div class="sns-item">
+        <h2>X（旧Twitter）</h2>
+        <input type="text" id="xUsernameInput" placeholder="ユーザー名（@なし）を入力" />
+        <button id="xShowBtn" onclick="showXProfile(document.getElementById('xUsernameInput').value)">表示</button>
+        <div id="xProfileDisplay"></div>
+      </div>
+      <div class="sns-item">
+        <h2>Instagram</h2>
+        <input type="text" id="instagramPostLink" placeholder="Instagram投稿リンク" />
+        <button id="instaShowBtn" onclick="embedInstagramPost(document.getElementById('instagramPostLink').value)">Instagram投稿を表示</button>
+        <div id="instagramPostContainer"></div>
+      </div>
+    </div>
+
+    <!-- ✅ TikTok（2カラム想定） -->
+    <div class="sns-bottom-row">
+      <div class="sns-item" id="tiktok-section">
+        <h2>TikTok動画を登録（最大3つ）</h2>
+        <input type="text" class="tiktok-input" placeholder="動画URL 1" /><br />
+        <input type="text" class="tiktok-input" placeholder="動画URL 2" /><br />
+        <input type="text" class="tiktok-input" placeholder="動画URL 3" /><br />
+        <button type="button" onclick="saveTikTokVideos()">保存</button>
         <div id="tiktok-container" class="tiktok-grid"></div>
       </div>
     </div>
-  </section>
 
+  </div>
+</div>
+
+    <!-- 🔽 プロフィール保存ボタン（下部） -->
+  <div style="text-align: center; margin: 40px 0;">
+    <button id="saveProfileBtnBottom" class="save-profile-button">プロフィールを保存</button>
+  </div>
 
   <script src="/script.js"></script>
   <script src="/youtube.js"></script>
   <script src="/user.js"></script>
-  <script async src="https://www.tiktok.com/embed.js"></script>
+  <script defer src="https://www.tiktok.com/embed.js"></script>
   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  <script async src="https://www.instagram.com/embed.js"></script>
+    <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      fetch('/session')
+        .then(res => res.json())
+        .then(data => {
+          const authContainer = document.querySelector('.auth-forms');
+          if (authContainer) {
+            if (!data.loggedIn) {
+              authContainer.innerHTML = ''; // ログインしていないなら非表示
+            }
+          }
+        });
+    });
+  </script>
+
 </body>
+  <div id="common-footer"></div>
+  <script>
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('common-footer').innerHTML = html;
+      });
+  </script>
 </html>

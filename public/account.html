@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>アカウント設定 - Procom</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .account-container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .account-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .account-container label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .account-container input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .account-container button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4e73df;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .account-container .note {
+      font-size: 0.9em;
+      color: gray;
+      margin-top: -10px;
+      margin-bottom: 15px;
+    }
+
+    .success {
+      color: green;
+      text-align: center;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="account-container">
+    <h2>アカウント設定</h2>
+    <div id="message"></div>
+    <form id="accountForm">
+      <label for="newUsername">新しいユーザー名</label>
+      <input type="text" id="newUsername" name="newUsername" placeholder="変更しない場合は空欄">
+
+      <label for="newEmail">新しいメールアドレス</label>
+      <input type="email" id="newEmail" name="newEmail" placeholder="変更しない場合は空欄">
+
+      <label for="newPassword">新しいパスワード</label>
+      <input type="password" id="newPassword" name="newPassword" placeholder="変更しない場合は空欄">
+
+      <button type="submit">保存する</button>
+    </form>
+  </div>
+
+  <div class="account-container" style="margin-top: 30px; border-top: 2px solid #f55;">
+  <h2 style="color: #c00;">アカウントを削除する</h2>
+  <p style="color: #444;">この操作は元に戻せません。本当に退会される場合のみ実行してください。</p>
+  <button style="background-color: #d9534f; margin-top: 10px;" onclick="handleWithdraw()">退会する</button>
+</div>
+
+<script>
+  // 退会処理
+  async function handleWithdraw() {
+    const confirmed = confirm("本当にアカウントを削除しますか？この操作は元に戻せません。");
+
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch('/account/delete', {
+        method: 'DELETE'
+      });
+
+      if (res.ok) {
+        alert("退会処理が完了しました。ご利用ありがとうございました。");
+        window.location.href = "/deleted.html";
+      } else {
+        const msg = await res.text();
+        alert("退会に失敗しました：" + msg);
+      }
+    } catch (err) {
+      alert("退会処理中にエラーが発生しました。");
+      console.error(err);
+    }
+  }
+</script>
+
+  <script>
+    document.getElementById('accountForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const messageEl = document.getElementById('message');
+
+      const newUsername = document.getElementById('newUsername').value.trim();
+      const newEmail = document.getElementById('newEmail').value.trim();
+      const newPassword = document.getElementById('newPassword').value.trim();
+
+      const res = await fetch('/account/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newUsername, newEmail, newPassword })
+      });
+
+      const resultText = await res.text();
+
+      if (res.ok) {
+        messageEl.innerHTML = `<p class="success">✅ アカウント情報を更新しました</p>`;
+        setTimeout(() => {
+          window.location.href = `/user/${JSON.parse(resultText).username}`;
+        }, 1000);
+      } else {
+        messageEl.innerHTML = `<p class="error">❌ ${resultText}</p>`;
+      }
+    });
+  </script>
+</body>
+  <div id="common-footer"></div>
+  <script>
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('common-footer').innerHTML = html;
+      });
+  </script>
+</html>

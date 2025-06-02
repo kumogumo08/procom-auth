@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>退会完了 - Procom</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    body {
+      background-color: #f4f4f8;
+      font-family: 'Noto Sans JP', sans-serif;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .deleted-box {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1.1rem;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    a.button {
+      display: inline-block;
+      padding: 12px 30px;
+      background-color: #4e73df;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+        <div id="common-header"></div>
+        <script>
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(html => {
+            document.getElementById('common-header').innerHTML = html;
+            });
+        </script>
+  <div class="deleted-box">
+    <h1>退会が完了しました</h1>
+    <p>ご利用ありがとうございました。またのご利用をお待ちしております。</p>
+    <a href="/top.html" class="button">トップページに戻る</a>
+  </div>
+</body>
+  <div id="common-footer"></div>
+  <script>
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('common-footer').innerHTML = html;
+      });
+  </script>
+</html>

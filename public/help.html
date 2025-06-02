@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ヘルプ - Procom</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: #f7f7f7;
+      color: #333;
+      padding: 40px 20px;
+      line-height: 1.8;
+    }
+
+    h1 {
+      color: #1f1f2e;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    section {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #38385a;
+      margin-top: 30px;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 20px;
+      text-align: center;
+      color: #888;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    a {
+      color: #0066cc;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+    <div id="common-header"></div>
+        <script>
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(html => {
+            document.getElementById('common-header').innerHTML = html;
+            });
+        </script>  
+  <section>
+    <h1>ヘルプ</h1>
+
+    <h2>よくある質問</h2>
+    <ul>
+      <li><strong>パスワードを忘れました</strong><br>
+        → 現在、パスワード再設定機能は開発中です。お困りの場合は運営までご連絡ください。</li>
+
+      <li><strong>プロフィールがうまく更新されません</strong><br>
+        → 編集後は「プロフィールを保存」ボタンを押してください。保存できない場合は、ログイン状態をご確認ください。</li>
+
+      <li><strong>写真が反映されない／消える</strong><br>
+        → 写真を登録後、保存ボタンを押してからページを再読み込みしてください。</li>
+
+      <li><strong>SNSリンクが表示されません</strong><br>
+        → 入力欄に正しいURLを入力し、「表示」や「保存」ボタンを押してください。</li>
+    </ul>
+
+    <h2>お問い合わせ</h2>
+    <p>
+      その他のお問い合わせは、以下のメールアドレスまでご連絡ください。<br>
+      <strong>info@procom.jp</strong>
+    </p>
+
+    <h2>関連リンク</h2>
+    <ul>
+      <li><a href="/privacy.html">プライバシーポリシー</a></li>
+      <li><a href="/operator.html">運営者情報</a></li>
+      <li><a href="/withdraw.html">退会方法</a></li>
+    </ul>
+  </section>
+
+  <footer>
+    &copy; 2025 Procom
+  </footer>
+</body>
+  <div id="common-footer"></div>
+  <script>
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('common-footer').innerHTML = html;
+      });
+  </script>
+</html>

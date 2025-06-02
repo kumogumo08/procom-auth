@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Procom - あなたのすべてを、ここに集約。</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+      color: white;
+    }
+    header {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    header h1:hover {
+      text-decoration: underline;
+    }
+    header p {
+      font-size: 1.2rem;
+      color: #ddd;
+    }
+    .nav {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .nav a {
+      color: #fff;
+      margin: 0 10px;
+      text-decoration: none;
+      border: 1px solid #fff;
+      padding: 8px 16px;
+      border-radius: 4px;
+    }
+    .search-box {
+      text-align: center;
+      margin: 30px auto;
+    }
+    .search-box input {
+      padding: 10px;
+      width: 60%;
+      max-width: 400px;
+      border: none;
+      border-radius: 6px;
+    }
+    .user-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+    .user-card {
+      background: white;
+      color: #333;
+      border-radius: 12px;
+      padding: 20px;
+      width: 200px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .user-card img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .user-card a {
+      text-decoration: none;
+      color: #1f1f1f;
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><a href="/top.html" style="color: inherit; text-decoration: none;">P r o c o m</a></h1>
+    <p>あなたのSNS・プロフィール・活動情報を一つにまとめる自己発信プラットフォーム</p>
+        <div class="nav" id="auth-links">
+        <!-- デフォルトは非表示、JSで制御 -->
+        <a href="/login.html" id="login-link">ログイン</a>
+        <a href="/register.html" id="register-link">新規登録</a>
+        <a href="#" id="mypage-link" style="display: none;">マイページへ</a>
+        <a href="/logout" id="logout-link" style="display: none;">ログアウト</a>
+        </div>
+  </header>
+
+  <div class="search-box">
+        <form action="/users.html" method="GET" style="display: flex; justify-content: center; gap: 8px;">
+        <input type="text" name="q" placeholder="名前や肩書きで検索" required />
+        <button type="submit">検索</button>
+        </form>
+  </div>
+
+  <section class="user-list" id="random-users">
+    <!-- ランダムなユーザーがここに表示されます -->
+  </section>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      const res = await fetch('/api/users');
+      const users = await res.json();
+
+      const randomUsers = users.sort(() => 0.5 - Math.random()).slice(0, 6);
+      const container = document.getElementById('random-users');
+
+        randomUsers.forEach(user => {
+        const div = document.createElement('div');
+        div.className = 'user-card';
+        const imgSrc = user.photoUrl || 'https://via.placeholder.com/200x150?text=No+Image';
+        const name = user.name || user.username;
+        const title = user.title || '';
+        const username = user.username;
+
+        div.innerHTML = `
+            <a href="/user/${username}" style="text-decoration: none; color: inherit;">
+            <img src="${imgSrc}" alt="${name}の写真">
+            <div style="margin-top: 10px;">
+                <strong>${name}</strong>
+                <p>${title}</p>
+            </div>
+            </a>
+        `;
+        container.appendChild(div);
+        });
+    });
+        
+  window.addEventListener('DOMContentLoaded', async () => {
+    // ランダムユーザー表示
+    const res = await fetch('/api/users');
+    const users = await res.json();
+    const randomUsers = users.sort(() => 0.5 - Math.random()).slice(0, 6);
+    const container = document.getElementById('random-users');
+
+    randomUsers.forEach(user => {
+        const div = document.createElement('div');
+        div.className = 'user-card';
+        const imgSrc = user.photoUrl || 'https://via.placeholder.com/200x150?text=No+Image';
+        div.innerHTML = `
+        <img src="${imgSrc}" alt="${user.name}の写真">
+        <a href="/user/${user.username}">${user.name || user.username}</a>
+        <p>${user.title || ''}</p>
+        `;
+        container.appendChild(div);
+    });
+
+    // 🔐 ログイン状態チェックしてUI更新
+    const sessionRes = await fetch('/session');
+    const session = await sessionRes.json();
+
+    if (session.loggedIn) {
+        document.getElementById('login-link').style.display = 'none';
+        document.getElementById('register-link').style.display = 'none';
+        document.getElementById('mypage-link').style.display = 'inline-block';
+        document.getElementById('logout-link').style.display = 'inline-block';
+        document.getElementById('mypage-link').href = `/user/${session.username}`;
+    }
+    });
+  </script>
+</body>
+  <div id="common-footer"></div>
+  <script>
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('common-footer').innerHTML = html;
+      });
+  </script>
+</html>

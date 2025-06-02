@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン / 新規登録 - Procom</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: #f7f7f7;
+      padding: 30px;
+    }
+
+    .auth-container {
+      max-width: 400px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #4e73df;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .toggle-link {
+      text-align: center;
+      margin-top: 10px;
+      cursor: pointer;
+      color: #007bff;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+    <div id="common-header"></div>
+        <script>
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(html => {
+            document.getElementById('common-header').innerHTML = html;
+            });
+        </script>
+  <div class="auth-container">
+    <!-- ログインフォーム -->
+    <div id="loginForm">
+      <h2>ログイン</h2>
+      <form action="/login" method="POST">
+        <input type="email" name="email" placeholder="メールアドレス" required>
+        <input type="password" name="password" placeholder="パスワード" required>
+        <button type="submit">ログイン</button>
+      </form>
+      <div class="toggle-link" onclick="toggleForms()">→ 新規登録はこちら</div>
+    </div>
+
+    <!-- 新規登録フォーム -->
+    <div id="registerForm" class="hidden">
+      <h2>新規登録</h2>
+      <form action="/register" method="POST">
+        <input type="text" name="username" placeholder="ユーザー名" required>
+        <input type="email" name="email" placeholder="メールアドレス" required>
+        <input type="password" name="password" placeholder="パスワード" required>
+        <button type="submit">登録する</button>
+      </form>
+      <div class="toggle-link" onclick="toggleForms()">← ログインに戻る</div>
+    </div>
+  </div>
+
+  <script>
+    function toggleForms() {
+      document.getElementById('loginForm').classList.toggle('hidden');
+      document.getElementById('registerForm').classList.toggle('hidden');
+    }
+  </script>
+
+</body>
+  <div id="common-footer"></div>
+  <script>
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('common-footer').innerHTML = html;
+      });
+  </script>
+</html>
