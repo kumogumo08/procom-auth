@@ -1,7 +1,6 @@
 const usernameFromURL = decodeURIComponent(window.location.pathname.split('/').pop());
 
 window.addEventListener('DOMContentLoaded', async () => {
-  updateAuthUI();
 
   localStorage.removeItem('youtubeChannelId');
   localStorage.removeItem('instagramPostUrl');
