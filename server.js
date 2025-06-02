@@ -424,26 +424,43 @@ app.post('/api/uploadPhotos', async (req, res) => {
   }
 
   try {
+    const folder = `photos/${username}/`;
+    const [files] = await bucket.getFiles({ prefix: folder });
+
+    // 古い画像削除
+    for (const file of files) {
+      try {
+        await file.delete();
+        console.log(`🗑️ 削除完了: ${file.name}`);
+      } catch (err) {
+        console.warn(`⚠️ 削除失敗: ${file.name}`, err.message);
+      }
+    }
+
     const urls = [];
 
     for (const base64 of base64Images) {
-      const base64Data = base64.split(',')[1];
-      const buffer = Buffer.from(base64Data, 'base64');
-      const filename = `photos/${username}_${uuidv4()}.jpg`;
-      const file = storage.bucket().file(filename);
+      const matches = base64.match(/^data:(image\/.+);base64,(.+)$/);
+      if (!matches) continue;
+
+      const contentType = matches[1];
+      const buffer = Buffer.from(matches[2], 'base64');
+      const ext = contentType.split('/')[1];
+      const fileName = `${folder}${uuidv4()}.${ext}`;
+      const file = storage.bucket().file(fileName);
 
       const token = uuidv4();
       await file.save(buffer, {
-      metadata: {
-      contentType: 'image/jpeg',
-      metadata: {
-      firebaseStorageDownloadTokens: token
-      }
-      }
-    });
+        metadata: {
+          contentType,
+          metadata: {
+            firebaseStorageDownloadTokens: token
+          }
+        }
+      });
 
-        const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
-        urls.push(publicUrl);
+      const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media&token=${token}`;
+      urls.push(publicUrl);
     }
 
     res.json({ urls });
@@ -452,6 +469,7 @@ app.post('/api/uploadPhotos', async (req, res) => {
     res.status(500).send('アップロード失敗');
   }
 });
+
 
 const saltRounds = 10;
 
