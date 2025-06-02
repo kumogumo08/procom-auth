@@ -551,7 +551,7 @@ app.post('/account/update', async (req, res) => {
 // ✅ YouTube APIプロキシ
 app.get('/api/youtube/:channelId', async (req, res) => {
   const apiKey = process.env.YOUTUBE_API_KEY;
-  const { channelId } = req.params;
+  const channelId = req.params.channelId;
 
   try {
     const response = await fetch(
