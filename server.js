@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 // Firebase Admin SDK
 const admin = require('firebase-admin');
-const serviceAccount = require('/etc/secrets/firebase-key.json'); // ←秘密鍵ファイル名に注意
+const serviceAccount = require(process.env.FIREBASE_KEY_PATH);// ←秘密鍵ファイル名に注意
 //const serviceAccount = require('./firebase-key.json');             // ←秘密鍵ファイルローカルサーバー用
 const { v4: uuidv4 } = require('uuid');
 
