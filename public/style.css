@@ -39,7 +39,7 @@ body {
   }
   
   .auth-forms form {
-    display: flex;
+    display: block;
     gap: 5px;
     align-items: center;
   }
