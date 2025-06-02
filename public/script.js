@@ -36,6 +36,7 @@ function updateAuthUI() {
   fetch('/session', { credentials: 'include' })
     .then(res => res.json())
     .then(data => {
+      console.log("📨 /session レスポンス:", data);
       const authForms = document.querySelector('.auth-forms');
       const editSection = document.getElementById('edit-section');
       const photoUpload = document.querySelector('.photo-upload');
@@ -71,7 +72,7 @@ function updateAuthUI() {
         if (xSection) xSection.style.display = 'block';
         if (tiktokSection) tiktokSection.style.display = 'block';
         } else {
-        // ログインしてない場合、非表示にしておく
+        console.log("🔴 非ログイン状態：UIを非表示にします");
         if (editSection) {
          editSection.style.display = 'none';
          }
@@ -89,6 +90,9 @@ function updateAuthUI() {
 
         attachAuthFormHandlers();
       }
+    })
+        .catch(err => {
+      console.error("❌ /session取得またはUI処理中エラー:", err);
     });
 }
 
