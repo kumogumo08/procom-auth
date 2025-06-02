@@ -587,6 +587,15 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('saveProfileBtnBottom')?.addEventListener('click', () => {
     saveProfileAndEventsToServer(true);
   });
+      // Instagram 投稿URL 入力時に保存
+    document.getElementById('instagramPostLink')?.addEventListener('input', (e) => {
+      localStorage.setItem('instagramPostUrl', e.target.value.trim());
+    });
+
+    // X（旧Twitter）ユーザー名 入力時に保存
+    document.getElementById('xUsernameInput')?.addEventListener('input', (e) => {
+      localStorage.setItem('xUsername', e.target.value.trim());
+    });
 
     const savePhotosBtn = document.getElementById('savePhotosBtn');
     if (savePhotosBtn && !savePhotosBtn.dataset.listenerAdded) {
