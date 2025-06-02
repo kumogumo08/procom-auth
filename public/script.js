@@ -59,6 +59,7 @@ function updateAuthUI() {
           </div>
         `;
         authForms.style.display = 'block'; // ← これを追加
+        console.log("✅ ログインUI更新完了"); 
 
                 // 🔽 ログインユーザー向け要素を表示
         if (editSection) editSection.style.display = 'block';
@@ -68,8 +69,6 @@ function updateAuthUI() {
         if (instagramSection) instagramSection.style.display = 'block';
         if (xSection) xSection.style.display = 'block';
         if (tiktokSection) tiktokSection.style.display = 'block';
-        authForms.style.display = 'block';
-
         } else {
         // ログインしてない場合、非表示にしておく
         if (editSection) {
