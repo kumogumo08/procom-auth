@@ -52,6 +52,9 @@ function updateAuthUI() {
           <form action="/logout" method="GET">
             <button type="submit">ログアウト</button>
           </form>
+          <div style="margin-top: 5px;">
+            <a href="/account.html">⚙ アカウント設定</a>
+          </div>
         `;
                 // 🔽 ログインユーザー向け要素を表示
         if (editSection) editSection.style.display = 'block';
@@ -69,19 +72,8 @@ function updateAuthUI() {
          editSection.style.display = 'none';
          }
 
-        authForms.innerHTML = `
-          <form id="login-form">
-            <input type="text" id="login-username" placeholder="ユーザー名" required />
-            <input type="password" id="login-password" placeholder="パスワード" required />
-            <button type="submit">ログイン</button>
-          </form>
-          <form id="register-form">
-            <input type="text" id="register-username" placeholder="新規ユーザー名" required />
-            <input type="password" id="register-password" placeholder="パスワード" required />
-            <button type="submit">登録</button>
-          </form>
-        `;
-
+        authForms.innerHTML = '';
+        
                 // 🔽 ログインしていないときは非表示に
         if (editSection) editSection.style.display = 'none';
         if (photoUpload) photoUpload.style.display = 'none';
