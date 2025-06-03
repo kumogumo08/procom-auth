@@ -113,8 +113,18 @@ app.post('/login', async (req, res) => {
   }
 
   req.session.username = userDoc.id;
-  res.json({ username: userDoc.id });
+
+  // ✅ セッションの保存を確実に完了させてからレスポンスを返す
+  req.session.save(err => {
+    if (err) {
+      console.error("❌ セッション保存エラー:", err);
+      return res.status(500).send('セッション保存に失敗しました');
+    }
+
+    res.json({ username: userDoc.id }); // ← この時点でセッションが確実に保存済み
+  });
 });
+
 
 
 // ログアウト
