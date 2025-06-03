@@ -96,18 +96,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (tiktokSaveBtn) tiktokSaveBtn.style.display = 'inline-block';
     }
 
-//     if (authForms && session.loggedIn) {
-//       authForms.innerHTML = `
-//       <p>ようこそ、${session.username}さん！</p>
-//       <form id="logout-form" action="/logout" method="GET">
-//       <button type="submit">ログアウト</button>
-//       </form>
-//       <div style="text-align: right; margin-top: 5px;">
-//       <a href="/account.html">⚙ アカウント設定</a>
-//     </div>
-//   `;
-// }
-
     // 🔽 プロフィール情報の表示
     const nameEl = document.getElementById('name');
     if (nameEl) nameEl.textContent = profile.name || '';
@@ -150,16 +138,16 @@ window.addEventListener('DOMContentLoaded', async () => {
       createCalendar(currentDate, isOwnPage);
     }
 
-    const resList = await fetch('/api/users');
-    const userList = await resList.json();
-    const list = document.getElementById('user-list');
-    if (list) {
-      userList.forEach(u => {
-        const li = document.createElement('li');
-        li.innerHTML = `<a href="/user/${u.username}">${u.name || u.username} さん</a>`;
-        list.appendChild(li);
-      });
-    }
+    // const resList = await fetch('/api/users');
+    // const userList = await resList.json();
+    // const list = document.getElementById('user-list');
+    // if (list) {
+    //   userList.forEach(u => {
+    //     const li = document.createElement('li');
+    //     li.innerHTML = `<a href="/user/${u.username}">${u.name || u.username} さん</a>`;
+    //     list.appendChild(li);
+    //   });
+    // }
   } catch (err) {
     console.error('❌ ユーザーデータ取得エラー:', err.message);
     alert('ユーザーデータの取得に失敗しました');

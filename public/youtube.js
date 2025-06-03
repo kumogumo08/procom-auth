@@ -259,7 +259,14 @@ window.saveYouTubeSettings = function () {
 
 window.addManualVideoInput = function () {
   const container = document.getElementById('manualUrlFields');
-  const count = container.querySelectorAll('input').length + 1;
+  const currentCount = container.querySelectorAll('input.manualVideoInput').length;
+
+  if (currentCount >= 4) {
+    alert('お気に入り動画は最大4つまで登録できます');
+    return;
+  }
+
+  const count = currentCount + 1;
 
   const input = document.createElement('input');
   input.type = 'text';
@@ -313,6 +320,10 @@ function saveYouTubeSettingsToServer() {
     .then(res => res.json())
     .then(session => {
       if (!session.loggedIn) return alert('ログインが必要です');
+
+          localStorage.setItem('youtubeMode', data.youtubeMode);
+          localStorage.setItem('youtubeChannelId', data.youtubeChannelId || '');
+          localStorage.setItem('manualYouTubeUrls', JSON.stringify(data.manualYouTubeUrls || []));
 
       return fetch(`/api/user/${session.username}`, {
         method: 'POST',
