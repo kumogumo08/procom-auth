@@ -51,14 +51,28 @@ app.use(session({
   }
 }));
 
+function isValidPassword(password) {
+  const lengthOK = password.length >= 8 && password.length <= 32;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSymbol = /[^A-Za-z0-9]/.test(password); // 記号が含まれていたら NG
+
+  return lengthOK && hasUpper && hasLower && hasNumber && !hasSymbol;
+}
+
 // ユーザー登録
 // ✅ registerルートの更新（username, email, password で登録）
 app.post('/register', async (req, res) => {
   let { username, email, password } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).send('全項目を入力してください');
+    return res.status(400).send('すべての項目を入力してください');
   }
+
+  if (!isValidPassword(password)) {
+  return res.status(400).send('パスワードは8〜32文字で、大文字・小文字・数字を含み、記号は使えません');
+}
 
   username = username.trim().toLowerCase();
   const userRef = db.collection('users').doc(username);
@@ -113,6 +127,10 @@ app.post('/login', async (req, res) => {
   }
 
   req.session.username = userDoc.id;
+  req.session.save(err => {
+  if (err) return res.status(500).send('セッション保存に失敗しました');
+  res.redirect(`/user/${userDoc.id}`);
+});
 
   // ✅ セッションの保存を確実に完了させてからレスポンスを返す
   req.session.save(err => {
@@ -125,14 +143,12 @@ app.post('/login', async (req, res) => {
   });
 });
 
-
-
 // ログアウト
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) return res.status(500).send('ログアウトに失敗しました');
     res.clearCookie('connect.sid');
-    res.status(200).send('ログアウト完了');
+    res.redirect('/top.html');
   });
 });
 
