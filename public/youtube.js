@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 初期値の表示モードをlocalStorageから復元
+  // ✅ 初期値の表示モードをlocalStorageから復元
   const savedMode = localStorage.getItem('youtubeMode');
   if (savedMode === 'manual') {
     document.querySelector('input[name="youtubeMode"][value="manual"]').checked = true;
@@ -323,6 +323,19 @@ function saveYouTubeSettingsToServer() {
       console.error('❌ YouTube設定保存エラー:', err);
       alert('保存に失敗しました');
     });
+}
+
+function addManualVideoInput() {
+  const container = document.getElementById('manualUrlFields');
+  const count = container.querySelectorAll('.manualVideoInput').length + 1;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'manualVideoInput';
+  input.placeholder = `動画URL ${count}`;
+
+  container.appendChild(document.createElement('br'));
+  container.appendChild(input);
 }
 
 // ==== 初期読み込み ==== 
