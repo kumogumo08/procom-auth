@@ -3,6 +3,7 @@ const usernameFromURL = decodeURIComponent(window.location.pathname.split('/').p
 
 window.addEventListener('DOMContentLoaded', async () => {
 
+  let isOwnPage = false; 
   localStorage.removeItem('youtubeChannelId');
   localStorage.removeItem('instagramPostUrl');
   localStorage.removeItem('xUsername');
@@ -10,6 +11,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   localStorage.removeItem('calendarEvents');
 
   const titleEl = document.getElementById('page-title');
+    // 🔽 セッションを取得してisOwnPageを定義する
+  const sessionRes = await fetch('/session');
+  const session = await sessionRes.json();
+  isOwnPage = session.loggedIn && session.username === usernameFromURL; // ← ここでは代入だけ
+  
   if (titleEl) titleEl.textContent = `Procom - ${usernameFromURL}さんのページ`;
 
   try {
@@ -40,7 +46,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     const snsSection = document.getElementById('sns-section');
     const editSection = document.getElementById('edit-section');
     const authForms = document.querySelector('.auth-forms');
-    const isOwnPage = session.loggedIn && session.username === usernameFromURL;
     const youtubeInputGroup = document.getElementById('youtubeInputGroup');
     const youtubeVideos = document.getElementById('videoContainer');
     const tiktokContainer = document.getElementById('tiktok-container');
