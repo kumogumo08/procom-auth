@@ -146,11 +146,16 @@ app.post('/login', async (req, res) => {
 // ログアウト
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
-    if (err) return res.status(500).send('ログアウトに失敗しました');
-    res.clearCookie('connect.sid');
-    res.redirect('/top.html');
+    if (err) {
+      console.error('❌ セッション破棄失敗:', err);
+      return res.status(500).send('ログアウトに失敗しました');
+    }
+
+    res.clearCookie('connect.sid', { path: '/' }); // 念のため path も指定
+    return res.redirect('/top.html'); // return を付けて終了を明示
   });
 });
+
 
 // セッションチェック
 app.get('/session', (req, res) => {
