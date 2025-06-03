@@ -367,7 +367,7 @@ app.get('/api/users', async (req, res) => {
 app.get('/account.html', (req, res, next) => {
   if (!req.session.username) {
     // 未ログインならリダイレクト
-    return res.redirect('/');
+    return res.redirect('/top.html');
   }
  res.sendFile(path.join(__dirname, 'public', 'account.html'));
 });
