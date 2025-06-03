@@ -184,6 +184,73 @@ function displayTikTokVideos(urls = null) {
   document.body.appendChild(script);
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const modeSelect = document.getElementById('youtubeModeSelect');
+  const channelInput = document.getElementById('channelIdInput');
+  const manualUrls = document.getElementById('manualYouTubeUrls');
+
+  if (modeSelect) {
+    modeSelect.addEventListener('change', () => {
+      const mode = modeSelect.value;
+      if (mode === 'manual') {
+        channelInput.style.display = 'none';
+        manualUrls.style.display = 'block';
+      } else {
+        channelInput.style.display = 'block';
+        manualUrls.style.display = 'none';
+      }
+    });
+  }
+  const mode = localStorage.getItem('youtubeMode');
+if (mode === 'manual') {
+  const urls = JSON.parse(localStorage.getItem('manualYouTubeUrls') || '[]');
+  document.getElementById('youtubeModeSelect').value = 'manual';
+  document.getElementById('channelIdInput').style.display = 'none';
+  document.getElementById('manualYouTubeUrls').style.display = 'block';
+  document.getElementById('manualYouTubeUrls').value = urls.join('\n');
+  displayManualYouTubeVideos(urls);
+} else {
+  const ytChannelId = localStorage.getItem('youtubeChannelId');
+  if (ytChannelId) {
+    fetchLatestVideos(ytChannelId);
+  }
+}
+});
+
+window.saveYouTubeSettings = function () {
+  const mode = document.getElementById('youtubeModeSelect').value;
+  if (mode === 'latest') {
+    const input = document.getElementById('channelIdInput').value.trim();
+    const match = input.match(/(UC[\w-]+)/);
+    if (!match) return alert('正しいチャンネルIDを入力してください');
+    const channelId = match[1];
+    localStorage.setItem('youtubeMode', 'latest');
+    localStorage.setItem('youtubeChannelId', channelId);
+    fetchLatestVideos(channelId);
+  } else {
+    const urls = document.getElementById('manualYouTubeUrls').value
+      .split('\n')
+      .map(url => url.trim())
+      .filter(url => url.includes('youtube.com/watch'));
+    if (urls.length === 0) return alert('URLを1つ以上入力してください');
+    localStorage.setItem('youtubeMode', 'manual');
+    localStorage.setItem('manualYouTubeUrls', JSON.stringify(urls));
+    displayManualYouTubeVideos(urls);
+  }
+};
+
+function displayManualYouTubeVideos(urls) {
+  const videoHTML = urls.map(url => {
+    const videoId = new URL(url).searchParams.get('v');
+    return `
+      <div class="youtube-card">
+        <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('videoContainer').innerHTML = videoHTML;
+}
+
 // ==== 初期読み込み ==== 
 console.log("✅ DOMContentLoaded が始まりました");
 window.addEventListener('DOMContentLoaded', () => {

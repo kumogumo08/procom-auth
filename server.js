@@ -379,7 +379,7 @@ app.get('/users', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'users.html'));
 });
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'top.html'));
 });
 
 // ✅ アカウント削除（Firestore + Storage + セッション削除）

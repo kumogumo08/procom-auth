@@ -108,16 +108,34 @@
   <div class="sns-embeds-wrapper">
 
     <!-- ✅ YouTubeだけ独立 -->
-    <div class="youtube-grid">
-      <div class="sns-item" id="youtube-section">
-        <h2>最新のYouTube動画</h2>
-        <div class="sns-section" id="youtubeInputGroup">
-          <input type="text" id="channelIdInput" placeholder="チャンネルID (UC〜で始まるID)">
-          <button type="button" onclick="saveYouTubeChannelId()">保存</button>
-        </div>
-        <div id="videoContainer" class="video-container"></div>
-      </div>
+<div class="youtube-grid">
+  <div class="sns-item" id="youtube-section">
+    <h2>YouTube動画表示設定</h2>
+
+    <!-- 表示モード選択 -->
+    <div class="sns-section">
+      <label><input type="radio" name="youtubeMode" value="latest" checked> 最新動画</label>
+      <label><input type="radio" name="youtubeMode" value="manual"> お気に入り動画</label>
     </div>
+
+    <!-- 最新動画用フォーム -->
+    <div class="sns-section" id="youtube-latest-input">
+      <input type="text" id="channelIdInput" placeholder="チャンネルID (UC〜で始まるID)">
+      <button type="button" onclick="saveYouTubeChannelId()">保存</button>
+    </div>
+
+    <!-- 手動入力フォーム -->
+    <div class="sns-section" id="youtube-manual-input" style="display: none;">
+      <input type="text" class="manualVideoInput" placeholder="動画URLを入力（https://www.youtube.com/watch?v=...）">
+      <button type="button" onclick="addManualVideo()">追加</button>
+      <ul id="manualVideoList"></ul>
+    </div>
+
+    <!-- 表示される動画 -->
+    <div id="videoContainer" class="video-container"></div>
+  </div>
+</div>
+
 
     <!-- ✅ X & Instagram（2カラム） -->
     <div class="sns-middle-row">
