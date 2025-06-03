@@ -53,9 +53,12 @@ function updateAuthUI() {
         authForms.innerHTML = `
           <div style="text-align: right; margin-top: 10px;">
             <p>ようこそ、${data.username}さん！</p>
-            <form action="/logout" method="GET">
-              <button type="submit">ログアウト</button>
-            </form>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; align-items: center;">
+              <a href="/user/${data.username}" class="mypage-btn">マイページ</a>
+              <form action="/logout" method="GET">
+                <button type="submit">ログアウト</button>
+              </form>
+            </div>
             <div style="margin-top: 5px;">
               <a href="/account.html">⚙ アカウント設定</a>
             </div>

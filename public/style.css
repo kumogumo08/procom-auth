@@ -778,7 +778,7 @@ body {
 .auth-link {
   text-align: center;
   margin-top: 20px;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 .auth-link a {
   color: #007bff;
@@ -892,4 +892,18 @@ copyright {
 .favorite-button:disabled {
   background-color: #ccc;
   cursor: default;
+}
+
+.mypage-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #444c91;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+.mypage-btn:hover {
+  background-color: #333975;
 }
