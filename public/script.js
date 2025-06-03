@@ -154,12 +154,31 @@ function getUsernameFromURL() {
   const path = window.location.pathname;
   const segments = path.split('/');
   const username = segments[segments.length - 1];
-  return username || localStorage.getItem('currentUsername'); // 空ならバックアップ
+  // 空や不正な場合は null を返す
+  if (!username || username === 'user' || username === '') {
+    return null;
+  }
+
+  return username;
 }
 
 async function loadUserProfile() {
   const username = getUsernameFromURL();
+  if (!username) {
+    console.warn('⚠ ユーザー名がURLから取得できませんでした（ログイン前など）');
+    return; // ← ここで処理をスキップ
+  }
+
   console.log('取得したユーザー名：', username);
+
+  try {
+    const res = await fetch(`/api/user/${username}`);
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    // 必要なプロフィール処理をここに…
+  } catch (err) {
+    console.error("❌ プロフィール読み込みエラー:", err.message);
+  }
 }
 
 function saveProfileAndEventsToServer(includePhotos = false, customPhotos = null) {

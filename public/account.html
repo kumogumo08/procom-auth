@@ -64,6 +64,14 @@
   </style>
 </head>
 <body>
+         <div id="common-header"></div>
+        <script>
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(html => {
+            document.getElementById('common-header').innerHTML = html;
+            });
+        </script>
   <div class="account-container">
     <h2>アカウント設定</h2>
     <div id="message"></div>
