@@ -22,6 +22,12 @@
     <form action="/users.html" method="GET" class="search-form">
     <input type="text" name="q" placeholder="名前や肩書きで検索" required />
     <button type="submit">検索</button>
+      <div style="margin: 30px;">
+      <h2 id="toggleUserList" style="cursor: pointer; color: #4444aa;">▶ 登録ユーザー</h2>
+      <div id="userListContainer" style="display: none; margin-top: 10px;">
+      <div id="userList" class="user-list"></div>
+  </div>
+</div>
   </form>
 </div>
 <!-- 🔽 お気に入りボタンをここに追加 -->

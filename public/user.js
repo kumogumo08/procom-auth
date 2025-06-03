@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const sessionRes = await fetch('/session');
   const session = await sessionRes.json();
   isOwnPage = session.loggedIn && session.username === usernameFromURL; // ← ここでは代入だけ
-  
+
   if (titleEl) titleEl.textContent = `Procom - ${usernameFromURL}さんのページ`;
 
   try {
@@ -223,3 +223,32 @@ function extractTikTokVideoId(url) {
   return match ? match[1] : null;
 }
 
+document.addEventListener('DOMContentLoaded', async () => {
+  const toggle = document.getElementById('toggleUserList');
+  const container = document.getElementById('userListContainer');
+  const userList = document.getElementById('userList');
+  let loaded = false;
+
+  toggle.addEventListener('click', async () => {
+    if (!loaded) {
+      // 初回クリック時だけデータ取得
+      const res = await fetch('/api/users');
+      const users = await res.json();
+      users.forEach(user => {
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        card.innerHTML = `
+          <h3>${user.name || user.username}</h3>
+          <p>${user.title || ''}</p>
+          <a href="/user/${user.username}">▶ プロフィール</a>
+        `;
+        userList.appendChild(card);
+      });
+      loaded = true;
+    }
+
+    // 表示/非表示の切り替え
+    container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    toggle.textContent = container.style.display === 'block' ? '▼ 登録ユーザー' : '▶ 登録ユーザー';
+  });
+});
