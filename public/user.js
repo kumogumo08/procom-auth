@@ -229,6 +229,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   const userList = document.getElementById('userList');
   let loaded = false;
 
+    // 🔍 セッション確認（非ログイン時は表示しない）
+  try {
+    const sessionRes = await fetch('/session');
+    const session = await sessionRes.json();
+    const isLoggedIn = session.loggedIn;
+
+    if (!isLoggedIn) {
+      if (toggle) toggle.style.display = 'none';
+      if (container) container.style.display = 'none';
+      return;
+    }
+  } catch (err) {
+    console.warn("⚠ セッション取得に失敗しました。登録ユーザー一覧は表示しません。", err);
+    if (toggle) toggle.style.display = 'none';
+    if (container) container.style.display = 'none';
+    return;
+  }
+  
   toggle.addEventListener('click', async () => {
     if (!loaded) {
       // 初回クリック時だけデータ取得
