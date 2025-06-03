@@ -121,6 +121,10 @@
     <!-- 最新動画用フォーム -->
     <div class="sns-section" id="youtube-latest-input">
       <input type="text" id="channelIdInput" placeholder="チャンネルID (UC〜で始まるID)">
+       <p class="help-text">
+        ※最新動画は最大2本まで表示されます。<br>
+        YouTubeのチャンネルIDはログイン後右上の写真をクリックし、設定から詳細設定で確認できます。
+      </p>
     </div>
 
     <!-- 手動入力フォーム（複数行対応） -->
@@ -129,6 +133,10 @@
         <input type="text" class="manualVideoInput" placeholder="動画URL 1" /><br>
         <input type="text" class="manualVideoInput" placeholder="動画URL 2" /><br>
       </div>
+        <p class="help-text">
+          ※お気に入り動画は最大4本まで登録できます。<br>
+          YouTubeの動画ページURL（例：<code>https://www.youtube.com/watch?v=xxxxx</code>）を入力してください。
+        </p>
       <button type="button" onclick="addManualVideoInput()">＋入力欄を追加</button>
     </div>
 
