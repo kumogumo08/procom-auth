@@ -125,8 +125,11 @@
 
     <!-- 手動入力フォーム（複数行対応） -->
     <div class="sns-section" id="youtube-manual-input" style="display: none;">
-      <textarea id="manualYouTubeUrls" rows="4" placeholder="1行につき1つのYouTube動画URLを入力してください（https://www.youtube.com/watch?v=...）"></textarea>
-      <ul id="manualVideoList"></ul>
+      <div id="manualUrlFields">
+        <input type="text" class="manualVideoInput" placeholder="動画URL 1" /><br>
+        <input type="text" class="manualVideoInput" placeholder="動画URL 2" /><br>
+      </div>
+      <button type="button" onclick="addManualVideoInput()">＋入力欄を追加</button>
     </div>
 
     <!-- 🔘 保存ボタン（共通でモードに応じて分岐） -->

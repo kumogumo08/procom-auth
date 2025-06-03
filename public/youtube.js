@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.saveYouTubeSettings = function () {
-  const mode = document.getElementById('youtubeModeSelect').value;
+  const mode = document.querySelector('input[name="youtubeMode"]:checked')?.value;
   if (mode === 'latest') {
     const input = document.getElementById('channelIdInput').value.trim();
     const match = input.match(/(UC[\w-]+)/);
@@ -252,6 +252,19 @@ window.saveYouTubeSettings = function () {
   }
 };
 
+window.addManualVideoInput = function () {
+  const container = document.getElementById('manualUrlFields');
+  const count = container.querySelectorAll('input').length + 1;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'manualVideoInput';
+  input.placeholder = `動画URL ${count}`;
+
+  container.appendChild(document.createElement('br'));
+  container.appendChild(input);
+};
+
 function displayManualYouTubeVideos(urls) {
   const videoHTML = urls.map(url => {
     const videoId = new URL(url).searchParams.get('v');
@@ -265,7 +278,7 @@ function displayManualYouTubeVideos(urls) {
 }
 
 function saveYouTubeSettingsToServer() {
-  const mode = document.getElementById('youtubeModeSelect').value;
+  const mode = document.querySelector('input[name="youtubeMode"]:checked')?.value;
   const data = {
     youtubeMode: mode,
     youtubeChannelId: '',
@@ -278,9 +291,8 @@ function saveYouTubeSettingsToServer() {
     if (!match) return alert('正しいチャンネルIDを入力してください');
     data.youtubeChannelId = match[1];
   } else {
-    const urls = document.getElementById('manualYouTubeUrls').value
-      .split('\n')
-      .map(url => url.trim())
+    const urls = Array.from(document.querySelectorAll('.manualVideoInput'))
+      .map(input => input.value.trim())
       .filter(url => url.includes('youtube.com/watch'));
     if (urls.length === 0) return alert('URLを1つ以上入力してください');
     data.manualYouTubeUrls = urls;
