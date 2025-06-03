@@ -22,13 +22,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       document.querySelector('input[name="youtubeMode"][value="manual"]').checked = true;
       document.getElementById('youtube-latest-input').style.display = 'none';
       document.getElementById('youtube-manual-input').style.display = 'block';
-      const list = document.getElementById('manualVideoList');
-      list.innerHTML = '';
-      (profile.manualYouTubeUrls || []).forEach(url => {
-        const li = document.createElement('li');
-        li.textContent = url;
-        list.appendChild(li);
-      });
+
       displayManualYouTubeVideos(profile.manualYouTubeUrls || []);
     } else if (profile.youtubeChannelId) {
       document.querySelector('input[name="youtubeMode"][value="latest"]').checked = true;
