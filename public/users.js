@@ -30,16 +30,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
-    // 🔽 オプションでリスト形式でも表示（<ul id="user-list"> があれば）
-    const list = document.getElementById('user-list');
-    if (list) {
-      users.forEach(u => {
-        const li = document.createElement('li');
-        li.innerHTML = `<a href="/user/${u.username}">${u.name || u.username} さん</a>`;
-        list.appendChild(li);
-      });
-    }
-
   } catch (err) {
     console.error('❌ ユーザーデータ取得エラー:', err);
     alert('ユーザーデータの取得に失敗しました');
