@@ -121,7 +121,7 @@ app.post('/login', async (req, res) => {
       return res.status(500).send('セッション保存に失敗しました');
     }
 
-    res.json({ username: userDoc.id }); // ← この時点でセッションが確実に保存済み
+     res.redirect(`/user/${userDoc.id}`);
   });
 });
 

@@ -138,7 +138,7 @@ loginForm?.addEventListener('submit', async (e) => {
 
     // ✅ セッション保存のタイミングを確保（超重要）
     setTimeout(() => {
-      window.location.href = `/user/${data.username}`;
+      // window.location.href = `/user/${data.username}`;
     }, 500);
 
   } else {
