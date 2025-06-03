@@ -1,3 +1,4 @@
+//script.jsです。
 // 🔁 グローバル変数
 let currentSlide = 0;
 let slides = [];

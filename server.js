@@ -1,3 +1,4 @@
+//server.jsです。
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -207,6 +208,7 @@ app.post('/api/user/:username', async (req, res) => {
     if (!userDoc.exists) return res.status(404).send('ユーザーが存在しません');
 
     const existing = userDoc.data();
+    const existingProfile = existing.profile || {};
 
     // calendarEventsの整形
     if (
@@ -294,16 +296,18 @@ app.post('/api/user/:username', async (req, res) => {
 
 
     // 🔧 profileの正規化
-   const cleanedProfile = {
-     name: profile.name ?? existing.profile?.name ?? '',
-     title: profile.title ?? existing.profile?.title ?? '',
-     bio: profile.bio ?? existing.profile?.bio ?? '',
-     calendarEvents: profile.calendarEvents ?? existing.profile?.calendarEvents ?? [],
-     photos: profile.photos ?? existing.profile?.photos ?? [],
-     youtubeChannelId: profile.youtubeChannelId ?? existing.profile?.youtubeChannelId ?? '',
-     instagramPostUrl: profile.instagramPostUrl ?? existing.profile?.instagramPostUrl ?? '',
-     xUsername: profile.xUsername ?? existing.profile?.xUsername ?? '',
-     tiktokUrls: profile.tiktokUrls ?? existing.profile?.tiktokUrls ?? []
+      const cleanedProfile = {
+      name: profile.name ?? existingProfile.name ?? '',
+      title: profile.title ?? existingProfile.title ?? '',
+      bio: profile.bio ?? existingProfile.bio ?? '',
+      calendarEvents: profile.calendarEvents ?? existingProfile.calendarEvents ?? [],
+      photos: profile.photos ?? existingProfile.photos ?? [],
+      youtubeChannelId: profile.youtubeChannelId ?? existingProfile.youtubeChannelId ?? '',
+      instagramPostUrl: profile.instagramPostUrl ?? existingProfile.instagramPostUrl ?? '',
+      xUsername: profile.xUsername ?? existingProfile.xUsername ?? '',
+      tiktokUrls: profile.tiktokUrls ?? existingProfile.tiktokUrls ?? [],
+      youtubeMode: profile.youtubeMode ?? existingProfile.youtubeMode ?? 'latest',
+      manualYouTubeUrls: profile.manualYouTubeUrls ?? existingProfile.manualYouTubeUrls ?? []
 };
 
     // 保存
@@ -327,18 +331,23 @@ app.get('/api/user/:username', async (req, res) => {
        return res.status(404).json({ error: 'ユーザーが見つかりません' });
     }
 
+
     const data = userDoc.data();
-    res.json(data.profile || {
-    name: '',
-    title: '',
-    bio: '',
-    photos: [],
-    youtubeChannelId: '',
-    instagramPostUrl: '',
-    xUsername: '',
-    tiktokUrls: [],
-    calendarEvents: []
-});
+    const profile = data.profile || {};
+
+    res.json(Object.assign({
+      name: '',
+      title: '',
+      bio: '',
+      photos: [],
+      youtubeChannelId: '',
+      instagramPostUrl: '',
+      xUsername: '',
+      tiktokUrls: [],
+      calendarEvents: [],
+      youtubeMode: 'latest',         // ✅ 安定的に追加
+      manualYouTubeUrls: []          // ✅ 安定的に追加
+    }, profile));
 
    // profileだけ返すように
   } catch (err) {

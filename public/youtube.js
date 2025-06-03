@@ -1,3 +1,4 @@
+//youtube.jsです
 // ==== X（旧Twitter）プロフィール表示機能 ====
 window.showXProfile = function () {
 console.log("✅ showXProfile() が呼ばれました");

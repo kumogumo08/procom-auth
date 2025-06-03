@@ -1,3 +1,4 @@
+//user.jsです
 const usernameFromURL = decodeURIComponent(window.location.pathname.split('/').pop());
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -17,11 +18,25 @@ window.addEventListener('DOMContentLoaded', async () => {
     const data = await res.json();
     const profile = data.profile || data;
 
-      if (profile.youtubeMode === 'manual') {
-    displayManualYouTubeVideos(profile.manualYouTubeUrls || []);
-  } else if (profile.youtubeChannelId) {
-    fetchLatestVideos(profile.youtubeChannelId);
-  }
+    if (profile.youtubeMode === 'manual') {
+      document.querySelector('input[name="youtubeMode"][value="manual"]').checked = true;
+      document.getElementById('youtube-latest-input').style.display = 'none';
+      document.getElementById('youtube-manual-input').style.display = 'block';
+      const list = document.getElementById('manualVideoList');
+      list.innerHTML = '';
+      (profile.manualYouTubeUrls || []).forEach(url => {
+        const li = document.createElement('li');
+        li.textContent = url;
+        list.appendChild(li);
+      });
+      displayManualYouTubeVideos(profile.manualYouTubeUrls || []);
+    } else if (profile.youtubeChannelId) {
+      document.querySelector('input[name="youtubeMode"][value="latest"]').checked = true;
+      document.getElementById('youtube-latest-input').style.display = 'block';
+      document.getElementById('youtube-manual-input').style.display = 'none';
+      document.getElementById('channelIdInput').value = profile.youtubeChannelId;
+      fetchLatestVideos(profile.youtubeChannelId);
+    }
 
     const sessionRes = await fetch('/session');
     const session = await sessionRes.json();
