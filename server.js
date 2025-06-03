@@ -128,11 +128,6 @@ app.post('/login', async (req, res) => {
   }
 
   req.session.username = userDoc.id;
-  req.session.save(err => {
-  if (err) return res.status(500).send('セッション保存に失敗しました');
-  res.redirect(`/user/${userDoc.id}`);
-});
-
   // ✅ セッションの保存を確実に完了させてからレスポンスを返す
   req.session.save(err => {
     if (err) {
