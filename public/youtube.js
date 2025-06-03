@@ -232,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.saveYouTubeSettings = function () {
   const mode = document.querySelector('input[name="youtubeMode"]:checked')?.value;
+
   if (mode === 'latest') {
     const input = document.getElementById('channelIdInput').value.trim();
     const match = input.match(/(UC[\w-]+)/);
@@ -241,15 +242,19 @@ window.saveYouTubeSettings = function () {
     localStorage.setItem('youtubeChannelId', channelId);
     fetchLatestVideos(channelId);
   } else {
-    const urls = document.getElementById('manualYouTubeUrls').value
-      .split('\n')
-      .map(url => url.trim())
+    // ✅ 複数の .manualVideoInput からURLを取得
+    const urls = Array.from(document.querySelectorAll('.manualVideoInput'))
+      .map(input => input.value.trim())
       .filter(url => url.includes('youtube.com/watch'));
+
     if (urls.length === 0) return alert('URLを1つ以上入力してください');
     localStorage.setItem('youtubeMode', 'manual');
     localStorage.setItem('manualYouTubeUrls', JSON.stringify(urls));
     displayManualYouTubeVideos(urls);
   }
+
+  // 🔽 ここでFireStoreにも保存
+  saveYouTubeSettingsToServer();
 };
 
 window.addManualVideoInput = function () {
@@ -267,12 +272,18 @@ window.addManualVideoInput = function () {
 
 function displayManualYouTubeVideos(urls) {
   const videoHTML = urls.map(url => {
-    const videoId = new URL(url).searchParams.get('v');
-    return `
-      <div class="youtube-card">
-        <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
-      </div>
-    `;
+    try {
+      const videoId = new URL(url).searchParams.get('v');
+      if (!videoId) return ''; // IDがなければスキップ
+      return `
+        <div class="youtube-card">
+          <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+        </div>
+      `;
+    } catch (e) {
+      console.warn('無効なURL:', url);
+      return ''; // 無効なURLは表示しない
+    }
   }).join('');
   document.getElementById('videoContainer').innerHTML = videoHTML;
 }
