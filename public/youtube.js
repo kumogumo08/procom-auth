@@ -186,36 +186,48 @@ function displayTikTokVideos(urls = null) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const modeSelect = document.getElementById('youtubeModeSelect');
-  const channelInput = document.getElementById('channelIdInput');
-  const manualUrls = document.getElementById('manualYouTubeUrls');
+  const latestInputSection = document.getElementById('youtube-latest-input');
+  const manualInputSection = document.getElementById('youtube-manual-input');
+  const modeRadios = document.querySelectorAll('input[name="youtubeMode"]');
 
-  if (modeSelect) {
-    modeSelect.addEventListener('change', () => {
-      const mode = modeSelect.value;
-      if (mode === 'manual') {
-        channelInput.style.display = 'none';
-        manualUrls.style.display = 'block';
-      } else {
-        channelInput.style.display = 'block';
-        manualUrls.style.display = 'none';
-      }
+  const updateModeDisplay = (mode) => {
+    if (mode === 'manual') {
+      latestInputSection.style.display = 'none';
+      manualInputSection.style.display = 'block';
+    } else {
+      latestInputSection.style.display = 'block';
+      manualInputSection.style.display = 'none';
+    }
+  };
+
+  modeRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      const selectedMode = document.querySelector('input[name="youtubeMode"]:checked')?.value;
+      updateModeDisplay(selectedMode);
     });
+  });
+
+  // 初期値の表示モードをlocalStorageから復元
+  const savedMode = localStorage.getItem('youtubeMode');
+  if (savedMode === 'manual') {
+    document.querySelector('input[name="youtubeMode"][value="manual"]').checked = true;
+    updateModeDisplay('manual');
+
+    const urls = JSON.parse(localStorage.getItem('manualYouTubeUrls') || '[]');
+    const textarea = document.getElementById('manualYouTubeUrls');
+    if (textarea) textarea.value = urls.join('\n');
+    displayManualYouTubeVideos(urls);
+  } else {
+    document.querySelector('input[name="youtubeMode"][value="latest"]').checked = true;
+    updateModeDisplay('latest');
+
+    const ytChannelId = localStorage.getItem('youtubeChannelId');
+    if (ytChannelId) {
+      const input = document.getElementById('channelIdInput');
+      if (input) input.value = ytChannelId;
+      fetchLatestVideos(ytChannelId);
+    }
   }
-  const mode = localStorage.getItem('youtubeMode');
-if (mode === 'manual') {
-  const urls = JSON.parse(localStorage.getItem('manualYouTubeUrls') || '[]');
-  document.getElementById('youtubeModeSelect').value = 'manual';
-  document.getElementById('channelIdInput').style.display = 'none';
-  document.getElementById('manualYouTubeUrls').style.display = 'block';
-  document.getElementById('manualYouTubeUrls').value = urls.join('\n');
-  displayManualYouTubeVideos(urls);
-} else {
-  const ytChannelId = localStorage.getItem('youtubeChannelId');
-  if (ytChannelId) {
-    fetchLatestVideos(ytChannelId);
-  }
-}
 });
 
 window.saveYouTubeSettings = function () {
