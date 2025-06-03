@@ -17,6 +17,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     const data = await res.json();
     const profile = data.profile || data;
 
+      if (profile.youtubeMode === 'manual') {
+    displayManualYouTubeVideos(profile.manualYouTubeUrls || []);
+  } else if (profile.youtubeChannelId) {
+    fetchLatestVideos(profile.youtubeChannelId);
+  }
+
     const sessionRes = await fetch('/session');
     const session = await sessionRes.json();
 

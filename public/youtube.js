@@ -251,6 +251,55 @@ function displayManualYouTubeVideos(urls) {
   document.getElementById('videoContainer').innerHTML = videoHTML;
 }
 
+function saveYouTubeSettingsToServer() {
+  const mode = document.getElementById('youtubeModeSelect').value;
+  const data = {
+    youtubeMode: mode,
+    youtubeChannelId: '',
+    manualYouTubeUrls: []
+  };
+
+  if (mode === 'latest') {
+    const input = document.getElementById('channelIdInput').value.trim();
+    const match = input.match(/(UC[\w-]+)/);
+    if (!match) return alert('正しいチャンネルIDを入力してください');
+    data.youtubeChannelId = match[1];
+  } else {
+    const urls = document.getElementById('manualYouTubeUrls').value
+      .split('\n')
+      .map(url => url.trim())
+      .filter(url => url.includes('youtube.com/watch'));
+    if (urls.length === 0) return alert('URLを1つ以上入力してください');
+    data.manualYouTubeUrls = urls;
+  }
+
+  fetch('/session')
+    .then(res => res.json())
+    .then(session => {
+      if (!session.loggedIn) return alert('ログインが必要です');
+
+      return fetch(`/api/user/${session.username}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile: {
+            youtubeMode: data.youtubeMode,
+            youtubeChannelId: data.youtubeChannelId,
+            manualYouTubeUrls: data.manualYouTubeUrls
+          }
+        })
+      });
+    })
+    .then(res => {
+      if (res.ok) alert('YouTube設定を保存しました');
+      else throw new Error('保存失敗');
+    })
+    .catch(err => {
+      console.error('❌ YouTube設定保存エラー:', err);
+      alert('保存に失敗しました');
+    });
+}
+
 // ==== 初期読み込み ==== 
 console.log("✅ DOMContentLoaded が始まりました");
 window.addEventListener('DOMContentLoaded', () => {
