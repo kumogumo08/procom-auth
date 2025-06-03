@@ -138,6 +138,7 @@ app.get('/logout', (req, res) => {
 
 // セッションチェック
 app.get('/session', (req, res) => {
+  console.log("🔥 セッション中身:", req.session); // ← これを追加
   if (req.session.username) {
     res.json({ loggedIn: true, username: req.session.username });
   } else {
