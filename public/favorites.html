@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>お気に入り一覧 - Procom</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .user-card {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin: 10px;
+      border-radius: 12px;
+      background: #fdfdfd;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+    .user-card:hover {
+      background: #f4faff;
+      transform: translateY(-2px);
+    }
+    .user-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+    <div id="common-header"></div>
+        <script>
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(html => {
+            document.getElementById('common-header').innerHTML = html;
+            });
+        </script>
+  <header>
+    <h1>お気に入り一覧</h1>
+  </header>
+
+  <main>
+    <div id="message" style="text-align:center; padding: 1em; color: red;"></div>
+    <div class="user-list" id="favoritesContainer"></div>
+  </main>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      const message = document.getElementById('message');
+      const container = document.getElementById('favoritesContainer');
+
+      try {
+        const sessionRes = await fetch('/session');
+        const sessionData = await sessionRes.json();
+        if (!sessionData.loggedIn) {
+          message.textContent = 'お気に入りを表示するにはログインが必要です。';
+          return;
+        }
+
+        const res = await fetch('/api/favorites');
+        if (!res.ok) throw new Error('取得失敗');
+        const favorites = await res.json();
+
+        if (favorites.length === 0) {
+          message.textContent = 'お気に入りに登録されたユーザーはいません。';
+          return;
+        }
+
+        favorites.forEach(user => {
+          const card = document.createElement('div');
+          card.className = 'user-card';
+            card.innerHTML = `
+            <img src="${user.photoUrl || '/default-icon.png'}" alt="icon" style="width: 80px; border-radius: 50%; margin-bottom: 10px;">
+            <h3>${user.name || user.username}</h3>
+            <p>${user.title ? `（${user.title}）` : ''}</p>
+            <a href="/user/${user.username}">▶ プロフィールを見る</a>
+            `;
+
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        message.textContent = 'データの取得に失敗しました。';
+        console.error('❌ お気に入り取得エラー:', err);
+      }
+    });
+  </script>
+    <div id="common-footer"></div>
+  <script>
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('common-footer').innerHTML = html;
+      });
+  </script>
+</body>
+</html>

@@ -32,9 +32,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       fetchLatestVideos(profile.youtubeChannelId);
     }
 
-    const sessionRes = await fetch('/session');
-    const session = await sessionRes.json();
-
     const xInput = document.getElementById('xUsernameInput');
     const xButton = document.getElementById('xShowBtn');
     const instagramInput = document.getElementById('instagramPostLink');
@@ -132,16 +129,26 @@ window.addEventListener('DOMContentLoaded', async () => {
       createCalendar(currentDate, isOwnPage);
     }
 
-    // const resList = await fetch('/api/users');
-    // const userList = await resList.json();
-    // const list = document.getElementById('user-list');
-    // if (list) {
-    //   userList.forEach(u => {
-    //     const li = document.createElement('li');
-    //     li.innerHTML = `<a href="/user/${u.username}">${u.name || u.username} さん</a>`;
-    //     list.appendChild(li);
-    //   });
-    // }
+const favoriteBtn = document.getElementById('favoriteBtn');
+
+// 自分のページではボタン非表示
+if (!isOwnPage && favoriteBtn) {
+  favoriteBtn.style.display = 'inline-block';
+  favoriteBtn.onclick = async () => {
+    const res = await fetch(`/api/favorites/${usernameFromURL}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (res.ok) {
+      alert('お気に入りに追加しました');
+      favoriteBtn.disabled = true;
+    } else {
+      alert('追加に失敗しました');
+    }
+  };
+} else if (favoriteBtn) {
+  favoriteBtn.style.display = 'none';
+}
   } catch (err) {
     console.error('❌ ユーザーデータ取得エラー:', err.message);
     alert('ユーザーデータの取得に失敗しました');

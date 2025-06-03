@@ -367,6 +367,52 @@ app.get('/api/users', async (req, res) => {
   res.json(list);
 });
 
+// お気に入り追加
+app.post('/api/favorites/:target', async (req, res) => {
+  const sessionUser = req.session.username;
+  const targetUser = req.params.target;
+
+  if (!sessionUser || sessionUser === targetUser) return res.status(400).send('不正な操作');
+
+  const userRef = db.collection('users').doc(sessionUser);
+  await userRef.set({
+    favorites: admin.firestore.FieldValue.arrayUnion(targetUser)
+  }, { merge: true });
+
+  res.send('追加完了');
+});
+
+app.get('/api/favorites', async (req, res) => {
+  const sessionUser = req.session.username;
+  if (!sessionUser) return res.status(401).send('ログインが必要です');
+
+  try {
+    const userSnap = await db.collection('users').doc(sessionUser).get();
+    if (!userSnap.exists) return res.status(404).send('ユーザーが見つかりません');
+
+    const data = userSnap.data();
+    const favorites = data.favorites || [];
+
+    const results = [];
+    for (const fav of favorites) {
+      const favSnap = await db.collection('users').doc(fav).get();
+      if (favSnap.exists) {
+        const profile = favSnap.data().profile || {};
+        results.push({
+          username: fav,
+          name: profile.name || '',
+          title: profile.title || ''
+        });
+      }
+    }
+
+    res.json(results);
+  } catch (err) {
+    console.error('❌ お気に入り取得エラー:', err);
+    res.status(500).send('内部エラー');
+  }
+});
+
 // アカウントページへのアクセスをセッションで保護
 app.get('/account.html', (req, res, next) => {
   if (!req.session.username) {
