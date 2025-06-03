@@ -16,7 +16,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const session = await sessionRes.json();
   isOwnPage = session.loggedIn && session.username === usernameFromURL; // ← ここでは代入だけ
 
-  if (titleEl) titleEl.textContent = `Procom - ${usernameFromURL}さんのページ`;
+  if (titleEl) titleEl.textContent = `${usernameFromURL}さんのページ`;
 
   try {
     const res = await fetch(`/api/user/${usernameFromURL}`);
@@ -237,10 +237,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       users.forEach(user => {
         const card = document.createElement('div');
         card.className = 'user-card';
+        const photoHTML = user.photoUrl
+        ? `<img src="${user.photoUrl}" alt="${user.name || user.username}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-right:10px;">`
+        : `<div style="width:60px;height:60px;border-radius:50%;background:#ccc;margin-right:10px;"></div>`;
+
         card.innerHTML = `
-          <h3>${user.name || user.username}</h3>
-          <p>${user.title || ''}</p>
-          <a href="/user/${user.username}">▶ プロフィール</a>
+        <div style="display:flex;align-items:center;">
+          ${photoHTML}
+          <div>
+            <strong>${user.name || user.username}</strong><br>
+            <small>${user.title || ''}</small><br>
+            <a href="/user/${user.username}">▶ プロフィール</a>
+          </div>
+        </div>
         `;
         userList.appendChild(card);
       });
