@@ -166,18 +166,14 @@ if (!isOwnPage && favoriteBtn) {
   }
 
     if (isOwnPage) {
-      const saveTop = document.getElementById('saveProfileBtnTop');
-      const saveBottom = document.getElementById('saveProfileBtnBottom');
-      const savePhotos = document.getElementById('savePhotosBtn');
+    const saveTop = document.getElementById('saveProfileBtnTop');
+    const saveBottom = document.getElementById('saveProfileBtnBottom');
+    const savePhotos = document.getElementById('savePhotosBtn');
 
-      if (saveTop) saveTop.addEventListener('click', saveProfileAndEventsToServer);
-      if (saveBottom) saveBottom.addEventListener('click', saveProfileAndEventsToServer);
-      if (savePhotos) {
-         savePhotos.addEventListener('click', () => {
-         saveProfileAndEventsToServer(true);
-  });
-}
-    }
+    if (saveTop) saveTop.addEventListener('click', () => saveProfileAndEventsToServer());
+    if (saveBottom) saveBottom.addEventListener('click', () => saveProfileAndEventsToServer());
+    if (savePhotos) savePhotos.addEventListener('click', savePhotosToServer);
+  }
 });
 
 function showXProfile(username) {
