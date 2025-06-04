@@ -630,6 +630,14 @@ function updatePhotoSlider(photoData = null) {
   updateCarousel();
 }
 
+function updateCarousel() {
+  slides.forEach((slide, i) => {
+    const offset = ((i - currentSlide + slides.length) % slides.length);
+    slide.style.setProperty('--i', offset);
+    slide.classList.toggle('active', offset === 0);
+  });
+}
+
 function prevSlide() {
   if (slides.length === 0) return;
   currentSlide = (currentSlide - 1 + slides.length) % slides.length;

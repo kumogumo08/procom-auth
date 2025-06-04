@@ -288,15 +288,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-    const index = e.target.dataset.index;
-    const value = e.target.value;
-    const image = document.querySelectorAll('.carousel-image')[index];
-    image.style.objectPosition = `center ${value}%`;
-
-    // 任意：localStorageに保存（ログインユーザーのみ保存対応予定ならFirestoreにも可）
-    const positions = JSON.parse(localStorage.getItem('photoPositions') || '{}');
-    positions[index] = value;
-    localStorage.setItem('photoPositions', JSON.stringify(positions));
+    slider.addEventListener('input', () => {
+      const value = slider.value;
+      img.style.objectPosition = `center ${value}%`;
+      // 任意：localStorageに保存（ログインユーザーのみ保存対応予定ならFirestoreにも可）
+      const positions = JSON.parse(localStorage.getItem('photoPositions') || '{}');
+      positions[index] = value;
+      localStorage.setItem('photoPositions', JSON.stringify(positions));
+});
 
 // 読み込み時に反映
 window.addEventListener('DOMContentLoaded', () => {
