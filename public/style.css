@@ -144,7 +144,7 @@ body {
   
     .slide {
       position: absolute;
-      transform: rotateY(calc(var(--i) * 15deg)) translateZ(400px); /* ← 45deg → 15deg に */
+      transform: rotateY(calc(var(--i) * 45deg)) translateZ(400px); /* ← 45deg → 15deg に */
       transition: transform 0.5s ease, opacity 0.5s ease;
       opacity: 0.6;
       border-radius: 12px;
