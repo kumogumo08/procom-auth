@@ -193,7 +193,15 @@ function saveProfileAndEventsToServer(includePhotos = false, customPhotos = null
         console.log("🛑 未ログイン状態のためプロフィール保存を中止");
         return;
       }
-      proceedWithSave(data.username, includePhotos, customPhotos);
+        if (includePhotos && Array.isArray(photos) && photos.length > 0) {
+        const updatedPhotos = photos.map((photo, index) => {
+          const slider = document.querySelector(`.position-slider[data-index="${index}"]`);
+          const position = slider ? slider.value : '50';
+          return { url: photo.url || photo, position };
+        });
+        profile.photos = updatedPhotos;
+      }
+      proceedWithSave(data.username, includePhotos, customPhotos, updatedPhotos);
     });
 }
 

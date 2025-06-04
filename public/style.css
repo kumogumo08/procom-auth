@@ -943,6 +943,7 @@ body {
   transition: object-position 0.3s ease;
 }
 .position-slider {
+  display: block;
   width: 100%;
-  margin-top: 5px;
+  margin-top: 8px;
 }
