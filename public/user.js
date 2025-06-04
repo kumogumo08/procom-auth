@@ -172,7 +172,10 @@ if (!isOwnPage && favoriteBtn) {
 
     if (saveTop) saveTop.addEventListener('click', () => saveProfileAndEventsToServer());
     if (saveBottom) saveBottom.addEventListener('click', () => saveProfileAndEventsToServer());
-    if (savePhotos) savePhotos.addEventListener('click', savePhotos); 
+    if (savePhotos) {
+  console.log("✅ 写真保存ボタンにイベント登録しました");
+  savePhotos.addEventListener('click', savePhotos);
+}
   }
 });
 
