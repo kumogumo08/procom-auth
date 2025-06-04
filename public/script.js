@@ -680,10 +680,13 @@ fetch(`/api/user/${getUsernameFromURL()}`)
 
   const saveBtn = document.getElementById('saveBtn');
   if (saveBtn) {
+    console.log("✅ saveBtn が見つかりました");
     saveBtn.addEventListener('click', () => {
       console.log("💾 プロフィール保存ボタンがクリックされました");
       saveProfileAndEventsToServer(true); 
     });
+    } else {
+  console.warn("❌ saveBtn が見つかりませんでした（DOMが未構築？）");
   }
 }); 
 
