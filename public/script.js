@@ -197,14 +197,19 @@ function saveProfileAndEventsToServer(includePhotos = false, customPhotos = null
         console.log("🛑 未ログイン状態のためプロフィール保存を中止");
         return;
       }
-        if (includePhotos && Array.isArray(photos) && photos.length > 0) {
-        const updatedPhotos = photos.map((photo, index) => {
+
+      const photos = customPhotos || JSON.parse(localStorage.getItem('photos') || '[]');
+      let updatedPhotos = [];
+
+      // ✅ エラーになっていた部分の修正
+      if (includePhotos && Array.isArray(photos) && photos.length > 0) {
+        updatedPhotos = photos.map((photo, index) => {
           const slider = document.querySelector(`.position-slider[data-index="${index}"]`);
           const position = slider ? slider.value : '50';
           return { url: photo.url || photo, position };
         });
-        profile.photos = updatedPhotos;
       }
+
       proceedWithSave(data.username, includePhotos, customPhotos, updatedPhotos);
     });
 }
@@ -593,7 +598,7 @@ function updatePhotoSlider(photoData = null) {
   photoData.forEach((photo, index) => {
     const slideDiv = document.createElement('div');
     slideDiv.classList.add('slide');
-    slideDiv.style.setProperty('--i', index);
+    // slideDiv.style.setProperty('--i', index);
     slideDiv.style.position = 'relative'; // ✅ スライダーを絶対配置するため
 
     const img = document.createElement('img');
