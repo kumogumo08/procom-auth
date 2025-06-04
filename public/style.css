@@ -248,14 +248,7 @@ body {
     display: none;
   }
   
-  /* イベントカレンダー */
-  
-  #calendar-container {
-    width: 280px;
-    flex-shrink: 0;
-    margin-left: 20px; /* 必要なら残す */
-  }
-  
+  /* イベントカレンダー */  
   #calendar {
     border: 1px solid #ccc;
     padding: 8px;
@@ -652,17 +645,6 @@ body {
     border: 0 !important;
   }
   
-  .user-card {
-  background-color: #fff;
-  padding: 20px;
-  margin: 15px auto;
-  max-width: 600px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  line-height: 1.5;
-  transition: transform 0.2s ease;
-}
-
 .user-card:hover {
   transform: scale(1.01);
 }
@@ -917,6 +899,7 @@ body {
   flex-wrap: wrap;
 }
 .user-card {
+  margin: 15px auto;
   border: 1px solid #ccc;
   padding: 12px;
   border-radius: 10px;
@@ -926,11 +909,14 @@ body {
   transition: transform 0.2s;
   border-bottom: 1px solid #ddd;
   padding: 10px 0;
+  max-width: 600px;
+  line-height: 1.5;
 }
+
 .user-card:hover {
   transform: translateY(-2px);
 }
-.user-list .user-card {
+.user-list  {
   border-bottom: 1px solid #ddd;
   padding: 10px 0;
 }

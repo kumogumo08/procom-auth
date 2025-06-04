@@ -1,4 +1,3 @@
-//user.jsです
 const usernameFromURL = decodeURIComponent(window.location.pathname.split('/').pop());
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -300,51 +299,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     localStorage.setItem('photoPositions', JSON.stringify(positions));
 
 // 読み込み時に反映
-window.addEventListener('DOMContentLoaded', () => {
-  const positions = JSON.parse(localStorage.getItem('photoPositions') || '{}');
-  Object.entries(positions).forEach(([index, value]) => {
-    const image = document.querySelectorAll('.carousel-image')[index];
-    const slider = document.querySelectorAll('.position-slider')[index];
-    if (image && slider) {
-      image.style.objectPosition = `center ${value}%`;
-      slider.value = value;
-    }
-  });
-});
-
-function updatePhotoSlider(photos) {
-  const carousel = document.querySelector('.carousel');
-  carousel.innerHTML = '';
-
-  photos.forEach((photo, index) => {
-    const slide = document.createElement('div');
-    slide.className = 'slide';
-    slide.style.setProperty('--i', index);
-
-    const img = document.createElement('img');
-    img.src = photo.url || photo;
-    img.className = 'carousel-image';
-    img.style.objectPosition = `center ${photo.position || '50'}%`;
-
-    const slider = document.createElement('input');
-    slider.type = 'range';
-    slider.min = '0';
-    slider.max = '100';
-    slider.value = photo.position || '50';
-    slider.className = 'position-slider';
-    slider.dataset.index = index;
-
-    // 🔁 スライダー動かすたびに画像位置を更新
-    slider.addEventListener('input', () => {
-      img.style.objectPosition = `center ${slider.value}%`;
-    });
-
-    slide.appendChild(img);
-    slide.appendChild(slider);
-    carousel.appendChild(slide);
-  });
-}
-
 window.addEventListener('DOMContentLoaded', () => {
   const positions = JSON.parse(localStorage.getItem('photoPositions') || '{}');
   Object.entries(positions).forEach(([index, value]) => {

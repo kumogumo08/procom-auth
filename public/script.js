@@ -123,7 +123,6 @@ function updateAuthUI() {
   });
 
 // 🔐 ログイン処理
-// 🔐 ログイン処理
 loginForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('login-email').value;
@@ -140,6 +139,11 @@ loginForm?.addEventListener('submit', async (e) => {
     const data = await res.json();
     alert(`ログイン成功！ようこそ ${data.username} さん`);
 
+        // ✅ 写真があればスライダーを更新
+    if (data.photos && Array.isArray(data.photos)) {
+      updatePhotoSlider(data.photos);
+    }
+    
     // ✅ セッション保存のタイミングを確保（超重要）
     setTimeout(() => {
       // window.location.href = `/user/${data.username}`;
@@ -579,20 +583,48 @@ async function savePhotos() {
   }
 }
 
-function updatePhotoSlider(photoURLs = null) {
-  if (!photoURLs) {
-    photoURLs = JSON.parse(localStorage.getItem('photos') || '[]');
+function updatePhotoSlider(photoData = null) {
+  if (!photoData) {
+    photoData = JSON.parse(localStorage.getItem('photos') || '[]');
   }
+
   carousel.innerHTML = '';
-  photoURLs.forEach((url, index) => {
+
+  photoData.forEach((photo, index) => {
     const slideDiv = document.createElement('div');
     slideDiv.classList.add('slide');
     slideDiv.style.setProperty('--i', index);
+    slideDiv.style.position = 'relative'; // ✅ スライダーを絶対配置するため
+
     const img = document.createElement('img');
-    img.src = url;
+    img.src = photo.url || photo; // photo.url または直接URL
+    img.classList.add('carousel-image');
+    img.style.objectPosition = `center ${photo.position || '50'}%`; // 🔄 表示位置を復元
+
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = '0';
+    slider.max = '100';
+    slider.value = photo.position || '50';
+    slider.classList.add('position-slider');
+    slider.dataset.index = index;
+
+    // ✅ スライダーのスタイル調整
+    slider.style.position = 'absolute';
+    slider.style.bottom = '10px';
+    slider.style.left = '10%';
+    slider.style.width = '80%';
+    slider.style.zIndex = '10';
+
+    slider.addEventListener('input', () => {
+      img.style.objectPosition = `center ${slider.value}%`;
+    });
+
     slideDiv.appendChild(img);
+    slideDiv.appendChild(slider);
     carousel.appendChild(slideDiv);
   });
+
   slides = carousel.querySelectorAll('.slide');
   currentSlide = 0;
   updateCarousel();
