@@ -299,9 +299,15 @@ function proceedWithSave(username, includePhotos = false, customPhotos = null) {
       alert('プロフィールが保存されました');
 
       // DOM 反映（オプション）
-      if (nameDisplay) nameDisplay.textContent = profile.name || '';
-      if (titleDisplay) titleDisplay.textContent = profile.title ? `（${profile.title}）` : '';
-      if (bioDisplay) bioDisplay.innerHTML = (profile.bio || '').replace(/\n/g, '<br>');
+      if (nameDisplay && profile.name !== undefined) {
+        nameDisplay.textContent = profile.name || nameDisplay.textContent;
+      }
+      if (titleDisplay && profile.title !== undefined) {
+        titleDisplay.textContent = profile.title ? `（${profile.title}）` : titleDisplay.textContent;
+      }
+      if (bioDisplay && profile.bio !== undefined) {
+        bioDisplay.innerHTML = profile.bio ? profile.bio.replace(/\n/g, '<br>') : bioDisplay.innerHTML;
+      }
 
     // 🔽 編集フォームを非表示（オプション）
         if (editForm) editForm.classList.add('hidden');
