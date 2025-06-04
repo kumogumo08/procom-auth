@@ -168,13 +168,13 @@ if (!isOwnPage && favoriteBtn) {
     if (isOwnPage) {
     const saveTop = document.getElementById('saveProfileBtnTop');
     const saveBottom = document.getElementById('saveProfileBtnBottom');
-    const savePhotos = document.getElementById('savePhotosBtn');
+    const savePhotosBtnEl = document.getElementById('savePhotosBtn');
 
     if (saveTop) saveTop.addEventListener('click', () => saveProfileAndEventsToServer());
     if (saveBottom) saveBottom.addEventListener('click', () => saveProfileAndEventsToServer());
-    if (savePhotos) {
-  console.log("✅ 写真保存ボタンにイベント登録しました");
-  savePhotos.addEventListener('click', savePhotos);
+    if (savePhotosBtnEl) {
+    console.log("✅ 写真保存ボタンにイベント登録します");
+    savePhotosBtnEl.addEventListener('click', savePhotos);
 }
   }
 });
