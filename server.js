@@ -282,7 +282,13 @@ app.post('/api/user/:username', async (req, res) => {
       uploadedPhotoUrls.push(downloadURL);
     }
 
-    profile.photos = uploadedPhotoUrls;
+    profile.photos = incoming.photos.map((photo, i) => {
+  if (typeof photo === 'object') return photo; // すでにurl+positionならそのまま
+  return {
+    url: uploadedPhotoUrls[i],
+    position: incoming.positions?.[i] ?? '50'  // ← ここはclient側で送る必要あり
+  };
+});
 
   } else {
     // base64ではなくURL配列の場合
