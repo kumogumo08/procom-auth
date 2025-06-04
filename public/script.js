@@ -605,7 +605,7 @@ function nextSlide() {
 }
 
 // 📌 初期化処理
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   updateAuthUI();
   attachAuthFormHandlers();
 
@@ -644,6 +644,14 @@ fetch(`/api/user/${getUsernameFromURL()}`)
     // alert(err.message);
   });
 
+  let isEditable = false;
+  try {
+    const sessionRes = await fetch('/session');
+    const session = await sessionRes.json();
+    isEditable = session.loggedIn && session.username === getUsernameFromURL();
+  } catch (err) {
+    console.warn("⚠ セッション情報の取得に失敗しました", err);
+  }
 
   updatePhotoSlider();
 
@@ -678,22 +686,19 @@ fetch(`/api/user/${getUsernameFromURL()}`)
       savePhotosBtn.dataset.listenerAdded = 'true'; // 重複防止
     }
 
-  const saveBtn = document.getElementById('saveBtn');
-  if (saveBtn) {
-    console.log("✅ saveBtn が見つかりました");
-    saveBtn.addEventListener('click', () => {
-      console.log("💾 プロフィール保存ボタンがクリックされました");
-      saveProfileAndEventsToServer(true); 
-    });
-    } else {
-  console.warn("❌ saveBtn が見つかりませんでした（DOMが未構築？）");
-  }
-}); 
+    document.getElementById('editBtn')?.addEventListener('click', () => {
+      document.getElementById('editForm')?.classList.remove('hidden');
 
-function getEventsForDate(date, eventsArray) {
-  const entry = eventsArray.find(e => e.date === date);
-  return entry ? entry.events : [];
-}
+      const saveBtn = document.getElementById('saveBtn');
+      if (saveBtn && !saveBtn.dataset.listenerAdded) {
+        console.log("✅ saveBtn が見つかりました（編集後）");
+        saveBtn.addEventListener('click', () => {
+          console.log("💾 プロフィール保存ボタンがクリックされました");
+          saveProfileAndEventsToServer(true); 
+        });
+        saveBtn.dataset.listenerAdded = 'true'; // ← 重複防止
+      }
+    });
 
 document.getElementById('add-event-btn')?.addEventListener('click', () => {
   const date = document.getElementById('event-date').value.trim();
@@ -721,6 +726,12 @@ document.getElementById('add-event-btn')?.addEventListener('click', () => {
   document.getElementById('event-date').value = '';
   document.getElementById('event-text').value = '';
 });
+});
+
+function getEventsForDate(date, eventsArray) {
+  const entry = eventsArray.find(e => e.date === date);
+  return entry ? entry.events : [];
+}
 
 function validatePassword(password) {
   const lengthOK = password.length >= 8 && password.length <= 32;
