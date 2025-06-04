@@ -133,14 +133,24 @@ body {
   
   .carousel {
     perspective: 1000px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
-    overflow: visible;
     height: 320px;
   }
   
+.carousel .slide {
+  width: 100%;
+  height: 400px; /* お好みで */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.carousel img {
+  object-fit: contain;
+  object-position: center;
+}
+
   .slide {
     position: absolute;
     transform: rotateY(calc(var(--i) * 45deg)) translateZ(400px);
@@ -148,12 +158,6 @@ body {
     opacity: 0.6;
     border-radius: 12px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-    width: 280px;
-    height: 180px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
   
   .slide.active {
@@ -728,9 +732,7 @@ body {
 }
 
 .carousel img {
-  width: 100%;
   height: auto;
-  object-fit: cover; /* 必要に応じて contain または cover を使う */
   border: none;
   padding: 0;
   background: none;
@@ -738,6 +740,10 @@ body {
   max-width: 100%;
   border-radius: 12px;
   box-shadow: none;
+  max-height: 100%;
+  object-fit: contain;
+  width: auto;
+  margin: 0 auto;
 }
 
 .delete-btn {
