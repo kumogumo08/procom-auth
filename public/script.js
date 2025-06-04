@@ -655,6 +655,10 @@ fetch(`/api/user/${getUsernameFromURL()}`)
 
   updatePhotoSlider();
 
+    document.getElementById('editBtn')?.addEventListener('click', () => {
+    document.getElementById('editForm')?.classList.remove('hidden');
+    });
+
   events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
   createCalendar(currentDate, isEditable); 
 
@@ -685,10 +689,6 @@ fetch(`/api/user/${getUsernameFromURL()}`)
       });
       savePhotosBtn.dataset.listenerAdded = 'true'; // 重複防止
     }
-
-    document.getElementById('editBtn')?.addEventListener('click', () => {
-    document.getElementById('editForm')?.classList.remove('hidden');
-    });
 
 document.getElementById('add-event-btn')?.addEventListener('click', () => {
   const date = document.getElementById('event-date').value.trim();
