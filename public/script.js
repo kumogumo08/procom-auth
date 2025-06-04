@@ -682,7 +682,7 @@ fetch(`/api/user/${getUsernameFromURL()}`)
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
       console.log("💾 プロフィール保存ボタンがクリックされました");
-      saveProfileAndEventsToServer();
+      saveProfileAndEventsToServer(true); 
     });
   }
 }); 
@@ -713,7 +713,7 @@ document.getElementById('add-event-btn')?.addEventListener('click', () => {
     console.error(`ローカル保存に失敗しました（${date}）:`, e);
   }
 
-  createCalendar(currentDate, isEditable); 
+  createCalendar(currentDate);
 
   document.getElementById('event-date').value = '';
   document.getElementById('event-text').value = '';
