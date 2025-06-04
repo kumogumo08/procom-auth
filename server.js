@@ -331,7 +331,7 @@ app.get('/api/user/:username', async (req, res) => {
     const data = userDoc.data();
     const profile = data.profile || {};
 
-    res.json(Object.assign({
+    res.json({ profile: Object.assign({
       name: '',
       title: '',
       bio: '',
@@ -341,9 +341,9 @@ app.get('/api/user/:username', async (req, res) => {
       xUsername: '',
       tiktokUrls: [],
       calendarEvents: [],
-      youtubeMode: 'latest',         // ✅ 安定的に追加
-      manualYouTubeUrls: []          // ✅ 安定的に追加
-    }, profile));
+      youtubeMode: 'latest',
+      manualYouTubeUrls: []
+    }, profile) });
 
    // profileだけ返すように
   } catch (err) {
