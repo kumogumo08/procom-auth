@@ -662,12 +662,23 @@ fetch(`/api/user/${getUsernameFromURL()}`)
   events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
   createCalendar(currentDate, isEditable); 
 
-  document.getElementById('saveProfileBtnTop')?.addEventListener('click', () => {
-    saveProfileAndEventsToServer(true);
-  });
-  document.getElementById('saveProfileBtnBottom')?.addEventListener('click', () => {
-    saveProfileAndEventsToServer(true);
-  });
+    const saveTop = document.getElementById('saveProfileBtnTop');
+    if (saveTop && !saveTop.dataset.listenerAdded) {
+      saveTop.addEventListener('click', () => {
+        console.log("💾 Topボタンがクリックされました");
+        saveProfileAndEventsToServer(true);
+      });
+      saveTop.dataset.listenerAdded = 'true';
+    }
+
+    const saveBottom = document.getElementById('saveProfileBtnBottom');
+    if (saveBottom && !saveBottom.dataset.listenerAdded) {
+      saveBottom.addEventListener('click', () => {
+        console.log("💾 Bottomボタンがクリックされました");
+        saveProfileAndEventsToServer(true);
+      });
+      saveBottom.dataset.listenerAdded = 'true';
+    }
       // Instagram 投稿URL 入力時に保存
     document.getElementById('instagramPostLink')?.addEventListener('input', (e) => {
       localStorage.setItem('instagramPostUrl', e.target.value.trim());
