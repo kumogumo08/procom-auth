@@ -687,17 +687,7 @@ fetch(`/api/user/${getUsernameFromURL()}`)
     }
 
     document.getElementById('editBtn')?.addEventListener('click', () => {
-      document.getElementById('editForm')?.classList.remove('hidden');
-
-      const saveBtn = document.getElementById('saveBtn');
-      if (saveBtn && !saveBtn.dataset.listenerAdded) {
-        console.log("✅ saveBtn が見つかりました（編集後）");
-        saveBtn.addEventListener('click', () => {
-          console.log("💾 プロフィール保存ボタンがクリックされました");
-          saveProfileAndEventsToServer(true); 
-        });
-        saveBtn.dataset.listenerAdded = 'true'; // ← 重複防止
-      }
+    document.getElementById('editForm')?.classList.remove('hidden');
     });
 
 document.getElementById('add-event-btn')?.addEventListener('click', () => {
