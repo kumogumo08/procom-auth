@@ -164,6 +164,16 @@ if (!isOwnPage && favoriteBtn) {
     errorContainer.innerText = 'ユーザーデータの取得に失敗しました。';
     document.body.prepend(errorContainer);
   }
+
+    if (isOwnPage) {
+      const saveTop = document.getElementById('saveProfileBtnTop');
+      const saveBottom = document.getElementById('saveProfileBtnBottom');
+      const savePhotos = document.getElementById('savePhotosBtn');
+
+      if (saveTop) saveTop.addEventListener('click', saveProfileAndEventsToServer);
+      if (saveBottom) saveBottom.addEventListener('click', saveProfileAndEventsToServer);
+      if (savePhotos) savePhotos.addEventListener('click', savePhotosToServer);
+    }
 });
 
 function showXProfile(username) {
