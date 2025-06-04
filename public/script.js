@@ -583,52 +583,52 @@ async function savePhotos() {
   }
 }
 
-function updatePhotoSlider(photoData = null) {
-  if (!photoData) {
-    photoData = JSON.parse(localStorage.getItem('photos') || '[]');
-  }
+// function updatePhotoSlider(photoData = null) {
+//   if (!photoData) {
+//     photoData = JSON.parse(localStorage.getItem('photos') || '[]');
+//   }
 
-  carousel.innerHTML = '';
+//   carousel.innerHTML = '';
 
-  photoData.forEach((photo, index) => {
-    const slideDiv = document.createElement('div');
-    slideDiv.classList.add('slide');
-    slideDiv.style.setProperty('--i', index);
-    slideDiv.style.position = 'relative'; // ✅ スライダーを絶対配置するため
+//   photoData.forEach((photo, index) => {
+//     const slideDiv = document.createElement('div');
+//     slideDiv.classList.add('slide');
+//     slideDiv.style.setProperty('--i', index);
+//     slideDiv.style.position = 'relative'; // ✅ スライダーを絶対配置するため
 
-    const img = document.createElement('img');
-    img.src = photo.url || photo; // photo.url または直接URL
-    img.classList.add('carousel-image');
-    img.style.objectPosition = `center ${photo.position || '50'}%`; // 🔄 表示位置を復元
+//     const img = document.createElement('img');
+//     img.src = photo.url || photo; // photo.url または直接URL
+//     img.classList.add('carousel-image');
+//     img.style.objectPosition = `center ${photo.position || '50'}%`; // 🔄 表示位置を復元
 
-    const slider = document.createElement('input');
-    slider.type = 'range';
-    slider.min = '0';
-    slider.max = '100';
-    slider.value = photo.position || '50';
-    slider.classList.add('position-slider');
-    slider.dataset.index = index;
+//     const slider = document.createElement('input');
+//     slider.type = 'range';
+//     slider.min = '0';
+//     slider.max = '100';
+//     slider.value = photo.position || '50';
+//     slider.classList.add('position-slider');
+//     slider.dataset.index = index;
 
-    // ✅ スライダーのスタイル調整
-    slider.style.position = 'absolute';
-    slider.style.bottom = '10px';
-    slider.style.left = '10%';
-    slider.style.width = '80%';
-    slider.style.zIndex = '10';
+//     // ✅ スライダーのスタイル調整
+//     slider.style.position = 'absolute';
+//     slider.style.bottom = '10px';
+//     slider.style.left = '10%';
+//     slider.style.width = '80%';
+//     slider.style.zIndex = '10';
 
-    slider.addEventListener('input', () => {
-      img.style.objectPosition = `center ${slider.value}%`;
-    });
+//     slider.addEventListener('input', () => {
+//       img.style.objectPosition = `center ${slider.value}%`;
+//     });
 
-    slideDiv.appendChild(img);
-    slideDiv.appendChild(slider);
-    carousel.appendChild(slideDiv);
-  });
+//     slideDiv.appendChild(img);
+//     slideDiv.appendChild(slider);
+//     carousel.appendChild(slideDiv);
+//   });
 
-  slides = carousel.querySelectorAll('.slide');
-  currentSlide = 0;
-  updateCarousel();
-}
+//   slides = carousel.querySelectorAll('.slide');
+//   currentSlide = 0;
+//   //updateCarousel();
+// }
 
 function updateCarousel() {
   slides.forEach((slide, i) => {
