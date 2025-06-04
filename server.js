@@ -327,7 +327,6 @@ app.get('/api/user/:username', async (req, res) => {
        return res.status(404).json({ error: 'ユーザーが見つかりません' });
     }
 
-
     const data = userDoc.data();
     const profile = data.profile || {};
 
