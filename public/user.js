@@ -172,7 +172,7 @@ if (!isOwnPage && favoriteBtn) {
 
     if (saveTop) saveTop.addEventListener('click', () => saveProfileAndEventsToServer());
     if (saveBottom) saveBottom.addEventListener('click', () => saveProfileAndEventsToServer());
-    if (savePhotos) savePhotosBtn.addEventListener('click', savePhotosToServer);
+    if (savePhotos) savePhotosBtn.addEventListener('click', savePhotos);
   }
 });
 
