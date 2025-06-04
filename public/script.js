@@ -630,25 +630,6 @@ function updatePhotoSlider(photoData = null) {
   updateCarousel();
 }
 
-function updateCarousel() {
-  slides.forEach((slide, i) => {
-    let offset;
-
-    if (slides.length === 1) {
-      offset = 0; // 中央固定
-    } else if (slides.length === 2) {
-      // 2枚のときだけ特別に -0.5 / 0.5 にして左右対称に配置
-      offset = (i === currentSlide) ? -0.5 : 0.5;
-    } else {
-      // 通常の3枚以上
-      offset = ((i - currentSlide + slides.length) % slides.length);
-    }
-
-    slide.style.setProperty('--i', offset);
-    slide.classList.toggle('active', offset === 0);
-  });
-}
-
 function prevSlide() {
   if (slides.length === 0) return;
   currentSlide = (currentSlide - 1 + slides.length) % slides.length;
