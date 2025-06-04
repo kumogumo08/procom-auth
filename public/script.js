@@ -683,7 +683,12 @@ fetch(`/api/user/${getUsernameFromURL()}`)
       document.getElementById('instagramPostLink').value = profile.instagramPostUrl;
       localStorage.setItem('instagramPostUrl', profile.instagramPostUrl);
     }
+     // 🔽🔽 ここで写真データを反映 🔽🔽
+    if (Array.isArray(profile.photos)) {
+      updatePhotoSlider(profile.photos);
+    }
   })
+
   .catch(err => {
     console.error("❌ プロフィール読み込みエラー:", err.message);
     // 必要ならユーザーにメッセージ表示も可能
@@ -698,8 +703,6 @@ fetch(`/api/user/${getUsernameFromURL()}`)
   } catch (err) {
     console.warn("⚠ セッション情報の取得に失敗しました", err);
   }
-
-  updatePhotoSlider();
 
     document.getElementById('editBtn')?.addEventListener('click', () => {
     document.getElementById('editForm')?.classList.remove('hidden');
