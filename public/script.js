@@ -143,7 +143,7 @@ loginForm?.addEventListener('submit', async (e) => {
     if (data.photos && Array.isArray(data.photos)) {
       updatePhotoSlider(data.photos);
     }
-    
+
     // ✅ セッション保存のタイミングを確保（超重要）
     setTimeout(() => {
       // window.location.href = `/user/${data.username}`;
@@ -632,7 +632,11 @@ function updatePhotoSlider(photoData = null) {
 
 function updateCarousel() {
   slides.forEach((slide, i) => {
-    const offset = ((i - currentSlide + slides.length) % slides.length);
+    let offset = ((i - currentSlide + slides.length) % slides.length);
+
+    // ✅ スライドが1枚だけのときは強制的に中央に
+    if (slides.length === 1) offset = 0;
+
     slide.style.setProperty('--i', offset);
     slide.classList.toggle('active', offset === 0);
   });
