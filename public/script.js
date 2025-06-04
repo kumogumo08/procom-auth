@@ -411,6 +411,18 @@ function createCalendar(date = new Date(), isEditable = false) {
           delBtn.className = 'delete-btn';
           delBtn.dataset.date = fullDate;
           delBtn.dataset.index = idx;
+
+            delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const date = delBtn.dataset.date;
+            const index = parseInt(delBtn.dataset.index, 10);
+            if (events[date]) {
+              events[date].splice(index, 1);
+              if (events[date].length === 0) delete events[date];
+              localStorage.setItem('calendarEvents', JSON.stringify(events));
+              createCalendar(currentDate, isEditable);
+            }
+          });
           item.appendChild(delBtn);
         }
         popup.appendChild(item);
@@ -430,7 +442,7 @@ function createCalendar(date = new Date(), isEditable = false) {
 
   document.getElementById('prev-month').onclick = () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
-    createCalendar(currentDate);
+    createCalendar(currentDate, isEditable); 
   };
   document.getElementById('next-month').onclick = () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
@@ -453,7 +465,7 @@ function createCalendar(date = new Date(), isEditable = false) {
           events[date].splice(index, 1);
           if (events[date].length === 0) delete events[date];
           localStorage.setItem('calendarEvents', JSON.stringify(events));
-          createCalendar(currentDate);
+          createCalendar(currentDate, isEditable); 
         }
       });
     });
@@ -636,7 +648,7 @@ fetch(`/api/user/${getUsernameFromURL()}`)
   updatePhotoSlider();
 
   events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
-  createCalendar(currentDate);
+  createCalendar(currentDate, isEditable); 
 
   document.getElementById('saveProfileBtnTop')?.addEventListener('click', () => {
     saveProfileAndEventsToServer(true);
@@ -701,7 +713,7 @@ document.getElementById('add-event-btn')?.addEventListener('click', () => {
     console.error(`ローカル保存に失敗しました（${date}）:`, e);
   }
 
-  createCalendar(currentDate);
+  createCalendar(currentDate, isEditable); 
 
   document.getElementById('event-date').value = '';
   document.getElementById('event-text').value = '';
