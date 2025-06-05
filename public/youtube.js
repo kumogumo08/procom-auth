@@ -361,51 +361,49 @@ function addManualVideoInput() {
 }
 
 // ==== 初期読み込み ==== 
-console.log("✅ DOMContentLoaded が始まりました");
 window.addEventListener('DOMContentLoaded', () => {
   const isUserPage = location.pathname.startsWith('/user/');
-  const savedX = localStorage.getItem('xUsername');
-  const savedUrl = localStorage.getItem('instagramPostUrl');
-  const savedYT = localStorage.getItem('youtubeChannelId');
-
-  // ▼ X表示（プロフィールページでもTOPでも共通）
-  if (savedX) {
-  const xInput = document.getElementById('xUsernameInput');
-  if (xInput) {
-    xInput.value = savedX;
-  }
-  showXProfile();
-}
-
-  // ▼ Instagram表示
-  if (savedUrl) {
-  const igInput = document.getElementById('instagramPostLink');
-  if (igInput) {
-    igInput.value = savedUrl;
-  }
-  embedInstagramPost();
-}
-
-  // ▼ YouTube表示
-if (isUserPage) {
   const uid = location.pathname.split('/').pop();
+
+  if (!isUserPage || !uid) return;
+
   fetch(`/api/user/${uid}`)
     .then(res => res.json())
     .then(data => {
-      if (data.youtubeChannelId) {
-        fetchLatestVideos(data.youtubeChannelId);
-      }
-    });
-} else {
-  if (savedYT) {
-    const ytInput = document.getElementById('channelIdInput');
-    if (ytInput) {
-      ytInput.value = savedYT;
-    }
-    fetchLatestVideos(savedYT);
-  }
-}
+      const profile = data.profile || data;
 
-  // ▼ TikTok表示
-  displayTikTokVideos();
+      // ▼ X表示
+      if (profile.xUsername) {
+        const xInput = document.getElementById('xUsernameInput');
+        if (xInput) xInput.value = profile.xUsername;
+        showXProfile(profile.xUsername);
+      }
+
+      // ▼ Instagram表示
+      if (profile.instagramPostUrl) {
+        const igInput = document.getElementById('instagramPostLink');
+        if (igInput) igInput.value = profile.instagramPostUrl;
+        embedInstagramPost(profile.instagramPostUrl);
+      }
+
+      // ▼ YouTube表示（latest / manual 両対応）
+      if (profile.youtubeMode === 'latest' && profile.youtubeChannelId) {
+        const ytInput = document.getElementById('channelIdInput');
+        if (ytInput) ytInput.value = profile.youtubeChannelId;
+        fetchLatestVideos(profile.youtubeChannelId);
+      } else if (profile.youtubeMode === 'manual') {
+        const urls = profile.manualYouTubeUrls || [];
+        const textarea = document.getElementById('manualYouTubeUrls');
+        if (textarea) textarea.value = urls.join('\n');
+        displayManualYouTubeVideos(urls);
+      }
+
+      // ▼ TikTok表示
+      if (Array.isArray(profile.tiktokUrls)) {
+        displayTikTokVideos(profile.tiktokUrls);
+      }
+    })
+    .catch(err => {
+      console.error("❌ Firestoreからのユーザーデータ取得エラー:", err);
+    });
 });
