@@ -325,7 +325,7 @@ function saveYouTubeSettingsToServer() {
           localStorage.setItem('youtubeChannelId', data.youtubeChannelId || '');
           localStorage.setItem('manualYouTubeUrls', JSON.stringify(data.manualYouTubeUrls || []));
 
-      return fetch(`/api/user/${session.username}`, {
+      return fetch(`/api/user/${session.uid}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -388,8 +388,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // ▼ YouTube表示
 if (isUserPage) {
-  const username = location.pathname.split('/').pop();
-  fetch(`/api/user/${username}`)
+  const uid = location.pathname.split('/').pop();
+  fetch(`/api/user/${uid}`)
     .then(res => res.json())
     .then(data => {
       if (data.youtubeChannelId) {

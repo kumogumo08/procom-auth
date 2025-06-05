@@ -52,9 +52,9 @@ function updateAuthUI() {
       if (data.loggedIn) {
         authForms.innerHTML = `
           <div style="text-align: right; margin-top: 10px;">
-            <p>ようこそ、${data.username}さん！</p>
+            <p>ようこそ、${data.name}さん！</p>
             <div style="display: flex; justify-content: flex-end; gap: 10px; align-items: center;">
-              <a href="/user/${data.username}" class="mypage-btn">マイページ</a>
+              <a href="/user/${data.uid}" class="mypage-btn">マイページ</a>
               <form action="/logout" method="GET">
                 <button type="submit">ログアウト</button>
               </form>
@@ -108,14 +108,15 @@ function updateAuthUI() {
   registerForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('register-username').value;
+    const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
 
     const res = await fetch('/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, email, password }),
       credentials: 'include'
-    });
+});
 
     const msg = await res.text();
     alert(msg);
@@ -137,7 +138,7 @@ loginForm?.addEventListener('submit', async (e) => {
 
   if (res.ok) {
     const data = await res.json();
-    alert(`ログイン成功！ようこそ ${data.username} さん`);
+    alert(`ログイン成功！ようこそ ${data.name} さん`);
 
         // ✅ 写真があればスライダーを更新
     if (data.photos && Array.isArray(data.photos)) {
@@ -158,35 +159,14 @@ loginForm?.addEventListener('submit', async (e) => {
 
 
 // 例：URLが http://localhost:3000/user/flamingo の場合
-function getUsernameFromURL() {
+function getUidFromURL() {
   const path = window.location.pathname;
   const segments = path.split('/');
-  const username = segments[segments.length - 1];
-  // 空や不正な場合は null を返す
-  if (!username || username === 'user' || username === '') {
+  const uid = segments[segments.length - 1];
+  if (!uid || uid === 'user' || uid === '') {
     return null;
   }
-
-  return username;
-}
-
-async function loadUserProfile() {
-  const username = getUsernameFromURL();
-  if (!username) {
-    console.warn('⚠ ユーザー名がURLから取得できませんでした（ログイン前など）');
-    return; // ← ここで処理をスキップ
-  }
-
-  console.log('取得したユーザー名：', username);
-
-  try {
-    const res = await fetch(`/api/user/${username}`);
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    // 必要なプロフィール処理をここに…
-  } catch (err) {
-    console.error("❌ プロフィール読み込みエラー:", err.message);
-  }
+  return uid;
 }
 
 function saveProfileAndEventsToServer(includePhotos = false, customPhotos = null) {

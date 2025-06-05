@@ -1,4 +1,4 @@
-const usernameFromURL = decodeURIComponent(window.location.pathname.split('/').pop());
+const uidFromURL = decodeURIComponent(window.location.pathname.split('/').pop());
 
 window.addEventListener('DOMContentLoaded', async () => {
 
@@ -13,12 +13,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     // 🔽 セッションを取得してisOwnPageを定義する
   const sessionRes = await fetch('/session');
   const session = await sessionRes.json();
-  isOwnPage = session.loggedIn && session.username === usernameFromURL; // ← ここでは代入だけ
+  isOwnPage = session.loggedIn && session.uid === uidFromURL;// ← ここでは代入だけ
 
   if (titleEl) titleEl.textContent = `${usernameFromURL}さんのページ`;
 
   try {
-    const res = await fetch(`/api/user/${usernameFromURL}`);
+    const res = await fetch(`/api/user/${uidFromURL}`);
     if (!res.ok) throw new Error('ユーザーデータ取得失敗');
     const data = await res.json();
     const profile = data.profile || data;
@@ -139,7 +139,7 @@ const favoriteBtn = document.getElementById('favoriteBtn');
 if (!isOwnPage && favoriteBtn) {
   favoriteBtn.style.display = 'inline-block';
   favoriteBtn.onclick = async () => {
-    const res = await fetch(`/api/favorites/${usernameFromURL}`, {
+    const res = await fetch(`/api/favorites/${uidFromURL}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div>
             <strong>${user.name || user.username}</strong><br>
             <small>${user.title || ''}</small><br>
-            <a href="/user/${user.username}">▶ プロフィール</a>
+            <a href="/user/${user.uid}">▶ プロフィール</a>
           </div>
         </div>
         `;

@@ -79,7 +79,7 @@ app.post('/register', async (req, res) => {
   username = username.trim();
   email = email.trim().toLowerCase();
 
-  const userRef = db.collection('users').doc(username);
+  const userRef = db.collection('users').doc(uid);
   const usernameSnapshot = await db.collection('users')
     .where('profile.name', '==', username)
     .get();
@@ -117,7 +117,7 @@ app.post('/register', async (req, res) => {
   });
 
   req.session.uid = uid;
-  res.redirect(`/user/${username}`);
+  res.redirect(`/user/${userDoc.id}`);
 });
 
 // ✅ loginルートの更新（email でログイン）
@@ -148,7 +148,7 @@ app.post('/login', async (req, res) => {
       return res.status(500).send('セッション保存に失敗しました');
     }
 
-     res.redirect(`/user/${username}`);
+     res.redirect(`/user/${userDoc.id}`);
   });
 });
 
@@ -167,13 +167,15 @@ app.get('/logout', (req, res) => {
 
 
 // セッションチェック
-app.get('/session', (req, res) => {
-  console.log("🔥 セッション中身:", req.session); // ← これを追加
-    if (req.session.uid) {
-      res.json({ loggedIn: true, uid: req.session.uid });
-    } else {
-      res.json({ loggedIn: false });
-    }
+app.get('/session', async (req, res) => {
+  if (req.session.uid) {
+    const uid = req.session.uid;
+    const doc = await db.collection('users').doc(uid).get();
+    const name = doc.exists ? doc.data()?.profile?.name || '（未設定）' : '（未設定）';
+    res.json({ loggedIn: true, uid, name });
+  } else {
+    res.json({ loggedIn: false });
+  }
 });
 
 function cleanData(obj) {
@@ -274,7 +276,7 @@ app.post('/api/user/:uid', async (req, res) => {
       const contentType = matches[1];
       const buffer = Buffer.from(matches[2], 'base64');
       const ext = contentType.split('/')[1];
-      const fileName = `photos/${req.params.username}/${uuidv4()}.${ext}`;
+      const fileName = `photos/${req.params.uid}/${uuidv4()}.${ext}`;
       const file = bucket.file(fileName);
 
       await file.save(buffer, {
@@ -453,7 +455,7 @@ app.get('/', (req, res) => {
 
 // ✅ アカウント削除（Firestore + Storage + セッション削除）
 app.delete('/account/delete', async (req, res) => {
-  if (!req.session || !req.session.username) {
+  if (!req.session || !req.session.uid) {
     return res.status(401).send('ログインが必要です');
   }
 
@@ -498,7 +500,7 @@ app.post('/api/deletePhotos', async (req, res) => {
     return res.status(400).send('不正な形式です');
   }
 
-  if (!req.session.username) {
+  if (!req.session.uid) {
     return res.status(403).send('ログインが必要です');
   }
 
@@ -536,8 +538,8 @@ app.post('/api/deletePhotos', async (req, res) => {
 });
 
 app.post('/api/uploadPhotos', async (req, res) => {
-  const username = req.session.username;
-  if (!username) {
+  const uid = req.session.uid;
+  if (!uid) {
     return res.status(401).send('未ログインです');
   }
 
@@ -597,15 +599,15 @@ app.post('/api/uploadPhotos', async (req, res) => {
 const saltRounds = 10;
 
 app.post('/account/update', async (req, res) => {
-  if (!req.session || !req.session.username) {
+  if (!req.session || !req.session.uid) {
     return res.status(401).send('ログインしていません');
   }
 
-  const currentUsername = req.session.username;
+  const uid = req.session.uid;
   const { newUsername, newEmail, newPassword } = req.body;
 
   try {
-    const userDocRef = db.collection('users').doc(currentUsername);
+    const userDocRef = db.collection('users').doc(uid);
     const userDoc = await userDocRef.get();
 
     if (!userDoc.exists) {
