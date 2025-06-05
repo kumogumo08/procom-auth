@@ -594,6 +594,7 @@ function updatePhotoSlider(photoData = null) {
   }
 
   carousel.innerHTML = '';
+   slides = []; // ← 念のため初期化
 
   photoData.forEach((photo, index) => {
     const slideDiv = document.createElement('div');
@@ -632,6 +633,7 @@ function updatePhotoSlider(photoData = null) {
 
   slides = carousel.querySelectorAll('.slide');
   currentSlide = 0;
+  console.log("📸 スライド初期化完了:", slides.length);
   updateCarousel();
 }
 
