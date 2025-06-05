@@ -588,11 +588,7 @@ async function savePhotos() {
   }
 }
 
-function updatePhotoSlider(photoData = null) {
-  if (!photoData) {
-    photoData = JSON.parse(localStorage.getItem('photos') || '[]');
-  }
-
+function updatePhotoSlider(photoData = [], isOwnPage = false) {
   carousel.innerHTML = '';
   slides = [];
 

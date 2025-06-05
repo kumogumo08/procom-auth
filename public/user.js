@@ -102,7 +102,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (bioEl) bioEl.innerHTML = (profile.bio || '').replace(/\n/g, '<br>');
 
     if (Array.isArray(profile.photos)) {
-      updatePhotoSlider(profile.photos);
+      updatePhotoSlider(profile.photos, isOwnPage);
     }
 
       // ✅ SNS表示処理はログイン状態に関係なく実行する
