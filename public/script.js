@@ -609,6 +609,9 @@ function updatePhotoSlider(photoData = null) {
     img.classList.add('carousel-image');
     img.style.objectPosition = `center ${position}%`;
 
+     slideDiv.appendChild(img);
+
+     if (typeof isOwnPage !== 'undefined' && isOwnPage) {
     const slider = document.createElement('input');
     slider.type = 'range';
     slider.min = '0';
@@ -627,8 +630,9 @@ function updatePhotoSlider(photoData = null) {
       img.style.objectPosition = `center ${slider.value}%`;
     });
 
-    slideDiv.appendChild(img);
-    slideDiv.appendChild(slider);
+      slideDiv.appendChild(slider);
+    }
+
     carousel.appendChild(slideDiv);
   });
 
