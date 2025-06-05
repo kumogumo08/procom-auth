@@ -1,5 +1,6 @@
 //server.jsです。
 const express = require('express');
+const { v4: uuidv4 } = require('uuid');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 require('dotenv').config();
@@ -76,20 +77,30 @@ app.post('/register', async (req, res) => {
   return res.status(400).send('パスワードは8〜32文字で、大文字・小文字・数字を含み、記号は使えません');
 }
 
-  username = username.trim().toLowerCase();
-  const userRef = db.collection('users').doc(username);
-  const userDoc = await userRef.get();
+  username = username.trim();
+  email = email.trim().toLowerCase();
 
-  const emailSnapshot = await db.collection('users').where('email', '==', email).get();
+  const userRef = db.collection('users').doc(username);
+  const usernameSnapshot = await db.collection('users')
+    .where('profile.name', '==', username)
+    .get();
+  if (!usernameSnapshot.empty) {
+    return res.status(409).send('ユーザー名は既に使用されています');
+  }
+
+  // 🔍 メールアドレスの重複チェック
+  const emailSnapshot = await db.collection('users')
+    .where('email', '==', email)
+    .get();
   if (!emailSnapshot.empty) {
     return res.status(409).send('メールアドレスは既に使用されています');
   }
 
-  if (userDoc.exists) {
-    return res.status(409).send('ユーザー名は既に使用されています');
-  }
+    // ✅ 固有のUIDを生成
+  const uid = uuidv4();
 
   const hashed = await bcrypt.hash(password, 10);
+
   await userRef.set({
     email,
     password: hashed,
@@ -106,7 +117,7 @@ app.post('/register', async (req, res) => {
     }
   });
 
-  req.session.username = username;
+  req.session.uid = uid;
   res.redirect(`/user/${username}`);
 });
 
@@ -128,15 +139,17 @@ app.post('/login', async (req, res) => {
     return res.status(401).send('パスワードが間違っています');
   }
 
-  req.session.username = userDoc.id;
-  // ✅ セッションの保存を確実に完了させてからレスポンスを返す
+ const username = user.profile?.name || userDoc.id; // ← 念のためチェック
+
+  req.session.uid = userDoc.id;
+
   req.session.save(err => {
     if (err) {
       console.error("❌ セッション保存エラー:", err);
       return res.status(500).send('セッション保存に失敗しました');
     }
 
-     res.redirect(`/user/${userDoc.id}`);
+     res.redirect(`/user/${username}`);
   });
 });
 
@@ -157,11 +170,11 @@ app.get('/logout', (req, res) => {
 // セッションチェック
 app.get('/session', (req, res) => {
   console.log("🔥 セッション中身:", req.session); // ← これを追加
-  if (req.session.username) {
-    res.json({ loggedIn: true, username: req.session.username });
-  } else {
-    res.json({ loggedIn: false });
-  }
+    if (req.session.uid) {
+      res.json({ loggedIn: true, uid: req.session.uid });
+    } else {
+      res.json({ loggedIn: false });
+    }
 });
 
 function cleanData(obj) {
@@ -182,11 +195,11 @@ function cleanData(obj) {
 }
 
 // 🔧 ユーザーデータ保存（ログインしている本人のみ許可）
-app.post('/api/user/:username', async (req, res) => {
-  if (!req.session.username || req.session.username !== req.params.username) {
+app.post('/api/user/:uid', async (req, res) => {
+  if (!req.session.uid || req.session.uid !== req.params.uid) {
     return res.status(403).send('権限がありません');
   }
-
+  const userRef = db.collection('users').doc(req.params.uid);
   const incoming = req.body;
   console.log("📩 POST /api/user - 受信データ:", incoming);
 
@@ -196,8 +209,6 @@ app.post('/api/user/:username', async (req, res) => {
   if (!profile || typeof profile !== 'object') {
     return res.status(400).send('プロフィール情報が正しくありません');
   }
-
-  const userRef = db.collection('users').doc(req.params.username);
 
   try {
     const userDoc = await userRef.get();
@@ -323,39 +334,42 @@ app.post('/api/user/:username', async (req, res) => {
 });
 
 // 🔍 ユーザーデータ取得（プロフィール表示用）
-app.get('/api/user/:username', async (req, res) => {
-  const username = req.params.username;
-  const userRef = db.collection('users').doc(username);
+app.get('/api/user/:uid', async (req, res) => {
+  const uid = req.params.uid;
+  const doc = await db.collection('users').doc(uid).get();
 
   try {
-    const userDoc = await userRef.get();
-    if (!userDoc.exists) {
-       return res.status(404).json({ error: 'ユーザーが見つかりません' });
-    }
+    // 🔍 profile.name から uid を探す
+  if (!doc.exists) {
+    return res.status(404).json({ error: 'ユーザーが見つかりません' });
+  }
 
-    const data = userDoc.data();
+    // 🔑 最初の一致ドキュメントを取得
+    const data = doc.data();
     const profile = data.profile || {};
 
-    res.json({ profile: Object.assign({
-      name: '',
-      title: '',
-      bio: '',
-      photos: [],
-      youtubeChannelId: '',
-      instagramPostUrl: '',
-      xUsername: '',
-      tiktokUrls: [],
-      calendarEvents: [],
-      youtubeMode: 'latest',
-      manualYouTubeUrls: []
-    }, profile) });
+      res.json({
+        profile: Object.assign({
+          name: '',
+          title: '',
+          bio: '',
+          photos: [],
+          youtubeChannelId: '',
+          instagramPostUrl: '',
+          xUsername: '',
+          tiktokUrls: [],
+          calendarEvents: [],
+          youtubeMode: 'latest',
+          manualYouTubeUrls: []
+        }, data.profile || {})
+      });
 
-   // profileだけ返すように
   } catch (err) {
     console.error('❌ ユーザーデータ取得エラー:', err);
     res.status(500).send('ユーザーデータの取得に失敗しました');
   }
 });
+
 
 // ユーザー一覧取得（検索用）
 app.get('/api/users', async (req, res) => {
@@ -375,7 +389,7 @@ app.get('/api/users', async (req, res) => {
 
 // お気に入り追加
 app.post('/api/favorites/:target', async (req, res) => {
-  const sessionUser = req.session.username;
+ const sessionUser = req.session.uid;
   const targetUser = req.params.target;
 
   if (!sessionUser || sessionUser === targetUser) return res.status(400).send('不正な操作');
@@ -389,7 +403,7 @@ app.post('/api/favorites/:target', async (req, res) => {
 });
 
 app.get('/api/favorites', async (req, res) => {
-  const sessionUser = req.session.username;
+  const sessionUser = req.session.uid;
   if (!sessionUser) return res.status(401).send('ログインが必要です');
 
   try {
@@ -421,14 +435,14 @@ app.get('/api/favorites', async (req, res) => {
 
 // アカウントページへのアクセスをセッションで保護
 app.get('/account.html', (req, res, next) => {
-  if (!req.session.username) {
+  if (!req.session.uid) {
     // 未ログインならリダイレクト
     return res.redirect('/top.html');
   }
  res.sendFile(path.join(__dirname, 'public', 'account.html'));
 });
 // HTML表示
-app.get('/user/:username', (req, res) => {
+app.get('/user/:uid', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'user.html'));
 });
 app.get('/users', (req, res) => {
@@ -444,18 +458,18 @@ app.delete('/account/delete', async (req, res) => {
     return res.status(401).send('ログインが必要です');
   }
 
-  const username = req.session.username;
+ const uid = req.session.uid;
 
   try {
     // Firestoreからユーザー削除
-    await db.collection('users').doc(username).delete();
-    console.log(`✅ Firestore: ${username} を削除しました`);
+    await db.collection('users').doc(uid).delete();
+    console.log(`✅ Firestore: ${uid} を削除しました`);
 
     // Storageから画像削除
-    const [files] = await bucket.getFiles({ prefix: `photos/${username}` });
+    const [files] = await bucket.getFiles({ prefix: `photos/${uid}` });
     const deletionPromises = files.map(file => file.delete());
     await Promise.all(deletionPromises);
-    console.log(`✅ Storage: ${username} の写真を削除しました`);
+    console.log(`✅ Storage: ${uid} の写真を削除しました`);
 
     // セッション破棄
     req.session.destroy(() => {
@@ -499,7 +513,7 @@ app.post('/api/deletePhotos', async (req, res) => {
           const filePath = match[1];
 
           // 自分のフォルダ以外の削除を防ぐ
-          if (!filePath.startsWith(`photos/${req.session.username}/`)) {
+          if (!filePath.startsWith(`photos/${req.session.uid}/`)) {
             console.warn(`⚠️ 不正なファイルパス: ${filePath}`);
             continue;
           }
@@ -534,7 +548,7 @@ app.post('/api/uploadPhotos', async (req, res) => {
   }
 
   try {
-    const folder = `photos/${username}/`;
+    const folder = `photos/${uid}/`;
     const [files] = await bucket.getFiles({ prefix: folder });
 
     // 古い画像削除
