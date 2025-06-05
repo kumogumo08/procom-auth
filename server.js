@@ -15,7 +15,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Firebase Admin SDK
 const admin = require('firebase-admin');
-const { v4: uuidv4 } = require('uuid');
 
 // 🔄 JSON文字列をパースして認証情報として渡す
 const serviceAccount = JSON.parse(process.env.FIREBASE_KEY_JSON);
