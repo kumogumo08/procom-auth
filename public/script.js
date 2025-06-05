@@ -594,28 +594,29 @@ function updatePhotoSlider(photoData = null) {
   }
 
   carousel.innerHTML = '';
-   slides = []; // ← 念のため初期化
+  slides = [];
 
   photoData.forEach((photo, index) => {
     const slideDiv = document.createElement('div');
     slideDiv.classList.add('slide');
-    // slideDiv.style.setProperty('--i', index);
-    slideDiv.style.position = 'relative'; // ✅ スライダーを絶対配置するため
+
+    // 🔽 photo が文字列かオブジェクトかに対応
+    const photoUrl = typeof photo === 'string' ? photo : photo.url;
+    const position = typeof photo === 'object' && photo.position ? photo.position : '50';
 
     const img = document.createElement('img');
-    img.src = photo.url || photo; // photo.url または直接URL
+    img.src = photoUrl;
     img.classList.add('carousel-image');
-    img.style.objectPosition = `center ${photo.position || '50'}%`; // 🔄 表示位置を復元
+    img.style.objectPosition = `center ${position}%`;
 
     const slider = document.createElement('input');
     slider.type = 'range';
     slider.min = '0';
     slider.max = '100';
-    slider.value = photo.position || '50';
+    slider.value = position;
     slider.classList.add('position-slider');
     slider.dataset.index = index;
 
-    // ✅ スライダーのスタイル調整
     slider.style.position = 'absolute';
     slider.style.bottom = '10px';
     slider.style.left = '10%';
@@ -633,27 +634,6 @@ function updatePhotoSlider(photoData = null) {
 
   slides = carousel.querySelectorAll('.slide');
   currentSlide = 0;
-  console.log("📸 スライド初期化完了:", slides.length);
-  updateCarousel();
-}
-
-function updateCarousel() {
-  slides.forEach((slide, i) => {
-    const offset = ((i - currentSlide + slides.length) % slides.length);
-    slide.style.setProperty('--i', offset);
-    slide.classList.toggle('active', offset === 0);
-  });
-}
-
-function prevSlide() {
-  if (slides.length === 0) return;
-  currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-  updateCarousel();
-}
-
-function nextSlide() {
-  if (slides.length === 0) return;
-  currentSlide = (currentSlide + 1) % slides.length;
   updateCarousel();
 }
 
