@@ -556,7 +556,7 @@ async function savePhotos() {
     const { urls } = await uploadRes.json();
     console.log("✅ アップロード完了URL一覧:", urls);
 
-    updatePhotoSlider(urls);
+    updatePhotoSlider(urls, true);
     localStorage.setItem('photos', JSON.stringify(urls));
 
     alert("✅ 写真が保存されました。プロフィールも保存するには『プロフィールを保存』ボタンを押してください。");
