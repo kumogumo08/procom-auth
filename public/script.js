@@ -283,7 +283,7 @@ function proceedWithSave(uid, includePhotos = false, customPhotos = null, update
   const data = { profile };
   console.log("✅ 最終送信データ:", data);
 
-  fetch(`/api/user/${username}`, {
+  fetch(`/api/user/${uid}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',

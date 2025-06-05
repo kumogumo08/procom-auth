@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const session = await sessionRes.json();
   isOwnPage = session.loggedIn && session.uid === uidFromURL;// ← ここでは代入だけ
 
-  if (titleEl) titleEl.textContent = `${usernameFromURL}さんのページ`;
+  if (titleEl) titleEl.textContent = `${profile.name || 'ユーザー'}さんのページ`;
 
   try {
     const res = await fetch(`/api/user/${uidFromURL}`);

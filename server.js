@@ -622,21 +622,29 @@ app.post('/account/update', async (req, res) => {
     const updates = {};
 
     // ユーザー名変更
-    if (newUsername && newUsername !== currentUsername) {
-      const newUserRef = db.collection('users').doc(newUsername);
-      const newUserDoc = await newUserRef.get();
-      if (newUserDoc.exists) {
-        return res.status(409).send('そのユーザー名は既に使われています');
-      }
+    // if (newUsername && newUsername !== currentUsername) {
+    //   const newUserRef = db.collection('users').doc(newUsername);
+    //   const newUserDoc = await newUserRef.get();
+    //   if (newUserDoc.exists) {
+    //     return res.status(409).send('そのユーザー名は既に使われています');
+    //   }
 
-      // Firestore上のドキュメントを新しいIDにコピーして古い方を削除
-      await newUserRef.set(userData);
-      await userDocRef.delete();
+    //   // Firestore上のドキュメントを新しいIDにコピーして古い方を削除
+    //   await newUserRef.set(userData);
+    //   await userDocRef.delete();
 
-      // セッションを更新
-      req.session.username = newUsername;
-      return res.status(200).send(JSON.stringify({ username: newUsername }));
-    }
+    //   // セッションを更新
+    //   req.session.username = newUsername;
+    //   return res.status(200).send(JSON.stringify({ username: newUsername }));
+    // }
+    if (newUsername) {
+    updates.username = newUsername;
+    req.session.username = newUsername; // セッションにも反映
+  }
+
+    if (Object.keys(updates).length > 0) {
+    await userDocRef.update(updates);
+  }
 
     // メール変更
     if (newEmail) {
