@@ -637,6 +637,16 @@ function updatePhotoSlider(photoData = null) {
   updateCarousel();
 }
 
+function updateCarousel() {
+  console.log("🧪 updateCarousel 呼び出し: slides.length =", slides.length);
+  slides.forEach((slide, i) => {
+    const offset = ((i - currentSlide + slides.length) % slides.length);
+    console.log(`slide[${i}] に offset ${offset} を設定`);
+    slide.style.setProperty('--i', offset);
+    slide.classList.toggle('active', offset === 0);
+  });
+}
+
 // 📌 初期化処理
 window.addEventListener('DOMContentLoaded', async () => {
   updateAuthUI();
