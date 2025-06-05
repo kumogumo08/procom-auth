@@ -313,7 +313,7 @@ app.post('/api/user/:uid', async (req, res) => {
 
 
     // 🔧 profileの正規化
-      const cleanedProfile = {
+      const cleanedProfile = cleanData({
       name: profile.name ?? existingProfile.name ?? '',
       title: profile.title ?? existingProfile.title ?? '',
       bio: profile.bio ?? existingProfile.bio ?? '',
@@ -325,7 +325,7 @@ app.post('/api/user/:uid', async (req, res) => {
       tiktokUrls: profile.tiktokUrls ?? existingProfile.tiktokUrls ?? [],
       youtubeMode: profile.youtubeMode ?? existingProfile.youtubeMode ?? 'latest',
       manualYouTubeUrls: profile.manualYouTubeUrls ?? existingProfile.manualYouTubeUrls ?? []
-};
+});
 
     // 保存
     await userRef.set({ profile: cleanedProfile }, { merge: true });

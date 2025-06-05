@@ -192,11 +192,11 @@ function saveProfileAndEventsToServer(includePhotos = false, customPhotos = null
         });
       }
 
-      proceedWithSave(data.username, includePhotos, customPhotos, updatedPhotos);
+      proceedWithSave(data.uid, includePhotos, customPhotos, updatedPhotos);
     });
 }
 
-function proceedWithSave(username, includePhotos = false, customPhotos = null, updatedPhotos = []) {
+function proceedWithSave(uid, includePhotos = false, customPhotos = null, updatedPhotos = []) {
   const name = document.getElementById('nameInput')?.value.trim();
   const title = document.getElementById('titleInput')?.value.trim();
   const bio = document.getElementById('bioInput')?.value.trim();
@@ -451,11 +451,11 @@ function createCalendar(date = new Date(), isEditable = false) {
   };
   document.getElementById('next-month').onclick = () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    const currentUser = getUsernameFromURL();
+    const currentUid = getUidFromURL();
    fetch('/session', { credentials: 'include' })
   .then(res => res.json())
   .then(data => {
-    const isEditable = data.loggedIn && data.username === getUsernameFromURL();
+    const isEditable = data.loggedIn && data.uid === currentUid;
     createCalendar(currentDate, isEditable);
   });
   };
@@ -651,8 +651,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   const savedBio = localStorage.getItem('profile_bio');
   if (savedBio) bioDisplay.innerHTML = savedBio.replace(/\n/g, '<br>');
 
+  const uidFromURL = decodeURIComponent(window.location.pathname.split('/').pop());
+
 // Firestoreから取得して表示する部分
-fetch(`/api/user/${getUsernameFromURL()}`)
+fetch(`/api/user/${uidFromURL}`)
   .then(async res => {
     if (!res.ok) {
       const errorText = await res.text(); // ← JSON以外のメッセージを読む
@@ -688,7 +690,7 @@ fetch(`/api/user/${getUsernameFromURL()}`)
   try {
     const sessionRes = await fetch('/session');
     const session = await sessionRes.json();
-    isEditable = session.loggedIn && session.username === getUsernameFromURL();
+    isEditable = session.loggedIn && session.uid === uidFromURL;
   } catch (err) {
     console.warn("⚠ セッション情報の取得に失敗しました", err);
   }
