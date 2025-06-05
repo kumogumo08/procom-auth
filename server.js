@@ -120,7 +120,7 @@ app.post('/register', async (req, res) => {
   req.session.uid = uid;
 
   // ✅ ユーザーページへリダイレクト
-  res.redirect(`/user/${uid}`);
+  res.status(200).json({ redirectTo: `/user/${uid}` });
 });
 
 // ✅ loginルートの更新（email でログイン）

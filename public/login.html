@@ -89,22 +89,66 @@
       <div class="toggle-link" onclick="toggleForms()">← ログインに戻る</div>
     </div>
   </div>
+    <script>
+      function validatePassword(password) {
+        if (password.length < 8 || password.length > 32) {
+          return 'パスワードは8〜32文字である必要があります';
+        }
+        if (!/[A-Z]/.test(password)) return '大文字を含めてください';
+        if (!/[a-z]/.test(password)) return '小文字を含めてください';
+        if (!/[0-9]/.test(password)) return '数字を含めてください';
+        if (/[^A-Za-z0-9]/.test(password)) return '記号は使えません';
+        return null;
+      }
 
-  <script>
-  // login.html 内の末尾に追加
-  window.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('mode') === 'register') {
-      toggleForms(); // 登録フォームを表示
-    }
-  });
- </script>
-  <script>
-    function toggleForms() {
-      document.getElementById('loginForm').classList.toggle('hidden');
-      document.getElementById('registerForm').classList.toggle('hidden');
-    }
-  </script>
+      document.getElementById('registerFormEl').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('usernameInput').value.trim();
+        const email = document.getElementById('emailInput').value.trim();
+        const password = document.getElementById('passwordInput').value;
+
+        const error = validatePassword(password);
+        if (error) {
+          alert(error);
+          return;
+        }
+
+        try {
+          const res = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password }),
+          });
+
+          if (res.ok) {
+            alert('登録成功！ログインしてください');
+            location.href = '/login.html';
+          } else {
+            const msg = await res.text();
+            alert('登録失敗: ' + msg);
+          }
+        } catch (err) {
+          console.error('登録エラー:', err);
+          alert('通信エラーが発生しました');
+        }
+      });
+    </script>
+      <script>
+      // login.html 内の末尾に追加
+      window.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('mode') === 'register') {
+          toggleForms(); // 登録フォームを表示
+        }
+      });
+    </script>
+      <script>
+        function toggleForms() {
+          document.getElementById('loginForm').classList.toggle('hidden');
+          document.getElementById('registerForm').classList.toggle('hidden');
+        }
+      </script>
 
 </body>
   <div id="common-footer"></div>

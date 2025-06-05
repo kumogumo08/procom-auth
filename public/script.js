@@ -138,6 +138,8 @@ loginForm?.addEventListener('submit', async (e) => {
 
   if (res.ok) {
     const data = await res.json();
+    location.href = data.redirectTo;
+
     alert(`ログイン成功！ようこそ ${data.name} さん`);
 
         // ✅ 写真があればスライダーを更新
