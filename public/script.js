@@ -611,7 +611,7 @@ function updatePhotoSlider(photoData = null) {
 
      slideDiv.appendChild(img);
 
-  　 if (isOwnPage) {
+     if (typeof isOwnPage !== 'undefined' && isOwnPage) {
     const slider = document.createElement('input');
     slider.type = 'range';
     slider.min = '0';
