@@ -101,6 +101,7 @@ app.post('/register', async (req, res) => {
   const userRef = db.collection('users').doc(uid);
 
   await userRef.set({
+    uid,
     email,
     password: hashed,
     profile: {
