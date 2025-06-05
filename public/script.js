@@ -676,7 +676,7 @@ fetch(`/api/user/${uidFromURL}`)
     }
      // 🔽🔽 ここで写真データを反映 🔽🔽
     if (Array.isArray(profile.photos)) {
-      updatePhotoSlider(profile.photos);
+      updatePhotoSlider(profile.photos, isOwnPage);
     }
   })
 
