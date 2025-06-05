@@ -214,7 +214,7 @@ function saveProfileAndEventsToServer(includePhotos = false, customPhotos = null
     });
 }
 
-function proceedWithSave(username, includePhotos = false, customPhotos = null) {
+function proceedWithSave(username, includePhotos = false, customPhotos = null, updatedPhotos = []) {
   const name = document.getElementById('nameInput')?.value.trim();
   const title = document.getElementById('titleInput')?.value.trim();
   const bio = document.getElementById('bioInput')?.value.trim();
