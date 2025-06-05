@@ -270,8 +270,8 @@ function proceedWithSave(username, includePhotos = false, customPhotos = null) {
   }
 
   const photos = customPhotos || JSON.parse(localStorage.getItem('photos') || '[]');
-  if (includePhotos && Array.isArray(photos) && photos.length > 0) {
-    profile.photos = photos;
+  if (includePhotos && Array.isArray(updatedPhotos) && updatedPhotos.length > 0) {
+    profile.photos = updatedPhotos;
   }
 
   const calendarEvents = Object.entries(events)
