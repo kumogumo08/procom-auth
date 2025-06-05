@@ -647,6 +647,16 @@ function updateCarousel() {
   });
 }
 
+function prevSlide() {
+  currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+  updateCarousel();
+}
+
+function nextSlide() {
+  currentSlide = (currentSlide + 1) % slides.length;
+  updateCarousel();
+}
+
 // 📌 初期化処理
 window.addEventListener('DOMContentLoaded', async () => {
   updateAuthUI();
