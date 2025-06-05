@@ -91,6 +91,15 @@
   </div>
 
   <script>
+  // login.html 内の末尾に追加
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'register') {
+      toggleForms(); // 登録フォームを表示
+    }
+  });
+ </script>
+  <script>
     function toggleForms() {
       document.getElementById('loginForm').classList.toggle('hidden');
       document.getElementById('registerForm').classList.toggle('hidden');
