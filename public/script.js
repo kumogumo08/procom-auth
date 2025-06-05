@@ -101,7 +101,7 @@ function updateAuthUI() {
 }
 
  function attachAuthFormHandlers() {
-  const registerForm = document.getElementById('register-form');
+  const registerForm = document.getElementById('registerFormEl');
   const loginForm = document.getElementById('login-form');
 
   // 🔹 登録処理

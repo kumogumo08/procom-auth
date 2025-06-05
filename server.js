@@ -73,13 +73,13 @@ app.post('/register', async (req, res) => {
   }
 
   if (!isValidPassword(password)) {
-  return res.status(400).send('パスワードは8〜32文字で、大文字・小文字・数字を含み、記号は使えません');
-}
+    return res.status(400).send('パスワードは8〜32文字で、大文字・小文字・数字を含み、記号は使えません');
+  }
 
   username = username.trim();
   email = email.trim().toLowerCase();
 
-  const userRef = db.collection('users').doc(uid);
+  // ✅ 重複チェック（username）
   const usernameSnapshot = await db.collection('users')
     .where('profile.name', '==', username)
     .get();
@@ -87,7 +87,7 @@ app.post('/register', async (req, res) => {
     return res.status(409).send('ユーザー名は既に使用されています');
   }
 
-  // 🔍 メールアドレスの重複チェック
+  // ✅ 重複チェック（email）
   const emailSnapshot = await db.collection('users')
     .where('email', '==', email)
     .get();
@@ -95,10 +95,10 @@ app.post('/register', async (req, res) => {
     return res.status(409).send('メールアドレスは既に使用されています');
   }
 
-    // ✅ 固有のUIDを生成
+  // ✅ 固有のUIDを生成してそのIDで登録
   const uid = uuidv4();
-
   const hashed = await bcrypt.hash(password, 10);
+  const userRef = db.collection('users').doc(uid);
 
   await userRef.set({
     email,
@@ -116,8 +116,11 @@ app.post('/register', async (req, res) => {
     }
   });
 
+  // ✅ セッションに保存
   req.session.uid = uid;
-  res.redirect(`/user/${userDoc.id}`);
+
+  // ✅ ユーザーページへリダイレクト
+  res.redirect(`/user/${uid}`);
 });
 
 // ✅ loginルートの更新（email でログイン）
