@@ -9,19 +9,18 @@ window.addEventListener('DOMContentLoaded', async () => {
   localStorage.removeItem('tiktokUrls');
   localStorage.removeItem('calendarEvents');
 
-  const titleEl = document.getElementById('page-title');
-    // 🔽 セッションを取得してisOwnPageを定義する
   const sessionRes = await fetch('/session');
   const session = await sessionRes.json();
   isOwnPage = session.loggedIn && session.uid === uidFromURL;// ← ここでは代入だけ
-
-  if (titleEl) titleEl.textContent = `${profile.name || 'ユーザー'}さんのページ`;
 
   try {
     const res = await fetch(`/api/user/${uidFromURL}`);
     if (!res.ok) throw new Error('ユーザーデータ取得失敗');
     const data = await res.json();
     const profile = data.profile || data;
+
+    const titleEl = document.getElementById('page-title');
+    if (titleEl) titleEl.textContent = `${profile.name || 'ユーザー'}さんのページ`;
 
     if (profile.youtubeMode === 'manual') {
       document.querySelector('input[name="youtubeMode"][value="manual"]').checked = true;
