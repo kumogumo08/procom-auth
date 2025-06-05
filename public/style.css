@@ -15,6 +15,7 @@ body {
   border-bottom: 4px solid #ff4f81;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
   position: relative; /* ← この1行を統合 */
+  z-index: 5; /* ← 明示的に設定 */
 }
   
   header h1 {
@@ -163,6 +164,13 @@ body {
   border: none;
   max-height: 300px;
 }
+
+.carousel-wrapper {
+  position: relative;
+  z-index: 100; /* ヘッダーより上に表示 */
+  margin-top: 20px; /* ヘッダーと少し隙間 */
+}
+
   .carousel {
     perspective: 1000px;
     display: flex;
