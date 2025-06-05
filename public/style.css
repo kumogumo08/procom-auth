@@ -168,7 +168,6 @@ body {
 .carousel-wrapper {
   position: relative;
   z-index: 100; /* ヘッダーより上に表示 */
-  margin-top: 20px; /* ヘッダーと少し隙間 */
 }
 
   .carousel {
@@ -177,7 +176,6 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    overflow: hidden;
     height: 320px;
     transform-style: preserve-3d;
   }
