@@ -202,10 +202,12 @@
   <div style="text-align: center; margin: 40px 0;">
     <button id="saveProfileBtnBottom" class="save-profile-button">プロフィールを保存</button>
   </div>
-    <div id="qrcodeCanvasWrapper" style="margin-top: 30px;">
+    <div style="display: flex; justify-content: center; gap: 20px; margin: 40px 0; align-items: center;">
+      <button id="saveProfileBtnBottom" class="save-profile-button">プロフィールを保存</button>
       <button id="generateQrBtn">📱 QRコードを表示</button>
-      <canvas id="qrCanvas" width="200" height="200" style="margin-top: 10px;"></canvas>
     </div>
+    <!-- QRコード表示部分（ボタンの下） -->
+    <div id="qrcode" style="margin-top: 15px; text-align: center;"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
