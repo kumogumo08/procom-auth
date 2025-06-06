@@ -288,15 +288,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-// 読み込み時に反映
-// window.addEventListener('DOMContentLoaded', () => {
-//   const positions = JSON.parse(localStorage.getItem('photoPositions') || '{}');
-//   Object.entries(positions).forEach(([index, value]) => {
-//     const image = document.querySelectorAll('.carousel-image')[index];
-//     const slider = document.querySelectorAll('.position-slider')[index];
-//     if (image && slider) {
-//       image.style.objectPosition = `center ${value}%`;
-//       slider.value = value;
-//     }
-//   });
-// });
+document.getElementById('generateQrBtn')?.addEventListener('click', () => {
+  const uid = location.pathname.split('/').pop();
+  const url = `${location.origin}/user/${uid}`;
+  const qrDiv = document.getElementById('qrcode');
+  qrDiv.innerHTML = ''; // すでに生成済みのQRを消す
+
+  new QRCode(qrDiv, {
+    text: url,
+    width: 200,
+    height: 200,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+});
