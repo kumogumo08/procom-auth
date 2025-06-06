@@ -210,40 +210,38 @@
         }
       });
     </script>
+
       <script>
-      // login.html 内の末尾に追加
-      window.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('mode') === 'register') {
-          toggleForms(); // 登録フォームを表示
-        }
+    function toggleForms() {
+      document.getElementById('loginForm')?.classList.toggle('hidden');
+      document.getElementById('registerForm')?.classList.toggle('hidden');
+    }
+
+    function setupTogglePassword(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+
+      icon?.addEventListener('click', () => {
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        icon.classList.toggle('fa-eye', !isHidden);
+        icon.classList.toggle('fa-eye-slash', isHidden);
       });
-    </script>
-      <script>
-        function toggleForms() {
-          document.getElementById('loginForm').classList.toggle('hidden');
-          document.getElementById('registerForm').classList.toggle('hidden');
-        }
-      </script>
-      <script>
-        function setupTogglePassword(inputId, iconId) {
-          const input = document.getElementById(inputId);
-          const icon = document.getElementById(iconId);
+    }
 
-          icon?.addEventListener('click', () => {
-            const isHidden = input.type === 'password';
-            input.type = isHidden ? 'text' : 'password';
-            icon.classList.toggle('fa-eye', !isHidden);
-            icon.classList.toggle('fa-eye-slash', isHidden);
-          });
-        }
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'register') {
+        toggleForms();
+      }
 
-        window.addEventListener('DOMContentLoaded', () => {
-          setupTogglePassword('loginPassword', 'toggleLoginPassword');
-          setupTogglePassword('passwordInput', 'toggleRegisterPassword');
-        });
-      </script>
-        <div id="common-footer"></div>
+      setupTogglePassword('loginPassword', 'toggleLoginPassword');
+      setupTogglePassword('passwordInput', 'toggleRegisterPassword');
+    });
+  </script>
+
+   <div id="common-footer"></div>
+  
   <script>
     fetch('/footer.html')
       .then(res => res.text())
