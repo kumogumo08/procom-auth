@@ -53,6 +53,8 @@ function displayUsers(users) {
     let photoHTML = '';
     if (user.photoUrl) {
       photoHTML = `<img src="${user.photoUrl}" alt="${user.name}の写真" class="user-thumb">`;
+    } else if (user.profile?.photos?.length) {
+      photoHTML = `<img src="${user.profile.photos[0].url}" alt="${user.name}の写真" class="user-thumb">`;
     }
 
     div.innerHTML = `
