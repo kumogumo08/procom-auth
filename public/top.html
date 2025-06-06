@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Procomは、YouTuberやダンサー、インフルエンサーのためのSNSプロフィール集約サイトです。">
+  <meta property="og:title" content="Procom - あなたのSNSをまとめよう">
+  <meta property="og:description" content="YouTube・X・Instagram・TikTokを一つのページで表示。">
+  <meta property="og:image" content="https://procom.jp/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
   <title>Procom - あなたのすべてを、ここに集約。</title>
   <link rel="stylesheet" href="/style.css" />
   <style>
@@ -117,25 +122,26 @@ window.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('random-users');
 
     randomUsers.forEach(user => {
-      const div = document.createElement('div');
-      div.className = 'user-card';
+    const div = document.createElement('div');
+    div.className = 'user-card';
 
-      const imgSrc = (typeof user.photoUrl === 'object' ? user.photoUrl.url : user.photoUrl) || 'https://via.placeholder.com/200x150?text=No+Image';
-      const name = user.name || user.username;
-      const title = user.title || '';
-      const uid = user.uid || user.username; // UIDベースでページリンク
+    const name = user.profile?.name || user.name || user.username || '未設定';
+    const title = user.profile?.title || user.title || '';
+    const photoUrl = user.profile?.photos?.[0]?.url || user.photoUrl || 'https://via.placeholder.com/200x150?text=No+Image';
+    const uid = user.uid || user.username;
 
-      div.innerHTML = `
-        <a href="/user/${uid}" style="text-decoration: none; color: inherit;">
-          <img src="${imgSrc}" alt="${name}の写真" style="width: 100%; border-radius: 8px;">
-          <div style="margin-top: 10px;">
-            <strong>${name}</strong>
-            <p>${title}</p>
-          </div>
-        </a>
-      `;
-      container.appendChild(div);
-    });
+    div.innerHTML = `
+      <a href="/user/${uid}" style="text-decoration: none; color: inherit;">
+        <img src="${photoUrl}" alt="${name}の写真" style="width: 100%; border-radius: 8px;">
+        <div style="margin-top: 10px;">
+          <strong>${name}</strong>
+          <p>${title}</p>
+        </div>
+      </a>
+    `;
+    container.appendChild(div);
+  });
+
 
     // 🔐 ログイン状態チェック
     const sessionRes = await fetch('/session');
