@@ -68,20 +68,61 @@
         </script>
   <div class="auth-container">
     <!-- ログインフォーム -->
-    <div id="loginForm">
-      <h2>ログイン</h2>
-      <form action="/login" method="POST">
-        <input type="email" name="email" placeholder="メールアドレス" required>
+      <div id="loginForm">
+        <h2>ログイン</h2>
+        <form action="/login" method="POST">
+          <input type="email" name="email" placeholder="メールアドレス" required>
 
-        <div class="password-wrapper">
-          <input type="password" name="password" id="loginPassword" placeholder="パスワード" required>
-          <i class="fa-solid fa-eye" id="toggleLoginPassword"></i>
-        </div>
+          <div class="password-wrapper">
+            <input
+              type="password"
+              name="password"
+              id="loginPassword"
+              placeholder="パスワード"
+              required
+              inputmode="latin"
+              autocomplete="new-password"
+              autocapitalize="none"
+              style="ime-mode: disabled;"
+            >
+            <i class="fa-solid fa-eye" id="toggleLoginPassword"></i>
+          </div>
 
-        <button type="submit">ログイン</button>
-      </form>
-      <div class="toggle-link" onclick="toggleForms()">→ 新規登録はこちら</div>
-    </div>
+          <button type="submit">ログイン</button>
+        </form>
+        <div class="toggle-link" onclick="toggleForms()">→ 新規登録はこちら</div>
+      </div>
+
+      <!-- ✅ 新規登録フォーム -->
+      <div id="registerForm" class="hidden">
+        <h2>新規登録</h2>
+        <form id="registerFormEl">
+          <input type="text" id="usernameInput" placeholder="ユーザー名" required>
+          <input type="email" id="emailInput" placeholder="メールアドレス" required>
+
+          <div class="password-wrapper">
+            <input
+              type="password"
+              id="registerPassword"
+              placeholder="パスワード"
+              required
+              inputmode="latin"
+              autocomplete="new-password"
+              autocapitalize="none"
+              style="ime-mode: disabled;"
+            >
+            <i class="fa-solid fa-eye" id="toggleRegisterPassword"></i>
+          </div>
+
+          <small style="color: red; font-weight: bold;">
+            ※ パスワードは8～32文字で、大文字・小文字・数字を含み、記号は使えません。
+          </small><br><br>
+
+          <button type="submit">登録する</button>
+        </form>
+        <div class="toggle-link" onclick="toggleForms()">← ログインに戻る</div>
+      </div>
+
 
     <!-- 新規登録フォーム -->
     <div id="registerForm" class="hidden">
@@ -91,6 +132,17 @@
         <input type="email" id="emailInput" placeholder="メールアドレス" required>
 
         <div class="password-wrapper">
+          <input
+              type="password"
+              name="password"
+              id="loginPassword"
+              placeholder="パスワード"
+              required
+              inputmode="latin"
+              autocomplete="new-password"
+              autocapitalize="none"
+              style="ime-mode: disabled;"
+            >
           <input type="password" id="passwordInput" placeholder="パスワード" required>
           <i class="fa-solid fa-eye" id="toggleRegisterPassword"></i>
         </div>
@@ -183,8 +235,7 @@
           setupTogglePassword('passwordInput', 'toggleRegisterPassword');
         });
       </script>
-</body>
-  <div id="common-footer"></div>
+        <div id="common-footer"></div>
   <script>
     fetch('/footer.html')
       .then(res => res.text())
@@ -192,4 +243,5 @@
         document.getElementById('common-footer').innerHTML = html;
       });
   </script>
+</body>
 </html>

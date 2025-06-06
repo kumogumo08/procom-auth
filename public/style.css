@@ -987,12 +987,11 @@ body {
 
 .password-wrapper input {
   width: 100%;
-  padding-right: 35px; /* アイコンの分だけ右余白 */
 }
 
 .password-wrapper i {
   position: absolute;
-  right: 10px;
+  right: 5px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
