@@ -952,3 +952,30 @@ body {
   margin: 20px auto;
   display: block;
 }
+
+#userList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* 🔧 各ユーザーカードのスタイル */
+.user-card {
+  width: 260px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 16px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
+.user-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
