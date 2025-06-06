@@ -949,6 +949,6 @@ body {
 }
 
 #qrcode canvas {
-  margin: 0 auto;
+  margin: 20px auto;
   display: block;
 }

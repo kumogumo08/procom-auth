@@ -293,14 +293,18 @@ document.getElementById('generateQrBtn').addEventListener('click', () => {
   const url = `${location.origin}/user/${uid}`;
 
   const canvas = document.getElementById('qrCanvas');
+  if (!canvas) return alert("❌ canvas要素が見つかりません");
   const ctx = canvas.getContext('2d');
 
-  // 一旦真っ白に塗りつぶし
+  // 一旦キャンバスクリア
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 一時的に qrcode.js で QR を invisible に描画し、それを drawImage で Canvas に貼る
+  // 一時的なDOMでQRコードを生成（非表示）
   const tempDiv = document.createElement('div');
-  const qr = new QRCode(tempDiv, {
+  tempDiv.style.visibility = 'hidden';
+  document.body.appendChild(tempDiv);
+
+  new QRCode(tempDiv, {
     text: url,
     width: 200,
     height: 200,
@@ -309,28 +313,39 @@ document.getElementById('generateQrBtn').addEventListener('click', () => {
     correctLevel: QRCode.CorrectLevel.H
   });
 
-  // QR画像が生成されたのを待ってCanvasへ描画
+  // QR画像が生成されるのを待つ
   setTimeout(() => {
     const qrImg = tempDiv.querySelector('img');
-    if (!qrImg) return alert('QRコードの生成に失敗しました');
+    if (!qrImg) {
+      alert('QRコードの生成に失敗しました');
+      document.body.removeChild(tempDiv);
+      return;
+    }
 
     const img = new Image();
+    img.crossOrigin = 'Anonymous'; // セキュリティ制限回避（同一オリジンが前提）
     img.src = qrImg.src;
 
     img.onload = () => {
       ctx.drawImage(img, 0, 0, 200, 200);
 
-      // ロゴ画像読み込み＆中央合成
+      // ロゴを中央に描画
       const logo = new Image();
-      logo.src = '/procom-logo.png'; // ★←ロゴのパス（PNG推奨）
+      logo.src = '/procom-logo.png'; // ← 必ずPNG・透過推奨
 
       logo.onload = () => {
-        const size = 50; // ロゴのサイズ（必要に応じて調整）
+        const size = 50;
         const x = (canvas.width - size) / 2;
         const y = (canvas.height - size) / 2;
         ctx.drawImage(logo, x, y, size, size);
+        document.body.removeChild(tempDiv);
+      };
+
+      logo.onerror = () => {
+        console.warn('⚠️ ロゴ画像の読み込みに失敗しました');
+        document.body.removeChild(tempDiv);
       };
     };
-  }, 100); // 少し待って画像生成を待つ
+  }, 300);
 });
 
