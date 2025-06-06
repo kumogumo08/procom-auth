@@ -85,11 +85,9 @@ window.saveYouTubeChannelId = function () {
   fetchLatestVideos(channelId);
 };
 
-function fetchLatestVideos(channelId = null) {
-  channelId = channelId || localStorage.getItem('youtubeChannelId');
+function fetchLatestVideos(channelId) {
   if (!channelId) return;
 
-  // 🔁 10分キャッシュ確認
   const cacheKey = `cachedVideos_${channelId}`;
   const cacheTimeKey = `lastFetchTime_${channelId}`;
   const now = Date.now();
@@ -102,7 +100,6 @@ function fetchLatestVideos(channelId = null) {
     return;
   }
 
-  // ✅ サーバー経由でAPI呼び出し
   fetch(`/api/youtube/${channelId}`)
     .then(res => {
       if (!res.ok) throw new Error('ユーザーデータの取得に失敗しました。');
