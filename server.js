@@ -379,13 +379,10 @@ app.get('/api/user/:uid', async (req, res) => {
 // ユーザー一覧取得（検索用）
 app.get('/api/users', async (req, res) => {
   const snapshot = await db.collection('users').get();
-  const list = snapshot.docs.map(doc => {
-    const profile = doc.data().profile || {};
-    return {
-      uid: doc.id,
-      profile // ✅ ここで profile 全体を返す
-    };
-  });
+  const list = snapshot.docs.map(doc => ({
+    uid: doc.id,
+    profile: doc.data().profile || {}
+  }));
   res.json(list);
 });
 
