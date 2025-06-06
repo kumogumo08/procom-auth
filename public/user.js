@@ -349,3 +349,19 @@ document.getElementById('generateQrBtn').addEventListener('click', () => {
   }, 300);
 });
 
+document.getElementById('downloadQrBtn').addEventListener('click', async () => {
+  const canvas = document.getElementById('qrCanvas');
+  const dataUrl = canvas.toDataURL('image/png');
+
+  // 🔽 ユーザー名を取得（セッションから）
+  const sessionRes = await fetch('/session');
+  const session = await sessionRes.json();
+  const userName = session.name || 'procom-user';  // fallback付き
+
+  const sanitizedName = userName.replace(/[^\w\-]/g, '_'); // 日本語や記号対策
+
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = `${sanitizedName}-qr.png`;  // 例: 春咲ミオ-qr.png
+  link.click();
+});
