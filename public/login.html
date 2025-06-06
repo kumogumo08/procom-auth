@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <meta charset="UTF-8">
   <title>ログイン / 新規登録 - Procom</title>
   <link rel="stylesheet" href="/style.css">
@@ -71,7 +72,12 @@
       <h2>ログイン</h2>
       <form action="/login" method="POST">
         <input type="email" name="email" placeholder="メールアドレス" required>
-        <input type="password" name="password" placeholder="パスワード" required>
+
+        <div class="password-wrapper">
+          <input type="password" name="password" id="loginPassword" placeholder="パスワード" required>
+          <i class="fa-solid fa-eye" id="toggleLoginPassword"></i>
+        </div>
+
         <button type="submit">ログイン</button>
       </form>
       <div class="toggle-link" onclick="toggleForms()">→ 新規登録はこちら</div>
@@ -83,15 +89,21 @@
       <form id="registerFormEl">
         <input type="text" id="usernameInput" placeholder="ユーザー名" required>
         <input type="email" id="emailInput" placeholder="メールアドレス" required>
-        <input type="password" id="passwordInput" placeholder="パスワード" required>
+
+        <div class="password-wrapper">
+          <input type="password" id="passwordInput" placeholder="パスワード" required>
+          <i class="fa-solid fa-eye" id="toggleRegisterPassword"></i>
+        </div>
+
         <small style="color: red; font-weight: bold;">
-        ※ パスワードは8～32文字で、大文字・小文字・数字を含み、記号は使えません。
+          ※ パスワードは8～32文字で、大文字・小文字・数字を含み、記号は使えません。
         </small><br><br>
+
         <button type="submit">登録する</button>
       </form>
       <div class="toggle-link" onclick="toggleForms()">← ログインに戻る</div>
     </div>
-  </div>
+
     <script>
       function validatePassword(password) {
         if (password.length < 8 || password.length > 32) {
@@ -153,7 +165,24 @@
           document.getElementById('registerForm').classList.toggle('hidden');
         }
       </script>
+      <script>
+        function setupTogglePassword(inputId, iconId) {
+          const input = document.getElementById(inputId);
+          const icon = document.getElementById(iconId);
 
+          icon?.addEventListener('click', () => {
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', !isHidden);
+            icon.classList.toggle('fa-eye-slash', isHidden);
+          });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+          setupTogglePassword('loginPassword', 'toggleLoginPassword');
+          setupTogglePassword('passwordInput', 'toggleRegisterPassword');
+        });
+      </script>
 </body>
   <div id="common-footer"></div>
   <script>
