@@ -84,6 +84,9 @@
         <input type="text" id="usernameInput" placeholder="ユーザー名" required>
         <input type="email" id="emailInput" placeholder="メールアドレス" required>
         <input type="password" id="passwordInput" placeholder="パスワード" required>
+        <small style="color: red; font-weight: bold;">
+        ※ パスワードは8～32文字で、大文字・小文字・数字を含み、記号は使えません。
+        </small><br><br>
         <button type="submit">登録する</button>
       </form>
       <div class="toggle-link" onclick="toggleForms()">← ログインに戻る</div>
@@ -122,8 +125,9 @@
           });
 
           if (res.ok) {
-            alert('登録成功！ログインしてください');
-            location.href = '/login.html';
+          const result = await res.json(); // ← JSONで受け取る
+          alert('登録成功！マイページに移動します');
+          window.location.href = result.redirectTo;
           } else {
             const msg = await res.text();
             alert('登録失敗: ' + msg);
