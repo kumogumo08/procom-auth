@@ -198,18 +198,23 @@
   </div>
 </div>
 
-    <!-- 🔽 プロフィール保存ボタン（下部） -->
 <!-- 🔽 プロフィール保存ボタンとQRボタン（並列配置） -->
-    <div style="display: flex; justify-content: center; gap: 20px; margin: 40px 0; align-items: center;">
-      <button id="saveProfileBtnBottom" class="save-profile-button">プロフィールを保存</button>
-      <button id="generateQrBtn" style="font-size: 14px;">📱 QRコードを表示</button>
-    </div>
+<div style="display: flex; justify-content: center; gap: 40px; margin: 40px 0; align-items: flex-start; flex-wrap: wrap;">
 
-    <!-- QRコード表示 -->
-    <div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
-     <canvas id="qrCanvas" width="200" height="200" style="margin-bottom: 10px;"></canvas>
-     <button id="downloadQrBtn">📥 QRコードをダウンロード</button>
-    </div>
+  <!-- プロフィール保存ボタン -->
+  <button id="saveProfileBtnBottom" class="save-profile-button">
+    プロフィールを保存
+  </button>
+
+  <!-- QRコードボタン＋キャンバス＋DL -->
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <button id="generateQrBtn" style="font-size: 14px; margin-bottom: 10px;">
+      📱 QRコードを表示
+    </button>
+    <canvas id="qrCanvas" width="200" height="200" style="margin-bottom: 10px;"></canvas>
+    <button id="downloadQrBtn">📥 QRコードをダウンロード</button>
+  </div>
+</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
