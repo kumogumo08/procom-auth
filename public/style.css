@@ -964,14 +964,15 @@ body {
 /* 🔧 各ユーザーカードのスタイル */
 .user-card {
   width: 260px;
+  max-height: 300px; /* ← 高さを揃える */
+  overflow-y: auto;  /* ← 長すぎる場合にスクロール */
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   padding: 16px;
-  text-align: center;
+  text-align: left;
   font-size: 14px;
   line-height: 1.5;
-  overflow-wrap: break-word;
 }
 
 .user-card img {
