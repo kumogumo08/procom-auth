@@ -382,11 +382,8 @@ app.get('/api/users', async (req, res) => {
   const list = snapshot.docs.map(doc => {
     const profile = doc.data().profile || {};
     return {
-      uid: doc.id, // 🔁 uidを明示的に返す
-      name: profile.name || '',
-      title: profile.title || '',
-      bio: profile.bio || '',
-      photoUrl: profile.photos?.[0]?.url || '' // ✅ ←ここを修正
+      uid: doc.id,
+      profile // ✅ ここで profile 全体を返す
     };
   });
   res.json(list);
