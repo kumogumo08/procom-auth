@@ -7,12 +7,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const keyword = params.get('q')?.toLowerCase() || '';
 
-    const filtered = keyword
-      ? users.filter(user =>
-          user.name.toLowerCase().includes(keyword) ||
-          user.title.toLowerCase().includes(keyword)
-        )
-      : users;
+   const filtered = keyword
+    ? users.filter(user => {
+      const name = user.profile?.name || '';
+      const title = user.profile?.title || '';
+      return name.toLowerCase().includes(keyword) || title.toLowerCase().includes(keyword);
+    })
+  : users;
 
     displayUsers(filtered);
 
@@ -47,23 +48,28 @@ function displayUsers(users) {
   }
 
   users.forEach(user => {
-    const div = document.createElement('div');
-    div.className = 'user-card';
+    const cardLink = document.createElement('a');
+    cardLink.href = `/user/${user.uid}`;
+    cardLink.className = 'user-card';
+    cardLink.style.textDecoration = 'none';
+    cardLink.style.color = 'inherit';
+
+    const name = user.profile?.name || user.name || user.username || '未設定';
+    const title = user.profile?.title || user.title || '';
+    const bio = user.profile?.bio || user.bio || '';
 
     let photoHTML = '';
-    if (user.photoUrl) {
-      photoHTML = `<img src="${user.photoUrl}" alt="${user.name}の写真" class="user-thumb">`;
-    } else if (user.profile?.photos?.length) {
-      photoHTML = `<img src="${user.profile.photos[0].url}" alt="${user.name}の写真" class="user-thumb">`;
+    const photoUrl = user.profile?.photos?.[0]?.url;
+    if (photoUrl) {
+      photoHTML = `<img src="${photoUrl}" alt="${name}の写真" class="user-thumb">`;
     }
 
-    div.innerHTML = `
+    cardLink.innerHTML = `
       ${photoHTML}
-      <h3>${user.name || user.username} ${user.title ? `（${user.title}）` : ''}</h3>
-      <p>${(user.bio || '').replace(/\n/g, '<br>')}</p>
-      <a href="/user/${user.username}">プロフィールを見る</a>
+      <h3>${name} ${title ? `（${title}）` : ''}</h3>
+      <p>${bio.replace(/\n/g, '<br>')}</p>
     `;
 
-    list.appendChild(div);
+    list.appendChild(cardLink);
   });
 }

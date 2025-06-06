@@ -964,7 +964,7 @@ body {
 /* 🔧 各ユーザーカードのスタイル */
 .user-card {
   width: 260px;
-  max-height: 400px; /* ← 高さを揃える */
+  max-height: 300px; /* ← 高さを揃える */
   overflow-y: auto;  /* ← 長すぎる場合にスクロール */
   background: white;
   border-radius: 12px;
