@@ -105,23 +105,29 @@ function updateAuthUI() {
   const loginForm = document.getElementById('login-form');
 
   // 🔹 登録処理
-  registerForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('register-username').value;
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
+registerForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const res = await fetch('/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
-      credentials: 'include'
-});
+  const username = document.getElementById('register-username').value;
+  const email = document.getElementById('register-email').value;
+  const password = document.getElementById('register-password').value;
 
-    const msg = await res.text();
-    alert(msg);
-    //updateAuthUI(); // フォーム再描画
+  const res = await fetch('/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, email, password }),
+    credentials: 'include'
   });
+
+  if (res.ok) {
+    const result = await res.json(); // サーバーが { redirectTo: '/user/uid' } を返す想定
+    alert('登録成功！マイページに移動します');
+    window.location.href = result.redirectTo;
+  } else {
+    const msg = await res.text();
+    alert('登録失敗: ' + msg);
+  }
+});
 
 // 🔐 ログイン処理
 loginForm?.addEventListener('submit', async (e) => {
