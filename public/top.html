@@ -105,67 +105,55 @@
     <!-- ランダムなユーザーがここに表示されます -->
   </section>
 
-  <script>
-    window.addEventListener('DOMContentLoaded', async () => {
-      const res = await fetch('/api/users');
-      const users = await res.json();
-
-      const randomUsers = users.sort(() => 0.5 - Math.random()).slice(0, 6);
-      const container = document.getElementById('random-users');
-
-        randomUsers.forEach(user => {
-        const div = document.createElement('div');
-        div.className = 'user-card';
-        const imgSrc = user.photoUrl || 'https://via.placeholder.com/200x150?text=No+Image';
-        const name = user.name || user.username;
-        const title = user.title || '';
-        const username = user.username;
-
-        div.innerHTML = `
-            <a href="/user/${username}" style="text-decoration: none; color: inherit;">
-            <img src="${imgSrc}" alt="${name}の写真">
-            <div style="margin-top: 10px;">
-                <strong>${name}</strong>
-                <p>${title}</p>
-            </div>
-            </a>
-        `;
-        container.appendChild(div);
-        });
-    });
-        
-  window.addEventListener('DOMContentLoaded', async () => {
-    // ランダムユーザー表示
+<script>
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    // 🔄 ユーザー一覧取得
     const res = await fetch('/api/users');
     const users = await res.json();
+
+    // 🔀 ランダムに6人選出
     const randomUsers = users.sort(() => 0.5 - Math.random()).slice(0, 6);
     const container = document.getElementById('random-users');
 
     randomUsers.forEach(user => {
-        const div = document.createElement('div');
-        div.className = 'user-card';
-        const imgSrc = user.photoUrl || 'https://via.placeholder.com/200x150?text=No+Image';
-        div.innerHTML = `
-        <img src="${imgSrc}" alt="${user.name}の写真">
-        <a href="/user/${user.username}">${user.name || user.username}</a>
-        <p>${user.title || ''}</p>
-        `;
-        container.appendChild(div);
+      const div = document.createElement('div');
+      div.className = 'user-card';
+
+      const imgSrc = (typeof user.photoUrl === 'object' ? user.photoUrl.url : user.photoUrl) || 'https://via.placeholder.com/200x150?text=No+Image';
+      const name = user.name || user.username;
+      const title = user.title || '';
+      const uid = user.uid || user.username; // UIDベースでページリンク
+
+      div.innerHTML = `
+        <a href="/user/${uid}" style="text-decoration: none; color: inherit;">
+          <img src="${imgSrc}" alt="${name}の写真" style="width: 100%; border-radius: 8px;">
+          <div style="margin-top: 10px;">
+            <strong>${name}</strong>
+            <p>${title}</p>
+          </div>
+        </a>
+      `;
+      container.appendChild(div);
     });
 
-    // 🔐 ログイン状態チェックしてUI更新
+    // 🔐 ログイン状態チェック
     const sessionRes = await fetch('/session');
     const session = await sessionRes.json();
 
     if (session.loggedIn) {
-        document.getElementById('login-link').style.display = 'none';
-        document.getElementById('register-link').style.display = 'none';
-        document.getElementById('mypage-link').style.display = 'inline-block';
-        document.getElementById('logout-link').style.display = 'inline-block';
-        document.getElementById('mypage-link').href = `/user/${session.username}`;
+      document.getElementById('login-link').style.display = 'none';
+      document.getElementById('register-link').style.display = 'none';
+      document.getElementById('mypage-link').style.display = 'inline-block';
+      document.getElementById('logout-link').style.display = 'inline-block';
+      document.getElementById('mypage-link').href = `/user/${session.uid}`;
     }
-    });
-  </script>
+  } catch (err) {
+    console.error('❌ 初期化エラー:', err);
+  }
+});
+</script>
+
 </body>
   <div id="common-footer"></div>
   <script>
