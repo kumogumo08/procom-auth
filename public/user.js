@@ -168,6 +168,7 @@ if (!isOwnPage && favoriteBtn) {
 
     if (savePhotosBtnEl) {
     console.log("✅ 写真保存ボタンにイベント登録します");
+    savePhotosBtnEl.removeEventListener('click', savePhotos);
     savePhotosBtnEl.addEventListener('click', savePhotos);
 }
   }
