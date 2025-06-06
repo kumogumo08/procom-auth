@@ -354,14 +354,26 @@ document.getElementById('downloadQrBtn').addEventListener('click', async () => {
   const dataUrl = canvas.toDataURL('image/png');
 
   // 🔽 ユーザー名を取得（セッションから）
-  const sessionRes = await fetch('/session');
-  const session = await sessionRes.json();
-  const userName = session.name || 'procom-user';  // fallback付き
+  let displayName = 'procom-user'; // デフォルト値
 
-  const sanitizedName = userName.replace(/[^\w\-]/g, '_'); // 日本語や記号対策
+  try {
+    const sessionRes = await fetch('/session');
+    const session = await sessionRes.json();
+
+    if (session.loggedIn && session.name) {
+      displayName = session.name;
+    }
+  } catch (err) {
+    console.warn('⚠ セッション取得に失敗しました。', err);
+  }
+  // 🔧 ファイル名に使えるようサニタイズ
+  const sanitizedName = displayName
+    .normalize("NFKD")                // 日本語などの分解正規化
+    .replace(/[^\w\-一-龥ぁ-んァ-ヶａ-ｚＡ-Ｚ０-９]/g, '_') // 日本語を保持しつつ記号を除去
+    .slice(0, 30); // 長すぎる名前を制限（任意）
 
   const link = document.createElement('a');
   link.href = dataUrl;
-  link.download = `${sanitizedName}-qr.png`;  // 例: 春咲ミオ-qr.png
+  link.download = `${sanitizedName || 'procom'}-qr.png`;
   link.click();
 });
