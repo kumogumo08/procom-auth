@@ -26,8 +26,7 @@
   <div id="userList"></div>
 
   <script src="/users.js"></script>
-</body>
-  <div id="common-footer"></div>
+    <div id="common-footer"></div>
   <script>
     fetch('/footer.html')
       .then(res => res.text())
@@ -35,4 +34,5 @@
         document.getElementById('common-footer').innerHTML = html;
       });
   </script>
+</body>
 </html>
