@@ -23,10 +23,11 @@ window.addEventListener('DOMContentLoaded', async () => {
       searchInput.value = keyword;
       searchInput.addEventListener('input', (e) => {
         const val = e.target.value.toLowerCase();
-        const result = users.filter(user =>
-          user.name.toLowerCase().includes(val) ||
-          user.title.toLowerCase().includes(val)
-        );
+        const result = users.filter(user => {
+          const name = user.profile?.name || '';
+          const title = user.profile?.title || '';
+          return name.toLowerCase().includes(val) || title.toLowerCase().includes(val);
+        });
         displayUsers(result);
       });
     }
@@ -67,7 +68,7 @@ function displayUsers(users) {
     cardLink.innerHTML = `
       ${photoHTML}
       <h3>${name} ${title ? `（${title}）` : ''}</h3>
-      <p>${bio.replace(/\n/g, '<br>')}</p>
+      <p>${(bio || '').replace(/\n/g, '<br>')}</p>
     `;
 
     list.appendChild(cardLink);
