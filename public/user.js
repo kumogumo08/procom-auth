@@ -322,7 +322,7 @@ document.getElementById('generateQrBtn').addEventListener('click', () => {
 
       // ロゴ画像読み込み＆中央合成
       const logo = new Image();
-      logo.src = '/img/procom-logo.png'; // ★←ロゴのパス（PNG推奨）
+      logo.src = '/procom-logo.png'; // ★←ロゴのパス（PNG推奨）
 
       logo.onload = () => {
         const size = 50; // ロゴのサイズ（必要に応じて調整）
