@@ -106,31 +106,51 @@
   <button style="background-color: #d9534f; margin-top: 10px;" onclick="handleWithdraw()">退会する</button>
 </div>
 
-<script>
-  // 退会処理
-  async function handleWithdraw() {
-    const confirmed = confirm("本当にアカウントを削除しますか？この操作は元に戻せません。");
+    <script>
+    function setupTogglePassword(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
 
-    if (!confirmed) return;
-
-    try {
-      const res = await fetch('/account/delete', {
-        method: 'DELETE'
-      });
-
-      if (res.ok) {
-        alert("退会処理が完了しました。ご利用ありがとうございました。");
-        window.location.href = "/deleted.html";
-      } else {
-        const msg = await res.text();
-        alert("退会に失敗しました：" + msg);
+      if (input && icon) {
+        icon.addEventListener('click', () => {
+          const isHidden = input.type === 'password';
+          input.type = isHidden ? 'text' : 'password';
+          icon.classList.toggle('fa-eye', !isHidden);
+          icon.classList.toggle('fa-eye-slash', isHidden);
+        });
       }
-    } catch (err) {
-      alert("退会処理中にエラーが発生しました。");
-      console.error(err);
     }
-  }
-</script>
+
+    // DOM読み込み時に追加
+    window.addEventListener('DOMContentLoaded', () => {
+      setupTogglePassword('newPassword', 'toggleNewPassword');
+    });
+    </script>
+    <script>
+      // 退会処理
+      async function handleWithdraw() {
+        const confirmed = confirm("本当にアカウントを削除しますか？この操作は元に戻せません。");
+
+        if (!confirmed) return;
+
+        try {
+          const res = await fetch('/account/delete', {
+            method: 'DELETE'
+          });
+
+          if (res.ok) {
+            alert("退会処理が完了しました。ご利用ありがとうございました。");
+            window.location.href = "/deleted.html";
+          } else {
+            const msg = await res.text();
+            alert("退会に失敗しました：" + msg);
+          }
+        } catch (err) {
+          alert("退会処理中にエラーが発生しました。");
+          console.error(err);
+        }
+      }
+    </script>
 
   <script>
     document.getElementById('accountForm').addEventListener('submit', async function(e) {
