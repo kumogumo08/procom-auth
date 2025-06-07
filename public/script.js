@@ -49,17 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const tiktokSection = document.getElementById('tiktok-section');
 
   // ハンバーガーメニュー開閉
-  if (hamburgerBtn && navLinks) {
-    hamburgerBtn.addEventListener('click', () => {
-      navLinks.classList.toggle('show');
-      authForms?.classList.toggle('show');
-    });
-  }
+  hamburgerBtn?.addEventListener('click', () => {
+    navLinks?.classList.toggle('show');
+  });
 
-  // ログインUIの表示を更新
-  updateAuthUI();
+  updateAuthUI(); // ←ログインUI描画用関数
 });
-
 
 // 🔧 ログインUI描画関数
 function updateAuthUI() {
