@@ -999,59 +999,58 @@ body {
 }
 
 /* ベースレイアウト */
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
+.hamburger {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
 }
 
 .nav-links {
   display: flex;
-  gap: 20px;
   list-style: none;
-  margin: 0;
-  padding: 0;
+  gap: 10px;
 }
 
-.nav-links li a,
-.nav-links li form button {
-  color: white;
-  background: none;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  text-decoration: none;
-}
+@media screen and (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
 
-/* ハンバーガーはデフォルト非表示 */
-.hamburger {
-  display: none;
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: white;
-}
-
-/* 📱 モバイル用レスポンシブ */
-@media (max-width: 768px) {
   .nav-links {
     display: none;
     flex-direction: column;
-    background-color: #38385a;
+    background: #333;
     position: absolute;
     top: 60px;
     right: 20px;
     padding: 10px;
     border-radius: 8px;
-    z-index: 100;
+    z-index: 999;
   }
 
   .nav-links.show {
     display: flex;
   }
 
-  .hamburger {
-    display: block;
+  .nav-links li {
+    margin: 10px 0;
+  }
+
+  .nav-links a,
+  .nav-links button {
+    color: white;
+    text-decoration: none;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
   }
 }
+
