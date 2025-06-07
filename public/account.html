@@ -83,8 +83,19 @@
       <input type="email" id="newEmail" name="newEmail" placeholder="変更しない場合は空欄">
 
       <label for="newPassword">新しいパスワード</label>
-      <input type="password" id="newPassword" name="newPassword" placeholder="変更しない場合は空欄">
-
+      <div class="password-wrapper" style="position: relative;">
+        <input
+          type="password"
+          id="newPassword"
+          name="newPassword"
+          placeholder="変更しない場合は空欄"
+        >
+        <i
+          class="fa-solid fa-eye"
+          id="toggleNewPassword"
+          style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"
+        ></i>
+      </div>
       <button type="submit">保存する</button>
     </form>
   </div>
