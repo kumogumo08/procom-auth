@@ -1009,18 +1009,20 @@ body {
   color: #555;
 }
 
-/* スマホなど小さい画面の時だけ表示 */
-@media screen and (max-width: 768px) {
-  #hamburgerBtn {
-    display: block !important; /* ← 上書き防止のため !important が必要 */
-  }
-
   .nav-links {
-    display: none;
-  }
+  display: none;
+  flex-direction: column;
+  background-color: #fff;
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 100;
+}
 
   .nav-links.show {
-    display: block;
+    display: flex;
     position: absolute;
     top: 60px;
     right: 10px;
@@ -1030,7 +1032,7 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     z-index: 1000;
   }
-}
+
 
 /* ✅ ハンバーガーアイコンのスタイル */
 #hamburgerBtn {
@@ -1043,5 +1045,19 @@ body {
   color: #fffdfd;
   cursor: pointer;
   z-index: 1001;
+}
+
+.hamburger {
   display: none; /* PCでは非表示 */
+  color: white;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+/* スマホなど小さい画面の時だけ表示 */
+@media screen and (max-width: 768px) {
+  #hamburgerBtn {
+    display: block !important; /* ← 上書き防止のため !important が必要 */
+  }
 }
