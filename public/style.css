@@ -1033,7 +1033,6 @@ body {
 .nav-links a,
 .nav-links form button {
   display: block;
-  width: 100%;
   text-align: left;
   background-color: #f3f3f3;
   border: none;
