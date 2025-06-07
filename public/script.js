@@ -77,21 +77,37 @@ function updateAuthUI() {
       if (!authForms) return;
 
       if (data.loggedIn) {
-        authForms.innerHTML = `
-          <div style="text-align: right; margin-top: 10px;">
-            <p>ようこそ、${data.name}さん！</p>
-            <div style="display: flex; justify-content: flex-end; gap: 10px; align-items: center;">
-              <a href="/user/${data.uid}" class="mypage-btn" id="mypageLink">マイページ</a>
-              <form action="/logout" method="GET">
-                <button type="submit">ログアウト</button>
-              </form>
+        const isMobile = window.innerWidth <= 768;
+        const mypageLinkHTML = `<a href="/user/${data.uid}" class="mypage-btn">マイページ</a>`;
+        const logoutFormHTML = `<form action="/logout" method="GET"><button type="submit">ログアウト</button></form>`;
+        const accountLinkHTML = `<a href="/account.html">⚙ アカウント設定</a>`;
+
+        if (isMobile) {
+          // モバイルならハンバーガーメニューに追加
+          const navLinks = document.getElementById('navLinks');
+          if (navLinks) {
+            navLinks.innerHTML += `
+              <li>${mypageLinkHTML}</li>
+              <li>${logoutFormHTML}</li>
+              <li>${accountLinkHTML}</li>
+            `;
+          }
+          authForms.style.display = 'none';
+        } else {
+          authForms.innerHTML = `
+            <div style="text-align: right; margin-top: 10px;">
+              <p>ようこそ、${data.name}さん！</p>
+              <div style="display: flex; justify-content: flex-end; gap: 10px; align-items: center;">
+                ${mypageLinkHTML}
+                ${logoutFormHTML}
+              </div>
+              <div style="margin-top: 5px;">
+                ${accountLinkHTML}
+              </div>
             </div>
-            <div style="margin-top: 5px;">
-              <a href="/account.html">⚙ アカウント設定</a>
-            </div>
-          </div>
-        `;
-        authForms.style.display = 'block';
+          `;
+          authForms.style.display = 'block';
+        }
 
         // ログイン時のみ表示する要素
         if (editSection) editSection.style.display = 'block';
@@ -107,8 +123,6 @@ function updateAuthUI() {
         console.log("🔴 非ログイン状態：UIを非表示にします");
 
         authForms.innerHTML = '';
-
-        // 非ログイン時はすべて非表示
         if (editSection) editSection.style.display = 'none';
         if (photoUpload) photoUpload.style.display = 'none';
         if (eventForm) eventForm.style.display = 'none';
