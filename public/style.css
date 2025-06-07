@@ -1009,16 +1009,51 @@ body {
   color: #555;
 }
 
-  .nav-links {
+.nav-links {
   display: none;
   flex-direction: column;
   background-color: #fff;
   position: absolute;
   top: 60px;
   right: 10px;
-  border: 1px solid #ccc;
-  padding: 10px;
-  z-index: 100;
+  border-radius: 8px;
+  padding: 15px 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
+  list-style: none; /* ← 黒ポチ消す */
+  gap: 12px;
+  min-width: 160px;
+}
+
+.nav-links li {
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a,
+.nav-links form button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background-color: #f3f3f3;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #333;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links form button:hover {
+  background-color: #e0e0e0;
+  cursor: pointer;
+}
+
+/* ⚙ アカウント設定は色分けするなら */
+.nav-links a[href="/account.html"] {
+  color: #6a1b9a;
 }
 
   .nav-links.show {
