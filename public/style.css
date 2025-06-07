@@ -36,6 +36,7 @@ body {
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    display: none;
   }
   
   .auth-forms form {
@@ -43,6 +44,10 @@ body {
     gap: 5px;
     align-items: center;
   }
+
+  .auth-forms.show {
+  display: block;
+}
   
   .auth-forms input {
     padding: 4px;
@@ -999,21 +1004,32 @@ body {
 }
 
 /* ✅ 初期は非表示にする */
-.nav-links {
+/* 通常（デスクトップ）画面では非表示にする */
+#hamburgerBtn {
   display: none;
 }
 
-/* ✅ 表示時のスタイル */
-.nav-links.show {
-  display: block;
-  position: absolute;
-  top: 50px;
-  right: 10px;
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+/* スマホなど小さい画面の時だけ表示 */
+@media screen and (max-width: 768px) {
+  #hamburgerBtn {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-links.show {
+    display: block;
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
 }
 
 /* ✅ ハンバーガーアイコンのスタイル */
