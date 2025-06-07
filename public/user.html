@@ -5,7 +5,20 @@
 <div style="position: absolute; top: 20px; left: 20px; z-index: 10;">
   <h3 id="toggleUserList" style="cursor: pointer; color: #ffffff; margin: 0;">▶ 登録ユーザー</h3>
 </div>
+  <div class="header-container">
+    <h1 class="site-title">Procom</h1>
 
+    <nav class="nav">
+      <button class="hamburger" id="hamburgerBtn" aria-label="メニュー">
+        ☰
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/top.html">ホーム</a></li>
+        <li><a href="/account.html">マイページ</a></li>
+        <li><form action="/logout" method="GET"><button>ログアウト</button></form></li>
+      </ul>
+    </nav>
+  </div>
 <!-- 🔽 展開されるユーザー一覧（固定高さ + 内部スクロール） -->
 <div id="userListContainer" style="display: none; position: absolute; top: 60px; left: 20px; width: 280px; max-height: 400px; overflow-y: auto; background: white; border: 1px solid #ccc; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 9;">
   <div id="userList" class="user-list"></div>
@@ -224,20 +237,17 @@
   <script defer src="https://www.tiktok.com/embed.js"></script>
   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   <script async src="https://www.instagram.com/embed.js"></script>
-    <!-- <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      fetch('/session')
-        .then(res => res.json())
-        .then(data => {
-          const authContainer = document.querySelector('.auth-forms');
-          if (authContainer) {
-            if (!data.loggedIn) {
-              authContainer.innerHTML = ''; // ログインしていないなら非表示
-            }
-          }
-        });
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    hamburgerBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('show');
     });
-  </script> -->
+  });
+</script>
 
     <div id="common-footer"></div>
   <script>

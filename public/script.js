@@ -833,3 +833,14 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     alert('登録失敗: ' + msg);
   }
 });
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    hamburgerBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('show');
+    });
+  });
+
