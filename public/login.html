@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <meta charset="UTF-8">
   <title>ログイン / 新規登録 - Procom</title>
@@ -55,7 +56,34 @@
     .hidden {
       display: none;
     }
+    /* ✅ スマホ対応と高さ調整（bodyとhtml全体） */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
 
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ✅ フォームが縦方向に伸びるように */
+    .auth-container {
+      flex: 1;
+      width: 90%; /* ← これでスマホで見やすく */
+      max-width: 400px;
+      margin: 30px auto;
+    }
+
+    /* ✅ フッターのスタイル（必要に応じて調整） */
+    .site-footer {
+      background: #222;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+    }
   </style>
 </head>
 <body>
