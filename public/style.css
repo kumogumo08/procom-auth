@@ -1040,7 +1040,7 @@ body {
   font-size: 28px;
   background: none;
   border: none;
-  color: #333;
+  color: #fffdfd;
   cursor: pointer;
   z-index: 1001;
   display: none; /* PCでは非表示 */

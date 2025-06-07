@@ -54,6 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   updateAuthUI(); // ←ログインUI描画用関数
+  // ✅ ここに追加（リサイズ時の再描画）
+  window.addEventListener('resize', () => {
+    clearTimeout(window.resizeTimer);
+    window.resizeTimer = setTimeout(() => {
+      updateAuthUI();
+    }, 200); // デバウンス
+  });
 });
 
 // 🔧 ログインUI描画関数
@@ -86,6 +93,7 @@ function updateAuthUI() {
           // モバイルならハンバーガーメニューに追加
           const navLinks = document.getElementById('navLinks');
           if (navLinks) {
+            navLinks.innerHTML = ''; // ←追加前に中身を消す
             navLinks.innerHTML += `
               <li>${mypageLinkHTML}</li>
               <li>${logoutFormHTML}</li>
