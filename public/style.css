@@ -25,19 +25,19 @@ body {
     animation: fadeInDown 1s ease-out;
   }
   
-  .auth-forms {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    display: none;
-  }
+.auth-forms {
+  display: none; /* 初期は非表示 */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  flex-direction: column;
+  gap: 8px;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+}
   
   .auth-forms form {
     display: block;
@@ -1006,7 +1006,7 @@ body {
 /* スマホなど小さい画面の時だけ表示 */
 @media screen and (max-width: 768px) {
   #hamburgerBtn {
-    display: block !important; /* ← 最優先で表示する */
+    display: block !important; /* ← 上書き防止のため !important が必要 */
   }
 
   .nav-links {
@@ -1016,7 +1016,7 @@ body {
   .nav-links.show {
     display: block;
     position: absolute;
-    top: 50px;
+    top: 60px;
     right: 10px;
     background: #fff;
     padding: 15px;
@@ -1028,7 +1028,6 @@ body {
 
 /* ✅ ハンバーガーアイコンのスタイル */
 #hamburgerBtn {
-  display: none;
   position: absolute;
   top: 10px;
   right: 10px;
@@ -1038,4 +1037,5 @@ body {
   color: #333;
   cursor: pointer;
   z-index: 1001;
+  display: none; /* PCでは非表示 */
 }
