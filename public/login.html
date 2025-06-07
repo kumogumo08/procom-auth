@@ -101,10 +101,10 @@
           <input type="text" id="usernameInput" placeholder="ユーザー名" required>
           <input type="email" id="emailInput" placeholder="メールアドレス" required>
 
-          <div class="password-wrapper">
+          <div class="password-wrapper" style="position: relative;">
             <input
               type="password"
-              id="registerPassword"
+              id="passwordInput"
               placeholder="パスワード"
               required
               inputmode="latin"
@@ -112,10 +112,8 @@
               autocapitalize="none"
               style="ime-mode: disabled;"
             >
+            <i class="fa-solid fa-eye" id="toggleRegisterPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
           </div>
-          <input type="password" id="passwordInput" placeholder="パスワード" required>
-          <i class="fa-solid fa-eye" id="toggleRegisterPassword"></i>
-        </div>
           <small style="color: red; font-weight: bold;">
             ※ パスワードは8～32文字で、大文字・小文字・数字を含み、記号は使えません。
           </small><br><br>
