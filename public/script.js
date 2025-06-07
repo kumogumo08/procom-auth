@@ -32,13 +32,45 @@ cancelBtn?.addEventListener('click', () => {
 });
 
 // 📌 認証 UI
+// 🔁 DOM読み込み後の初期化
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("✅ DOMContentLoaded");
+
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const navLinks = document.getElementById('navLinks');
+  const authForms = document.querySelector('.auth-forms');
+
+  const editSection = document.getElementById('edit-section');
+  const photoUpload = document.querySelector('.photo-upload');
+  const eventForm = document.getElementById('event-form');
+  const youtubeInputSection = document.querySelector('.sns-section');
+  const instagramSection = document.querySelector('#editForm #instagramPostLink')?.parentElement;
+  const xSection = editSection?.querySelector('#xUsernameInput')?.parentElement;
+  const tiktokSection = document.getElementById('tiktok-section');
+
+  // ハンバーガーメニュー開閉
+  if (hamburgerBtn && navLinks) {
+    hamburgerBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('show');
+      authForms?.classList.toggle('show');
+    });
+  }
+
+  // ログインUIの表示を更新
+  updateAuthUI();
+});
+
+
+// 🔧 ログインUI描画関数
 function updateAuthUI() {
   console.log("✅ updateAuthUI 呼び出し開始");
+
   fetch('/session', { credentials: 'include' })
     .then(res => res.json())
     .then(data => {
       console.log("📨 /session レスポンス:", data);
       const authForms = document.querySelector('.auth-forms');
+
       const editSection = document.getElementById('edit-section');
       const photoUpload = document.querySelector('.photo-upload');
       const eventForm = document.getElementById('event-form');
@@ -54,7 +86,7 @@ function updateAuthUI() {
           <div style="text-align: right; margin-top: 10px;">
             <p>ようこそ、${data.name}さん！</p>
             <div style="display: flex; justify-content: flex-end; gap: 10px; align-items: center;">
-              <a href="/user/${data.uid}" class="mypage-btn">マイページ</a>
+              <a href="/user/${data.uid}" class="mypage-btn" id="mypageLink">マイページ</a>
               <form action="/logout" method="GET">
                 <button type="submit">ログアウト</button>
               </form>
@@ -64,10 +96,9 @@ function updateAuthUI() {
             </div>
           </div>
         `;
-        authForms.style.display = 'block'; // ← これを追加
-        console.log("✅ ログインUI更新完了"); 
+        authForms.style.display = 'block';
 
-                // 🔽 ログインユーザー向け要素を表示
+        // ログイン時のみ表示する要素
         if (editSection) editSection.style.display = 'block';
         if (photoUpload) photoUpload.style.display = 'block';
         if (eventForm) eventForm.style.display = 'block';
@@ -75,15 +106,14 @@ function updateAuthUI() {
         if (instagramSection) instagramSection.style.display = 'block';
         if (xSection) xSection.style.display = 'block';
         if (tiktokSection) tiktokSection.style.display = 'block';
-        } else {
+
+        console.log("✅ ログインUI更新完了");
+      } else {
         console.log("🔴 非ログイン状態：UIを非表示にします");
-        if (editSection) {
-         editSection.style.display = 'none';
-         }
 
         authForms.innerHTML = '';
 
-                // 🔽 ログインしていないときは非表示に
+        // 非ログイン時はすべて非表示
         if (editSection) editSection.style.display = 'none';
         if (photoUpload) photoUpload.style.display = 'none';
         if (eventForm) eventForm.style.display = 'none';
@@ -91,11 +121,9 @@ function updateAuthUI() {
         if (instagramSection) instagramSection.style.display = 'none';
         if (xSection) xSection.style.display = 'none';
         if (tiktokSection) tiktokSection.style.display = 'none';
-
-        attachAuthFormHandlers();
       }
     })
-        .catch(err => {
+    .catch(err => {
       console.error("❌ /session取得またはUI処理中エラー:", err);
     });
 }
