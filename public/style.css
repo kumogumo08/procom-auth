@@ -1006,7 +1006,7 @@ body {
 /* スマホなど小さい画面の時だけ表示 */
 @media screen and (max-width: 768px) {
   #hamburgerBtn {
-    display: block;
+    display: block !important; /* ← 最優先で表示する */
   }
 
   .nav-links {
