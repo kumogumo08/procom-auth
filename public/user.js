@@ -19,6 +19,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       document.body.classList.remove('own-page');
     }
 
+    document.querySelectorAll('.auth-only').forEach(el => {
+  el.style.display = isOwnPage ? 'block' : 'none';
+ });
+
   try {
     const res = await fetch(`/api/user/${uidFromURL}`);
     if (!res.ok) throw new Error('ユーザーデータ取得失敗');

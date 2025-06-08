@@ -60,7 +60,7 @@
     <button class="next" onclick="nextSlide()">›</button>
   </div>
 
-  <div class="photo-upload">
+  <div class="photo-upload auth-only">
   <h3>写真を登録(最大5枚)</h3>
   <input type="file" id="photoInput" accept="image/*" multiple>
   <button type="button" id="savePhotosBtn">写真を保存</button>
@@ -68,7 +68,7 @@
 
     <!-- 🔼 プロフィール保存ボタン（上部） -->
   <div style="text-align: center; margin: 20px 0;">
-    <button id="saveProfileBtnTop" class="save-profile-button">プロフィールを保存</button>
+    <button id="saveProfileBtnTop" class="save-profile-button auth-only">プロフィールを保存</button>
   </div>
 
   <!-- プロフィール -->
@@ -139,7 +139,7 @@
       <label><input type="radio" name="youtubeMode" value="manual"> お気に入り動画</label>
     </div>
 
-    <div id="youtubeInputGroup">
+    <div id="youtubeInputGroup" class="auth-only">
     <!-- 最新動画用フォーム -->
     <div class="sns-section" id="youtube-latest-input">
       <input type="text" id="channelIdInput" placeholder="チャンネルID (UC〜で始まるID)">
@@ -195,7 +195,7 @@
         <input type="text" class="tiktok-input" placeholder="動画URL 1" /><br />
         <input type="text" class="tiktok-input" placeholder="動画URL 2" /><br />
         <input type="text" class="tiktok-input" placeholder="動画URL 3" /><br />
-        <button type="button" onclick="saveTikTokVideos()">保存</button>
+       <button type="button" onclick="saveTikTokVideos()" class="auth-only">保存</button>
         <div id="tiktok-container" class="tiktok-grid"></div>
       </div>
     </div>
@@ -207,7 +207,7 @@
 <div style="display: flex; justify-content: center; gap: 40px; margin: 40px 0; align-items: flex-start; flex-wrap: wrap;">
 
   <!-- プロフィール保存ボタン -->
-  <button id="saveProfileBtnBottom" class="save-profile-button">
+  <button id="saveProfileBtnBottom" class="save-profile-button auth-only">
     プロフィールを保存
   </button>
 
