@@ -72,7 +72,6 @@ function updateAuthUI() {
     .then(data => {
       console.log("📨 /session レスポンス:", data);
       const authForms = document.querySelector('.auth-forms');
-
       const editSection = document.getElementById('edit-section');
       const photoUpload = document.querySelector('.photo-upload');
       const eventForm = document.getElementById('event-form');
@@ -80,6 +79,7 @@ function updateAuthUI() {
       const instagramSection = document.querySelector('#editForm #instagramPostLink')?.parentElement;
       const xSection = editSection?.querySelector('#xUsernameInput')?.parentElement;
       const tiktokSection = document.getElementById('tiktok-section');
+      const currentUid = decodeURIComponent(window.location.pathname.split('/').pop());
 
       if (!authForms) return;
 
@@ -88,13 +88,12 @@ function updateAuthUI() {
         const mypageLinkHTML = `<a href="/user/${data.uid}" class="mypage-btn">マイページ</a>`;
         const logoutFormHTML = `<form action="/logout" method="GET"><button type="submit">ログアウト</button></form>`;
         const accountLinkHTML = `<a href="/account.html">⚙ アカウント設定</a>`;
+        const isOwnPage = data.uid === currentUid;
 
         if (isMobile) {
-          // モバイルならハンバーガーメニューに追加
           const navLinks = document.getElementById('navLinks');
           if (navLinks) {
-            navLinks.innerHTML = ''; // ←追加前に中身を消す
-            navLinks.innerHTML += `
+            navLinks.innerHTML = `
               <li>${mypageLinkHTML}</li>
               <li>${logoutFormHTML}</li>
               <li>${accountLinkHTML}</li>
@@ -117,16 +116,26 @@ function updateAuthUI() {
           authForms.style.display = 'block';
         }
 
-        // ログイン時のみ表示する要素
-        if (editSection) editSection.style.display = 'block';
-        if (photoUpload) photoUpload.style.display = 'block';
-        if (eventForm) eventForm.style.display = 'block';
-        if (youtubeInputSection) youtubeInputSection.style.display = 'block';
-        if (instagramSection) instagramSection.style.display = 'block';
-        if (xSection) xSection.style.display = 'block';
-        if (tiktokSection) tiktokSection.style.display = 'block';
+        // 🎯 ページ所有者かどうかで切り替え
+        if (isOwnPage) {
+          if (editSection) editSection.style.display = 'block';
+          if (photoUpload) photoUpload.style.display = 'block';
+          if (eventForm) eventForm.style.display = 'block';
+          if (youtubeInputSection) youtubeInputSection.style.display = 'block';
+          if (instagramSection) instagramSection.style.display = 'block';
+          if (xSection) xSection.style.display = 'block';
+          if (tiktokSection) tiktokSection.style.display = 'block';
+        } else {
+          if (editSection) editSection.style.display = 'none';
+          if (photoUpload) photoUpload.style.display = 'none';
+          if (eventForm) eventForm.style.display = 'none';
+          if (youtubeInputSection) youtubeInputSection.style.display = 'none';
+          if (instagramSection) instagramSection.style.display = 'none';
+          if (xSection) xSection.style.display = 'none';
+          if (tiktokSection) tiktokSection.style.display = 'block'; // 閲覧のみOK
+        }
 
-        console.log("✅ ログインUI更新完了");
+        document.body.classList.toggle('own-page', isOwnPage);
       } else {
         console.log("🔴 非ログイン状態：UIを非表示にします");
 
@@ -138,6 +147,8 @@ function updateAuthUI() {
         if (instagramSection) instagramSection.style.display = 'none';
         if (xSection) xSection.style.display = 'none';
         if (tiktokSection) tiktokSection.style.display = 'none';
+
+        document.body.classList.remove('own-page');
       }
     })
     .catch(err => {
