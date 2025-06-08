@@ -1095,3 +1095,11 @@ body {
     display: block !important; /* ← 上書き防止のため !important が必要 */
   }
 }
+
+.auth-only {
+  display: none;
+}
+
+body.own-page .auth-only {
+  display: block;
+}
