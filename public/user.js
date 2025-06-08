@@ -13,12 +13,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   const session = await sessionRes.json();
   isOwnPage = session.loggedIn && session.uid === uidFromURL;// ← ここでは代入だけ
 
-    if (!isOwnPage) {
-    document.querySelectorAll('.auth-only').forEach(el => {
-      el.style.display = 'none';
-    });
-  }
-  
+    if (isOwnPage) {
+      document.body.classList.add('own-page');
+    } else {
+      document.body.classList.remove('own-page');
+    }
+
   try {
     const res = await fetch(`/api/user/${uidFromURL}`);
     if (!res.ok) throw new Error('ユーザーデータ取得失敗');
