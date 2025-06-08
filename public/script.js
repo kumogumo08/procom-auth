@@ -511,21 +511,21 @@ function createCalendar(date = new Date(), isEditable = false) {
   });
   };
 
-  setTimeout(() => {
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const date = btn.getAttribute('data-date');
-        const index = parseInt(btn.getAttribute('data-index'), 10);
-        if (events[date]) {
-          events[date].splice(index, 1);
-          if (events[date].length === 0) delete events[date];
-          localStorage.setItem('calendarEvents', JSON.stringify(events));
-          createCalendar(currentDate, isEditable); 
-        }
-      });
-    });
-  }, 0);
+//   setTimeout(() => {
+//     document.querySelectorAll('.delete-btn').forEach(btn => {
+//       btn.addEventListener('click', (e) => {
+//         e.stopPropagation();
+//         const date = btn.getAttribute('data-date');
+//         const index = parseInt(btn.getAttribute('data-index'), 10);
+//         if (events[date]) {
+//           events[date].splice(index, 1);
+//           if (events[date].length === 0) delete events[date];
+//           localStorage.setItem('calendarEvents', JSON.stringify(events));
+//           createCalendar(currentDate, isEditable); 
+//         }
+//       });
+//     });
+//   }, 0);
 }
 
 let isSavingPhotos = false;
