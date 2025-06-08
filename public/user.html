@@ -80,7 +80,7 @@
       <h2 id="nameTitle"><span id="name"></span><span id="title"></span></h2>
       <p id="bio"></p>
 
-      <div id="edit-section">
+      <div id="edit-section" class="auth-only">
         <button id="editBtn">プロフィールを編集</button>
         <form id="editForm" class="hidden">
 
@@ -111,7 +111,7 @@
     <!-- 右：カレンダー -->
     <div id="calendar-container">
       <div id="calendar"></div>
-      <div id="event-form">
+      <div id="event-form" class="auth-only">
         <h3>予定を追加</h3>
         <label>日付: <input type="date" id="event-date" /></label><br>
         <label>内容: <input type="text" id="event-text" placeholder="イベント内容" /></label><br>
@@ -164,7 +164,7 @@
   </div>
 
     <!-- 🔘 保存ボタン（共通でモードに応じて分岐） -->
-    <button type="button" onclick="saveYouTubeSettings()">保存</button>
+    <button type="button" class="auth-only" onclick="saveYouTubeSettings()">保存</button>
 
     <!-- 表示される動画 -->
     <div id="videoContainer" class="video-container"></div>
