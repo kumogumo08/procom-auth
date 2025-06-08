@@ -63,12 +63,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (instaBtn) instaBtn.style.display = 'none';
       if (tiktokSection) tiktokSection.style.display = 'block';
       if (snsSection) snsSection.classList.remove('show');
-      if (editSection) editSection.style.display = 'none';
-      if (youtubeInputGroup) youtubeInputGroup.style.display = 'none';
-      if (youtubeVideos) youtubeVideos.style.display = 'flex';
+      // if (editSection) editSection.style.display = 'none';
+      // if (youtubeInputGroup) youtubeInputGroup.style.display = 'none';
+      // if (youtubeVideos) youtubeVideos.style.display = 'flex';
       if (tiktokContainer) tiktokContainer.style.display = 'flex';
-      if (saveTop) saveTop.style.display = 'none';
-      if (saveBottom) saveBottom.style.display = 'none';
+      // if (saveTop) saveTop.style.display = 'none';
+      // if (saveBottom) saveBottom.style.display = 'none';
           tiktokInputs.forEach(input => input.style.display = 'none');
       if (tiktokSaveBtn) tiktokSaveBtn.style.display = 'none';
     } else {
@@ -80,12 +80,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (instaBtn) instaBtn.style.display = 'inline-block';
       if (tiktokSection) tiktokSection.style.display = 'block';
       if (snsSection) snsSection.classList.add('show');
-      if (editSection) editSection.style.display = 'block';
-      if (youtubeInputGroup) youtubeInputGroup.style.display = 'block';
-      if (youtubeVideos) youtubeVideos.style.display = 'flex';
+      // if (editSection) editSection.style.display = 'block';
+      // if (youtubeInputGroup) youtubeInputGroup.style.display = 'block';
+      // if (youtubeVideos) youtubeVideos.style.display = 'flex';
       if (tiktokContainer) tiktokContainer.style.display = 'flex';
-      if (saveTop) saveTop.style.display = 'inline-block';
-      if (saveBottom) saveBottom.style.display = 'inline-block';
+      // if (saveTop) saveTop.style.display = 'inline-block';
+      // if (saveBottom) saveBottom.style.display = 'inline-block';
          tiktokInputs.forEach(input => input.style.display = 'block');
       if (tiktokSaveBtn) tiktokSaveBtn.style.display = 'inline-block';
     }
@@ -182,7 +182,7 @@ if (!isOwnPage && favoriteBtn) {
     document.querySelectorAll('.auth-only').forEach(el => {
   el.style.display = isOwnPage ? 'block' : 'none';
  });
- 
+
 });
 
 function showXProfile(username) {
